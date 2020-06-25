@@ -97,7 +97,7 @@ def wide_large_triplelayer():
 
     Three graphene layers
     Lateral: 3.0 nm x 3.0 nm
-    Width: 1.0 nm
+    Width: 1.6 nm
 
     Arguments
     ---------
