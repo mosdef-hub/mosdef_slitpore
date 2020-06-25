@@ -8,7 +8,7 @@
   <Bond class1="OW" class2="HW" length="0.1" k="502416.0"/>
   </HarmonicBondForce>
  <HarmonicAngleForce>
-  <Angle class1="HW" class2="OW" class3="HW" angle="1.9111355" k="383.0"/>
+  <Angle class1="HW" class2="OW" class3="HW" angle="1.91063324" k="383.0"/>
  </HarmonicAngleForce>
  <NonbondedForce coulomb14scale="0.5" lj14scale="0.5">
   <Atom type="GPH"    charge="0.00"    sigma="0.34"   epsilon="0.232805"/>
