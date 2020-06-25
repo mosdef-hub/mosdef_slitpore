@@ -1,7 +1,7 @@
 import mbuild as mb
 from mbuild import recipes
 
-def pore_narrow_small_singlelayer():
+def narrow_small_singlelayer():
     """Generate an empty pore with the following:
 
     Single layer graphene
@@ -31,7 +31,7 @@ def pore_narrow_small_singlelayer():
 
     return pore
 
-def pore_narrow_large_singlelayer():
+def narrow_large_singlelayer():
     """Generate an empty pore with the following:
 
     Single layer graphene
@@ -61,7 +61,7 @@ def pore_narrow_large_singlelayer():
 
     return pore
 
-def pore_narrow_large_triplelayer():
+def narrow_large_triplelayer():
     """Generate an empty pore with the following:
 
     Three graphene layers
@@ -92,7 +92,7 @@ def pore_narrow_large_triplelayer():
     return pore
 
 
-def pore_wide_large_tripelayer():
+def wide_large_triplelayer():
     """Generate an empty pore with the following:
 
     Three graphene layers
