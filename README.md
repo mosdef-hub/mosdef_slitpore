@@ -6,3 +6,9 @@ A collection of scripts to run simulations of water inside a carbon slit-pore.  
 - [GOMC](http://gomc.eng.wayne.edu)
 
 ### Requirements
+
+### Simulation details
+
+* LJ, cutoff, no analytical tail corrections
+* 9.0 angstrom cutoffs for LJ and Coulombic interactions
+* No long range electrostatics 
