@@ -13,6 +13,6 @@
  <NonbondedForce coulomb14scale="0.5" lj14scale="0.5">
   <Atom type="GPH"    charge="0.00"    sigma="0.34"   epsilon="0.232805"/>
   <Atom type="o_spce" charge="-0.8476" sigma="0.31656" epsilon="0.65010"/>
-  <Atom type="h_spce" charge="0.4238"  sigma="0.1"    epsilon="0.0"/>
+  <Atom type="h_spce" charge="0.4238"  sigma="0.0"    epsilon="0.0"/>
   </NonbondedForce>
 </ForceField>
