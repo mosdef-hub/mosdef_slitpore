@@ -1,0 +1,34 @@
+PSF 
+
+       1 !NTITLE
+ REMARKS this file Water_boxes_for_test_box.psf - created by mBuild/foyer using the
+ REMARKS parameters from the ['files/pore-spce.xml'] force field via MoSDef
+ REMARKS created on 2020-06-29 13:00:47.034842
+
+
+       0 !NATOM       
+
+       0 !NBOND: bonds
+
+       0 !NTHETA: angles
+
+       0 !NPHI: dihedrals
+
+
+       0 !NIMPHI: impropers
+
+
+       0 !NDON: donors
+
+
+       0 !NACC: acceptors
+
+
+       0 !NNB
+
+       0       0       0
+
+       1       0 !NGRP 
+       0       1       0
+
+
