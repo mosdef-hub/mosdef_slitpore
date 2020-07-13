@@ -4,7 +4,7 @@ import mbuild as mb
 from foyer import Forcefield
 from mosdef_slitpore.pores import graphene_surface
 from mosdef_slitpore.utils.cassandra import spce_water
-from mosdef_slitpore.utils.utils import get_ff
+from mosdef_slitpore.utils.utils import get_ff, add_settles
 
 surface = graphene_surface()
 x_length = np.max(surface.xyz[:, 0])
@@ -33,3 +33,5 @@ system = graphenePM + waterPM
 system.save('init.gro', combine='all', overwrite=True)
 system.save('init.top', combine='all', overwrite=True)
 system.save('init.mol2', overwrite=True)
+
+add_settles('init.top')
