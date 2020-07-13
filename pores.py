@@ -121,3 +121,24 @@ def wide_large_triplelayer():
     pore.periodicity[2] = 6.0
 
     return pore
+
+def graphene_surface():
+    """Generate a graphene surface with the following:
+    Three graphene layers
+    Lateral: 4.0 nm x 4.0 nm
+    Vacuum: 20 nm
+
+    Arguments
+    ---------
+    None
+
+    Returns
+    -------
+    mbuild.Compound
+    """
+    surface = recipes.GrapheneSurface(
+            x_length=4.0,
+            y_length=4.0,
+            n_sheets=3,
+            vacuum=20.0
+            )
