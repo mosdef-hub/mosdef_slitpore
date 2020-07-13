@@ -6,7 +6,7 @@ import unyt as u
 import mosdef_cassandra as mc
 import numpy as np
 
-sys.path.append("../../../")
+from mosdef_slitpore.utils.utils import get_ff
 
 from mosdef_cassandra.utils.tempdir import temporary_cd
 from mosdef_slitpore.utils.cassandra import spce_water, load_final_frame
@@ -23,7 +23,7 @@ filterwarnings("ignore", category=OpenMMWarning)
 def main():
     # Create a water molecule with the spce geometry
     water = spce_water()
-    ff = foyer.Forcefield("../../ffxml/pore-spce.xml")
+    ff = foyer.Forcefield(get_ff("pore-spce.xml"))
     water_typed = ff.apply(water)
 
     # Define conditions
