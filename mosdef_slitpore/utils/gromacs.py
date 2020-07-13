@@ -10,14 +10,14 @@ def add_settles(top_file):
             if len(line.split()) == 0:
                 continue
             if 'GPH' == line.split()[0]:
+                i += 1
                 atom_dict['GPH'] = i
-                i += 1
             elif 'o_spce' == line.split()[0]:
+                i += 1
                 atom_dict['o_spce'] = i
-                i += 1
             elif 'h_spce' == line.split()[0]:
-                atom_dict['h_spce'] = i
                 i += 1
+                atom_dict['h_spce'] = i
             if i >= 3:
                 break
 
@@ -25,7 +25,7 @@ def add_settles(top_file):
         f.write('\n')
         f.write('[ settles ]\n')
         f.write('; OW    funct   doh     dhh\n')
-        f.write('{}    1    0.1    0.1633'.format(atom_dict['o_spce']-1))
+        f.write('{}    1    0.1    0.1633'.format(atom_dict['o_spce']))
 
 def write_ndx():
     """ Write GROMACS ndx file
