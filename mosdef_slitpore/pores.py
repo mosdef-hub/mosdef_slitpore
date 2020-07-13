@@ -142,3 +142,5 @@ def graphene_surface():
             n_sheets=3,
             vacuum=20.0
             )
+
+    return surface
