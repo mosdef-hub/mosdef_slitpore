@@ -16,7 +16,7 @@ water = spce_water()
 water.name = 'SOL'
 
 water_region = mb.Box(
-        mins=[0, 0, z_length],
+        mins=[0, 0, z_length+0.2],
         maxs=[x_length, y_length, z_length+2]
         )
 
