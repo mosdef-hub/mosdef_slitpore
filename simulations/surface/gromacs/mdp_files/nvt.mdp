@@ -37,4 +37,3 @@ comm-mode           = None
 
 pbc                 = xyz
 periodic-molecules  = yes
-DispCorr            = EnerPres
