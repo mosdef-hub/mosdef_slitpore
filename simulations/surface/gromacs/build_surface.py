@@ -26,8 +26,8 @@ water_box = mb.fill_box(water, box=water_region, density=1000)
 
 ff = Forcefield(get_ff('pore-spce.xml'))
 
-graphenePM = ff.apply(surface, residues='RES')
-waterPM = ff.apply(water_box, residues='SOL')
+graphenePM = ff.apply(surface, combining_rule='lorentz', residues='RES')
+waterPM = ff.apply(water_box, combining_rule='lorentz', residues='SOL')
 
 system = graphenePM + waterPM
 
