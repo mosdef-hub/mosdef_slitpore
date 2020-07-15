@@ -11,4 +11,4 @@ A collection of scripts to run simulations of water inside a carbon slit-pore.  
 
 * LJ, cutoff, no analytical tail corrections
 * 9.0 angstrom cutoffs for LJ and Coulombic interactions
-* No long range electrostatics 
+* Long range electrostatics 
