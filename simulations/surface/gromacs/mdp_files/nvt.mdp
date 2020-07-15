@@ -1,7 +1,7 @@
 constraints         = all-angles
 constraint-algorithm = LINCS
 integrator          = md
-nsteps              = 10000000
+nsteps              = 25000000
 dt                  = 0.001
 
 nstxout             = 1000

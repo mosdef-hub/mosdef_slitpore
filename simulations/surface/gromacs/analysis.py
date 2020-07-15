@@ -13,7 +13,7 @@ def number_density():
     dim = 2
     box_range = [0.67, 3]
     
-    n_bins=150
+    n_bins=200
     
     rho, bins, res = calc_number_density(trj, area, dim, box_range, n_bins)
     r_min, rho_min = find_local_minima(bins, rho[0], 0.5)
