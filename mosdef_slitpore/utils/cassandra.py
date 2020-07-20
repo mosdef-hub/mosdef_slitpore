@@ -84,8 +84,8 @@ def run_adsorption(pore, temperature, mu, nsteps):
     )
 
 
-def restart_adsorption(pore, temperature, mu, nsteps):
-    """Run adsorption simulation at the specified temperature
+def run_desorption(empty_pore, filled_pore, nwater, temperature, mu, nsteps_eq, nsteps_prod):
+    """Run desorption simulation at the specified temperature
     and chemical potential
 
     Parameters
@@ -96,30 +96,28 @@ def restart_adsorption(pore, temperature, mu, nsteps):
 
     """
     # Verify inputs
-
     # Apply ff
-    ff = foyer.Forcefield("../../../ffxml/pore-spce.xml")
-    typed_pore = ff.apply(pore)
+    ff = foyer.Forcefield(get_ff("pore-spce.xml"))
+    typed_pore = ff.apply(empty_pore)
 
     # Create a water molecule with the spce geometry
     water = spce_water()
     typed_water = ff.apply(water)
 
     # Create box and species list
-    box_list = [pore]
+    box_list = [filled_pore]
     species_list = [typed_pore, typed_water]
 
     # Specify mols at start of the simulation
-    mols_in_boxes = [[1, 0]]
+    mols_in_boxes = [[1, nwater]]
 
     # Create MC system
     system = mc.System(box_list, species_list, mols_in_boxes=mols_in_boxes)
-    moves = mc.MoveSet("gcmc", species_list)
+    moves = mc.MoveSet("nvt", species_list)
 
     # Set move probabilities
-    moves.prob_translate = 0.25
-    moves.prob_rotate = 0.25
-    moves.prob_insert = 0.25
+    moves.prob_translate = 0.5
+    moves.prob_rotate = 0.5
     moves.prob_regrow = 0.0
 
     # Set thermodynamic properties
@@ -143,6 +141,30 @@ def restart_adsorption(pore, temperature, mu, nsteps):
         "coord_freq": 50000,
     }
 
+    custom_args["run_name"] = "equil.nvt"
+
+    # Run NVT equilibration
+    mc.run(
+        system=system,
+        moveset=moves,
+        run_type="equilibration",
+        run_length=nsteps_eq,
+        temperature=temperature,
+        **custom_args,
+    )
+
+    # Create MC system
+    equilibrated_box = load_final_frame("equil.nvt.out.xyz")
+    box_list = [equilibrated_box]
+    system = mc.System(box_list, species_list, mols_in_boxes=mols_in_boxes)
+    moves = mc.MoveSet("gcmc", species_list)
+
+    # Set move probabilities
+    moves.prob_translate = 0.25
+    moves.prob_rotate = 0.25
+    moves.prob_insert = 0.25
+    moves.prob_regrow = 0.0
+
     # Specify the restricted insertion
     restricted_type = [[None, "slitpore"]]
     restricted_value = [[None, 0.8 * u.nm]]
@@ -150,19 +172,19 @@ def restart_adsorption(pore, temperature, mu, nsteps):
         species_list, restricted_type, restricted_value
     )
 
-    custom_args["run_name"] = "equil.rst"
-    custom_args["restart_name"] = "equil"
-    mc.restart(
+    # Run GCMC
+    custom_args["run_name"] = "equil.gcmc"
+    mc.run(
         system=system,
         moveset=moves,
         run_type="equilibration",
-        run_length=nsteps,
+        run_length=nsteps_prod,
         temperature=temperature,
         chemical_potentials=["none", mu],
         **custom_args,
     )
 
-
+ 
 def spce_water():
     """Generate a single water molecule with the SPC/E geometry
 
@@ -221,9 +243,9 @@ def load_final_frame(fname):
     for iline, line in enumerate(data):
         if len(line) > 0:
             if line[0] == "MC_STEP:":
-                natom_line = iline - 1
+                natom_line = iline-1
 
-    final_frame = data[natom_line + 2 :]
+    final_frame = data[natom_line+2:]
     natoms = int(data[natom_line][0])
     with open(fname + "-final.xyz", "w") as f:
         f.write(f"{natoms}\nAtoms\n")
@@ -231,22 +253,22 @@ def load_final_frame(fname):
             f.write(
                 "{}\t{}\t{}\t{}\n".format(
                     coord[0], coord[1], coord[2], coord[3],
-                )
-            )
-
+                )   
+            )   
     data = []
     with open(fname + ".H") as f:
         for line in f:
             data.append(line.strip().split())
 
-    box_matrix = np.asarray(data[-6:-3], dtype=np.float32)
-    assert box_matrix.shape == (3, 3)
+    nspecies = int(data[-1][0])
+    box_matrix = np.asarray(data[-(nspecies+5):-(nspecies+2)], dtype=np.float32)
+    assert box_matrix.shape == (3,3)
     if np.count_nonzero(box_matrix - np.diag(np.diagonal(box_matrix))) > 0:
         raise ValueError("Only orthogonal boxes are currently supported")
 
     # If all is well load in the final frame
     frame = mbuild.load(fname + "-final.xyz")
     # mbuild.Compounds use nanometers!
-    frame.periodicity = np.diagonal(box_matrix / 10.0)
+    frame.periodicity = np.diagonal(box_matrix/10.0)
 
     return frame
