@@ -1,5 +1,165 @@
 import mbuild
+import foyer
+import unyt as u
+import mosdef_cassandra as mc
 import numpy as np
+
+
+def run_adsorption(pore, temperature, mu, nsteps):
+    """Run adsorption simulation at the specified temperature
+    and chemical potential
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
+    """
+    # Verify inputs
+
+    # Apply ff
+    ff = foyer.Forcefield('../../../ffxml/pore-spce.xml')
+    typed_pore = ff.apply(pore)
+
+    # Create a water molecule with the spce geometry
+    water = spce_water()
+    typed_water = ff.apply(water)
+
+    # Create box and species list
+    box_list = [pore]
+    species_list = [typed_pore, typed_water]
+
+    # Specify mols at start of the simulation
+    mols_in_boxes = [[1, 0]]
+
+    # Create MC system
+    system = mc.System(box_list, species_list, mols_in_boxes=mols_in_boxes)
+    moves = mc.MoveSet("gcmc", species_list)
+
+    # Set move probabilities
+    moves.prob_translate = 0.25
+    moves.prob_rotate = 0.25
+    moves.prob_insert = 0.25
+    moves.prob_regrow = 0.0
+
+    # Set thermodynamic properties
+    thermo_props = [
+        "energy_total",
+        "pressure",
+        "volume",
+        "nmols",
+        "mass_density",
+    ]
+
+    custom_args = {
+        "cutoff_style" : "cut",
+        "charge_style": "ewald",
+        "rcut_min": 0.5 * u.angstrom,
+        "vdw_cutoff": 9.0 * u.angstrom,
+        "charge_cutoff" : 9.0 * u.angstrom,
+        "properties": thermo_props,
+        "angle_style" : ["harmonic", "fixed"],
+        "run_name": "equil",
+        "coord_freq": 50000,
+    }
+
+    # Specify the restricted insertion
+    restricted_type = [[None, 'slitpore']]
+    restricted_value = [[None, 0.8 * u.nm]]
+    moves.add_restricted_insertions(species_list,
+                                   restricted_type,
+                                   restricted_value)
+
+    mc.run(
+        system=system,
+   	    moveset=moves,
+   	    run_type="equilibration",
+   	    run_length=nsteps,
+   	    temperature=temperature,
+   	    chemical_potentials=["none", mu],
+   	    **custom_args,
+    )
+
+
+def restart_adsorption(pore, temperature, mu, nsteps):
+    """Run adsorption simulation at the specified temperature
+    and chemical potential
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
+    """
+    # Verify inputs
+
+    # Apply ff
+    ff = foyer.Forcefield('../../../ffxml/pore-spce.xml')
+    typed_pore = ff.apply(pore)
+
+    # Create a water molecule with the spce geometry
+    water = spce_water()
+    typed_water = ff.apply(water)
+
+    # Create box and species list
+    box_list = [pore]
+    species_list = [typed_pore, typed_water]
+
+    # Specify mols at start of the simulation
+    mols_in_boxes = [[1, 0]]
+
+    # Create MC system
+    system = mc.System(box_list, species_list, mols_in_boxes=mols_in_boxes)
+    moves = mc.MoveSet("gcmc", species_list)
+
+    # Set move probabilities
+    moves.prob_translate = 0.25
+    moves.prob_rotate = 0.25
+    moves.prob_insert = 0.25
+    moves.prob_regrow = 0.0
+
+    # Set thermodynamic properties
+    thermo_props = [
+        "energy_total",
+        "pressure",
+        "volume",
+        "nmols",
+        "mass_density",
+    ]
+
+    custom_args = {
+        "cutoff_style" : "cut",
+        "charge_style": "ewald",
+        "rcut_min": 0.5 * u.angstrom,
+        "vdw_cutoff": 9.0 * u.angstrom,
+        "charge_cutoff" : 9.0 * u.angstrom,
+        "properties": thermo_props,
+        "angle_style" : ["harmonic", "fixed"],
+        "run_name": "equil",
+        "coord_freq": 50000,
+    }
+
+    # Specify the restricted insertion
+    restricted_type = [[None, 'slitpore']]
+    restricted_value = [[None, 0.8 * u.nm]]
+    moves.add_restricted_insertions(species_list,
+                                   restricted_type,
+                                   restricted_value)
+
+    custom_args["run_name"] = "equil.rst"
+    custom_args["restart_name"] = "equil"
+    mc.restart(
+        system=system,
+   	    moveset=moves,
+   	    run_type="equilibration",
+   	    run_length=nsteps,
+   	    temperature=temperature,
+   	    chemical_potentials=["none", mu],
+   	    **custom_args,
+    )
+
 
 def spce_water():
     """Generate a single water molecule with the SPC/E geometry
@@ -80,7 +240,7 @@ def load_final_frame(fname):
     assert box_matrix.shape == (3,3)
     if np.count_nonzero(box_matrix - np.diag(np.diagonal(box_matrix))) > 0:
         raise ValueError("Only orthogonal boxes are currently supported")
-   
+
     # If all is well load in the final frame
     frame = mbuild.load(fname + "-final.xyz")
     # mbuild.Compounds use nanometers!
