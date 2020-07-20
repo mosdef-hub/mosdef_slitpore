@@ -4,6 +4,8 @@ import unyt as u
 import mosdef_cassandra as mc
 import numpy as np
 
+from mosdef_slitpore.utils.utils import get_ff
+
 
 def run_adsorption(pore, temperature, mu, nsteps):
     """Run adsorption simulation at the specified temperature
@@ -19,7 +21,7 @@ def run_adsorption(pore, temperature, mu, nsteps):
     # Verify inputs
 
     # Apply ff
-    ff = foyer.Forcefield('../../../ffxml/pore-spce.xml')
+    ff = foyer.Forcefield(get_ff("pore-spce.xml"))
     typed_pore = ff.apply(pore)
 
     # Create a water molecule with the spce geometry
@@ -53,32 +55,32 @@ def run_adsorption(pore, temperature, mu, nsteps):
     ]
 
     custom_args = {
-        "cutoff_style" : "cut",
+        "cutoff_style": "cut",
         "charge_style": "ewald",
         "rcut_min": 0.5 * u.angstrom,
         "vdw_cutoff": 9.0 * u.angstrom,
-        "charge_cutoff" : 9.0 * u.angstrom,
+        "charge_cutoff": 9.0 * u.angstrom,
         "properties": thermo_props,
-        "angle_style" : ["harmonic", "fixed"],
+        "angle_style": ["harmonic", "fixed"],
         "run_name": "equil",
         "coord_freq": 50000,
     }
 
     # Specify the restricted insertion
-    restricted_type = [[None, 'slitpore']]
+    restricted_type = [[None, "slitpore"]]
     restricted_value = [[None, 0.8 * u.nm]]
-    moves.add_restricted_insertions(species_list,
-                                   restricted_type,
-                                   restricted_value)
+    moves.add_restricted_insertions(
+        species_list, restricted_type, restricted_value
+    )
 
     mc.run(
         system=system,
-   	    moveset=moves,
-   	    run_type="equilibration",
-   	    run_length=nsteps,
-   	    temperature=temperature,
-   	    chemical_potentials=["none", mu],
-   	    **custom_args,
+        moveset=moves,
+        run_type="equilibration",
+        run_length=nsteps,
+        temperature=temperature,
+        chemical_potentials=["none", mu],
+        **custom_args,
     )
 
 
@@ -96,7 +98,7 @@ def restart_adsorption(pore, temperature, mu, nsteps):
     # Verify inputs
 
     # Apply ff
-    ff = foyer.Forcefield('../../../ffxml/pore-spce.xml')
+    ff = foyer.Forcefield("../../../ffxml/pore-spce.xml")
     typed_pore = ff.apply(pore)
 
     # Create a water molecule with the spce geometry
@@ -130,34 +132,34 @@ def restart_adsorption(pore, temperature, mu, nsteps):
     ]
 
     custom_args = {
-        "cutoff_style" : "cut",
+        "cutoff_style": "cut",
         "charge_style": "ewald",
         "rcut_min": 0.5 * u.angstrom,
         "vdw_cutoff": 9.0 * u.angstrom,
-        "charge_cutoff" : 9.0 * u.angstrom,
+        "charge_cutoff": 9.0 * u.angstrom,
         "properties": thermo_props,
-        "angle_style" : ["harmonic", "fixed"],
+        "angle_style": ["harmonic", "fixed"],
         "run_name": "equil",
         "coord_freq": 50000,
     }
 
     # Specify the restricted insertion
-    restricted_type = [[None, 'slitpore']]
+    restricted_type = [[None, "slitpore"]]
     restricted_value = [[None, 0.8 * u.nm]]
-    moves.add_restricted_insertions(species_list,
-                                   restricted_type,
-                                   restricted_value)
+    moves.add_restricted_insertions(
+        species_list, restricted_type, restricted_value
+    )
 
     custom_args["run_name"] = "equil.rst"
     custom_args["restart_name"] = "equil"
     mc.restart(
         system=system,
-   	    moveset=moves,
-   	    run_type="equilibration",
-   	    run_length=nsteps,
-   	    temperature=temperature,
-   	    chemical_potentials=["none", mu],
-   	    **custom_args,
+        moveset=moves,
+        run_type="equilibration",
+        run_length=nsteps,
+        temperature=temperature,
+        chemical_potentials=["none", mu],
+        **custom_args,
     )
 
 
@@ -193,6 +195,7 @@ def spce_water():
 
     return water
 
+
 def load_final_frame(fname):
     """Return the final frame of a Cassandra .xyz file as an mbuild.Compound
 
@@ -218,9 +221,9 @@ def load_final_frame(fname):
     for iline, line in enumerate(data):
         if len(line) > 0:
             if line[0] == "MC_STEP:":
-                natom_line = iline-1
+                natom_line = iline - 1
 
-    final_frame = data[natom_line+2:]
+    final_frame = data[natom_line + 2 :]
     natoms = int(data[natom_line][0])
     with open(fname + "-final.xyz", "w") as f:
         f.write(f"{natoms}\nAtoms\n")
@@ -237,13 +240,13 @@ def load_final_frame(fname):
             data.append(line.strip().split())
 
     box_matrix = np.asarray(data[-6:-3], dtype=np.float32)
-    assert box_matrix.shape == (3,3)
+    assert box_matrix.shape == (3, 3)
     if np.count_nonzero(box_matrix - np.diag(np.diagonal(box_matrix))) > 0:
         raise ValueError("Only orthogonal boxes are currently supported")
 
     # If all is well load in the final frame
     frame = mbuild.load(fname + "-final.xyz")
     # mbuild.Compounds use nanometers!
-    frame.periodicity = np.diagonal(box_matrix/10.0)
+    frame.periodicity = np.diagonal(box_matrix / 10.0)
 
     return frame
