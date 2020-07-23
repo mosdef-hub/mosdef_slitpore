@@ -7,16 +7,26 @@ import numpy as np
 from mosdef_slitpore.utils.utils import get_ff
 
 
-def run_adsorption(pore, temperature, mu, nsteps):
+def run_adsorption(pore, temperature, mu, nsteps, pore_width=1.6 * u.nm):
     """Run adsorption simulation at the specified temperature
     and chemical potential
 
     Parameters
     ----------
+    pore : mbuild.Compound
+        empty pore system to simulate
+    temperature: u.unyt_quantity (temperature)
+        desired temperature
+    mu : u.unyt_quantity (energy)
+        desired chemical potential
+    nsteps : int
+        number of MC steps in simulation
+    pore_width : opt, u.unyt_quantity (length)
+        width of pore for restricted insertions
 
     Returns
     -------
-
+    None: runs simulation
     """
     # Verify inputs
 
@@ -68,7 +78,7 @@ def run_adsorption(pore, temperature, mu, nsteps):
 
     # Specify the restricted insertion
     restricted_type = [[None, "slitpore"]]
-    restricted_value = [[None, 0.8 * u.nm]]
+    restricted_value = [[None, pore_width ]]
     moves.add_restricted_insertions(
         species_list, restricted_type, restricted_value
     )
@@ -84,16 +94,41 @@ def run_adsorption(pore, temperature, mu, nsteps):
     )
 
 
-def run_desorption(empty_pore, filled_pore, nwater, temperature, mu, nsteps_eq, nsteps_prod):
+def run_desorption(
+    empty_pore,
+    filled_pore,
+    nwater,
+    temperature,
+    mu,
+    nsteps_eq,
+    nsteps_prod,
+    pore_width=1.6 * u.nm,
+):
     """Run desorption simulation at the specified temperature
     and chemical potential
 
     Parameters
     ----------
+    empty_pore : mbuild.Compound
+        empty pore system to simulate
+    filled_pore : mbuild.Compound
+        pore filled with water
+    nwater : int
+        number of waters in the pore
+    temperature: u.unyt_quantity (temperature)
+        desired temperature
+    mu : u.unyt_quantity (energy)
+        desired chemical potential
+    nsteps_eq : int
+        number of MC steps for NVT equilibration
+    nsteps_prod : int
+        number of MC steps for GCMC simulation
+    pore_width : opt, u.unyt_quantity (length)
+        width of pore for restricted insertions
 
     Returns
     -------
-
+    None: runs simulation
     """
     # Verify inputs
     # Apply ff
@@ -167,7 +202,7 @@ def run_desorption(empty_pore, filled_pore, nwater, temperature, mu, nsteps_eq, 
 
     # Specify the restricted insertion
     restricted_type = [[None, "slitpore"]]
-    restricted_value = [[None, 0.8 * u.nm]]
+    restricted_value = [[None, pore_width]]
     moves.add_restricted_insertions(
         species_list, restricted_type, restricted_value
     )
@@ -184,7 +219,7 @@ def run_desorption(empty_pore, filled_pore, nwater, temperature, mu, nsteps_eq, 
         **custom_args,
     )
 
- 
+
 def spce_water():
     """Generate a single water molecule with the SPC/E geometry
 
@@ -243,9 +278,9 @@ def load_final_frame(fname):
     for iline, line in enumerate(data):
         if len(line) > 0:
             if line[0] == "MC_STEP:":
-                natom_line = iline-1
+                natom_line = iline - 1
 
-    final_frame = data[natom_line+2:]
+    final_frame = data[natom_line + 2 :]
     natoms = int(data[natom_line][0])
     with open(fname + "-final.xyz", "w") as f:
         f.write(f"{natoms}\nAtoms\n")
@@ -253,22 +288,24 @@ def load_final_frame(fname):
             f.write(
                 "{}\t{}\t{}\t{}\n".format(
                     coord[0], coord[1], coord[2], coord[3],
-                )   
-            )   
+                )
+            )
     data = []
     with open(fname + ".H") as f:
         for line in f:
             data.append(line.strip().split())
 
     nspecies = int(data[-1][0])
-    box_matrix = np.asarray(data[-(nspecies+5):-(nspecies+2)], dtype=np.float32)
-    assert box_matrix.shape == (3,3)
+    box_matrix = np.asarray(
+        data[-(nspecies + 5) : -(nspecies + 2)], dtype=np.float32
+    )
+    assert box_matrix.shape == (3, 3)
     if np.count_nonzero(box_matrix - np.diag(np.diagonal(box_matrix))) > 0:
         raise ValueError("Only orthogonal boxes are currently supported")
 
     # If all is well load in the final frame
     frame = mbuild.load(fname + "-final.xyz")
     # mbuild.Compounds use nanometers!
-    frame.periodicity = np.diagonal(box_matrix/10.0)
+    frame.periodicity = np.diagonal(box_matrix / 10.0)
 
     return frame
