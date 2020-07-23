@@ -16,13 +16,17 @@ def init_project():
         -60.0 * u.kJ / u.mol,
         -57.0 * u.kJ / u.mol,
         -54.0 * u.kJ / u.mol,
+        -53.0 * u.kJ / u.mol,
+        -52.0 * u.kJ / u.mol,
         -51.0 * u.kJ / u.mol,
+        -50.0 * u.kJ / u.mol,
+        -49.0 * u.kJ / u.mol,
         -48.0 * u.kJ / u.mol,
         -45.0 * u.kJ / u.mol,
     ]
 
     # Run for 150 M steps
-    nsteps_eq = 1000000
+    nsteps_eq = 5000000
     nsteps_prod = 150000000
 
     # Start with 405 waters in pore
