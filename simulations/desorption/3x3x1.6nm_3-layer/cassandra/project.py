@@ -33,7 +33,7 @@ def gcmc_complete(job):
 
     try:
         thermo_data = np.genfromtxt(job.fn("equil.gcmc.out.prp"), skip_header=3)
-        completed = int(thermo_data[-1][0]) == job.sp.nsteps_eq
+        completed = int(thermo_data[-1][0]) == job.sp.nsteps_prod
     except:
         completed = False
         pass
