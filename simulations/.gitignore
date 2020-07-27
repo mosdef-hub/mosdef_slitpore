@@ -1,0 +1,5 @@
+.bundles
+signac*
+templates/
+*bundle*.o*
+workspace/
