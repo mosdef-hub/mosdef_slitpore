@@ -27,8 +27,8 @@ def add_settles(top_file):
         f.write('; OW    funct   doh     dhh\n')
         f.write('{}    1    0.1    0.1633'.format(atom_dict['o_spce']))
 
-def write_ndx():
+def write_ndx(path=''):
     """ Write GROMACS ndx file
     """
-    cmd = 'printf "q\n" | gmx make_ndx -f init.gro -o index.ndx'
+    cmd = f'printf "q\n" | gmx make_ndx -f {path}/init.gro -o {path}/index.ndx'
     os.system(cmd)
