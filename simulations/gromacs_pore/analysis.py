@@ -67,7 +67,8 @@ def find_nearest(arr, val):
     arr = np.asarray(arr)
     idx = (np.abs(arr - val)).argmin()
     return idx, arr[idx]
+
 for i in [485, 490, 495, 500]:
-    #number_density(i)
-    #calc_water_angle('nvt_chunk.trr', 'init.mol2', cutoff=(1.5+0.75)*10, dim=1, filepath=f'{i}_mols')
-    calc_water_order_parameter('nvt.trr', 'init.mol2', cutoffs=[8.37+3, 28.37-3], dim=1, filepath=f'{i}_mols')
+    number_density(i)
+    calc_water_angle('nvt_chunk.trr', 'init.mol2', cutoff=(1.5+0.75)*10, dim=1, filepath=f'{i}_mols')
+    calc_water_order_parameter('nvt_chunk.trr', 'init.mol2', cutoffs=[8.37+3, 28.37-3], dim=1, filepath=f'{i}_mols', shift=True)
