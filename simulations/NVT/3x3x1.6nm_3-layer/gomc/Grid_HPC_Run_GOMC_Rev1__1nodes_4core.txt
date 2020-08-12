@@ -1,0 +1,16 @@
+#!/bin/sh
+#PBS -l select=1:ncpus=4:mem=16gb:cpu_type=Intel
+#PBS -j oe
+#PBS -q wsuq
+#PBS -m aeb
+#PBS -M bc118@wayne.edu
+#PBS -r y
+
+
+echo "Running on host" hostname
+echo "Time is" date
+module swap gnu7/7.3.0 intel/2019
+
+cd /wsu/home/hf/hf68/hf6839/Simulations/Graphene_water/Graphene_Water_boxes/298K/NVT/16_ang_slit
+
+/wsu/home/hf/hf68/hf6839/GOMC-2_6-master/bin/GOMC_CPU_NVT +p4 slit_water_NVT.conf > slit_water_NVT.log

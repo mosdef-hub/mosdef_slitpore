@@ -1,0 +1,14 @@
+@<TRIPOS>MOLECULE
+Gra
+    1    0    1    0    0
+SMALL
+NO_CHARGES
+****
+Energy = 0
+
+@<TRIPOS>ATOM
+      1  C          0.0000    0.0000    0.0000    C    1  Gra        0.000000
+@<TRIPOS>BOND
+       
+@<TRIPOS>SUBSTRUCTURE
+       1 RES             1 RESIDUE    0 **** ROOT      0
