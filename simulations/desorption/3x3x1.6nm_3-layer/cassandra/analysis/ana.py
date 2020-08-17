@@ -2,7 +2,6 @@ import signac
 import unyt as u
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
 from mosdef_cassandra.analysis import ThermoProps
 
@@ -24,6 +23,7 @@ def main():
 
     mus = u.unyt_array(mus * u.kJ/u.mol)
     nmols = np.asarray(nmols)
+    nmols_unc = np.asarray(nmols_unc)
     runs = np.asarray(runs)
     df = pd.DataFrame(
         columns=["mu-cassandra_kJmol", "run", "nmols_per_nm^2"]
