@@ -220,6 +220,106 @@ def run_desorption(
     )
 
 
+def run_nvt(
+    empty_pore,
+    filled_pore,
+    nwater,
+    temperature,
+    nsteps_eq,
+    nsteps_prod,
+    pore_width=1.6 * u.nm,
+):
+    """Run nvt simulation at the specified temperature
+
+    Parameters
+    ----------
+    empty_pore : mbuild.Compound
+        empty pore system to simulate
+    filled_pore : mbuild.Compound
+        pore filled with water
+    nwater : int
+        number of waters in the pore
+    temperature: u.unyt_quantity (temperature)
+        desired temperature
+    nsteps_eq : int
+        number of MC steps for NVT equilibration
+    nsteps_prod : int
+        number of MC steps for GCMC simulation
+    pore_width : opt, u.unyt_quantity (length)
+        width of pore for restricted insertions
+
+    Returns
+    -------
+    None: runs simulation
+    """
+    # Verify inputs
+    # Apply ff
+    ff = foyer.Forcefield(get_ff("pore-spce.xml"))
+    typed_pore = ff.apply(empty_pore)
+
+    # Create a water molecule with the spce geometry
+    water = spce_water()
+    typed_water = ff.apply(water)
+
+    # Create box and species list
+    box_list = [filled_pore]
+    species_list = [typed_pore, typed_water]
+
+    # Specify mols at start of the simulation
+    mols_in_boxes = [[1, nwater]]
+
+    # Create MC system
+    system = mc.System(box_list, species_list, mols_in_boxes=mols_in_boxes)
+    moves = mc.MoveSet("nvt", species_list)
+
+    # Set move probabilities
+    moves.prob_translate = 0.5
+    moves.prob_rotate = 0.5
+    moves.prob_regrow = 0.0
+
+    # Set thermodynamic properties
+    thermo_props = [
+        "energy_total",
+    ]
+
+    custom_args = {
+        "cutoff_style": "cut",
+        "charge_style": "ewald",
+        "rcut_min": 0.5 * u.angstrom,
+        "vdw_cutoff": 9.0 * u.angstrom,
+        "charge_cutoff": 9.0 * u.angstrom,
+        "properties": thermo_props,
+        "angle_style": ["harmonic", "fixed"],
+        "run_name": "equil",
+        "coord_freq": 10000,
+        "prop_freq": 1000,
+    }
+
+    custom_args["run_name"] = "equil.nvt"
+
+    # Run NVT equilibration
+    mc.run(
+        system=system,
+        moveset=moves,
+        run_type="equilibration",
+        run_length=nsteps_eq,
+        temperature=temperature,
+        **custom_args,
+    )
+
+    # Run production
+    custom_args["run_name"] = "prod.nvt"
+    custom_args["restart_name"] = "equil.nvt"
+    mc.restart(
+        system=system,
+        moveset=moves,
+        run_type="production",
+        run_length=nsteps_prod,
+        temperature=temperature,
+        **custom_args,
+    )
+
+
 def spce_water():
     """Generate a single water molecule with the SPC/E geometry
 
