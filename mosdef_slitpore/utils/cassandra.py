@@ -78,7 +78,7 @@ def run_adsorption(pore, temperature, mu, nsteps, pore_width=1.6 * u.nm):
 
     # Specify the restricted insertion
     restricted_type = [[None, "slitpore"]]
-    restricted_value = [[None, pore_width ]]
+    restricted_value = [[None, 0.5 * pore_width ]]
     moves.add_restricted_insertions(
         species_list, restricted_type, restricted_value
     )
@@ -202,7 +202,7 @@ def run_desorption(
 
     # Specify the restricted insertion
     restricted_type = [[None, "slitpore"]]
-    restricted_value = [[None, pore_width]]
+    restricted_value = [[None, 0.5 * pore_width]]
     moves.add_restricted_insertions(
         species_list, restricted_type, restricted_value
     )
