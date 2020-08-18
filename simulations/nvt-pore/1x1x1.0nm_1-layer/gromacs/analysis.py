@@ -14,7 +14,7 @@ def number_density(nmols, box_range):
     
     fig, ax = plt.subplots()
     for water_trj in (water_o, water_h):
-        bins, density = compute_density(water_trj, area, dim, pore_center=pore_center)
+        bins, density = compute_density(water_trj, area, dim, pore_center=pore_center, max_distance=0.5)
         label_name = list(set([i.name for i in water_trj.topology.atoms]))
         plt.plot(bins, density, label=label_name[0])
     
@@ -47,18 +47,19 @@ def area(nmols, cutoff, box_range):
     n_bins=200
    
     fig, ax = plt.subplots()
-    areas, bins, res = compute_mol_per_area(trj, area, dim, box_range, n_bins, shift=False)
+    areas, bins = compute_mol_per_area(trj, area, dim, box_range, n_bins, shift=False)
 
     cutoff_indices = np.where(bins < bins[0] + cutoff)
-    area_sum = sum(areas[0][:cutoff_indices[0][-1]])
+    area_sum = sum(areas[:cutoff_indices[0][-1]])
 
-    cumsum = np.cumsum(areas[0])
+    cumsum = np.cumsum(areas)
     new_bins = [bi -box_range[0] for bi in bins]
     plt.plot(new_bins, cumsum)
     plt.scatter(bins[cutoff_indices[0][-1]]-box_range[0], area_sum)
-    plt.text(1.2, 5, f'n_molecules = {(area_sum):.3f}')
+    plt.text(0.5, 5, f'n_molecules = {(area_sum):.3f}')
     plt.xlabel('z-position (nm)')
     plt.ylabel('cumulative sum of molecules')
     plt.savefig(f'{nmols}_mols/cumsum.pdf')
 
 number_density(23, box_range = [0.167, 1.167])
+area(23, 0.5, box_range = [0.167, 1.167])
