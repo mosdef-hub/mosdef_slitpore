@@ -21,7 +21,6 @@ def build_gromacs_pore(n_solvent):
         x_bulk=0,
     )
     
-    #pore.translate(-pore.center)
     pore.periodicity[1] = 6.0
     
     ff = foyer.Forcefield(get_ff("pore-spce.xml"))
