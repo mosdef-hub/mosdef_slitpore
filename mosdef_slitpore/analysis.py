@@ -102,3 +102,82 @@ def compute_s(
         s_values.append(s)
 
     return bin_centers, s_values
+
+def compute_mol_per_area(traj, area,
+        dim, box_range, n_bins, shift=True, frame_range=None):
+    """
+    Calculate molecules per area
+    Parameters
+    ----------
+    traj : mdtraj.trajectory
+        Trajectory
+    area : int or float
+        Area of box in dimensions where number density isn't calculated
+    dim : int
+        Dimension to calculate number density profile (x: 0, y: 1, z: 2)
+    box_range : array
+        Range of coordinates in 'dim' to evaluate
+    n_bins : int
+        Number of bins in histogram
+    shift : boolean, default=True
+        Shift center to zero if True
+    frame_range : Python range() (optional)
+        Range of frames to calculate number density function over
+    
+    Returns
+    -------
+    areas : list
+        A list containing number density for each bin
+    new_bins : list
+        A list of bins
+    """
+    water_o = traj.atom_slice(traj.topology.select('name O'))
+    resnames = np.unique([x.name for x in
+               water_o.topology.residues])
+    
+    if frame_range:
+        water_o = water_o[frame_range]
+    for i,frame in enumerate(water_o):
+        indices = [[atom.index for atom in compound.atoms]
+                  for compound in
+                  list(frame.topology.residues)]
+
+        if frame_range:
+            if i == 0:
+                x = np.histogram(frame.xyz[0,indices,dim].flatten(), 
+                    bins=n_bins, range=(box_range[0], box_range[1]))
+                areas = x[0]
+                bins = x[1]
+            else:
+                areas += np.histogram(frame.xyz[0, indices, dim].
+                        flatten(),bins=n_bins, range=(box_range[0],
+                            box_range[1]))[0]
+        else:
+            if i == 0:
+                x = np.histogram(frame.xyz[0,indices,dim].flatten(), 
+                    bins=n_bins, range=(box_range[0], box_range[1]))
+                areas = x[0]
+                bins = x[1]
+            else:
+                areas += np.histogram(frame.xyz[0, indices, dim].
+                        flatten(),bins=n_bins, range=(box_range[0],
+                            box_range[1]))[0]
+
+    areas = np.divide(areas, water_o.n_frames)
+
+    new_bins = list()
+    for idx, bi in enumerate(bins):
+        if (idx+1) >= len(bins):
+            continue
+        mid = (bins[idx] + bins[idx+1])/2
+        new_bins.append(mid)
+
+    if shift:
+        middle = float(n_bins / 2)
+        if middle % 2 != 0:
+            shift_value = new_bins[int(middle - 0.5)]
+        else:
+            shift_value = new_bins[int(middle)]
+        new_bins = [(bi-shift_value) for bi in new_bins]
+    
+    return (areas, new_bins)
