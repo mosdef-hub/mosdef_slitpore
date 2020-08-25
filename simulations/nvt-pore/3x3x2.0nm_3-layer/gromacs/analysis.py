@@ -53,7 +53,7 @@ def s_order(job):
     pore_center = (box_range[1]-box_range[0])/2 + box_range[0]
     fig, ax = plt.subplots()
     s_list = list()
-    for trj in md.iterload(os.path.join(job.ws, 'nvt.trr'), top=os.path.join(job.ws, 'nvt.gro'), chunk=5000, skip=10001):
+    for trj in md.iterload(os.path.join(job.ws, 'nvt.trr'), top=os.path.join(job.ws, 'init.mol2'), chunk=5000, skip=10001):
         bins, s_values = compute_s(trj, dim, pore_center=pore_center)
         s_list.append(s_values)
 
