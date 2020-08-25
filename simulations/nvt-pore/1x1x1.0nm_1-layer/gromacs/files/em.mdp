@@ -8,6 +8,8 @@ nstvout             = 0
 nstenergy           = 1000
 nstlog              = 1000
 
+verlet-buffer-tolerance = -1
+rlist               = 0.49
 cutoff-scheme       = Verlet
 ns_type             = grid
 nstlist             = 10

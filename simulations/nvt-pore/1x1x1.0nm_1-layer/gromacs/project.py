@@ -50,7 +50,7 @@ def initialize(job):
         n_sheets=1,
         slit_pore_dim=2,
         solvent=water,
-        n_solvent=n_solvent,
+        n_solvent=job.sp.nwater,
         x_bulk=0,
     )
    
