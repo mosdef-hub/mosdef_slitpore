@@ -1,0 +1,30 @@
+constraints         = none
+integrator          = steep
+nsteps              = 2000
+dt                  = 0.001
+
+nstxout             = 0
+nstvout             = 0
+nstenergy           = 1000
+nstlog              = 1000
+
+cutoff-scheme       = Verlet
+ns_type             = grid
+nstlist             = 10
+rcoulomb            = 0.49
+rvdw                = 0.49
+
+coulombtype         = PME
+fourierspacing      = 0.16
+
+gen_vel             = no
+
+tcoupl              = no
+
+pcoupl              = no
+
+freezegrps          = RES
+freezedim           = Y Y Y
+
+pbc                 = xyz
+periodic-molecules  = yes
