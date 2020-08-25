@@ -1,46 +1,82 @@
 import numpy as np
 import mdtraj as md
 import matplotlib.pyplot as plt
-from mosdef_slitpore.analysis import compute_density, compute_s, compute_mol_per_area
+import signac
+from mosdef_slitpore.analysis import compute_density, compute_s
 
-def number_density(nmols, box_range):
-    trj = md.load(f'{nmols}_mols/sample.trr', top=f'{nmols}_mols/sample.gro')
-    
-    water_o = trj.atom_slice(trj.topology.select('name O'))
-    water_h = trj.atom_slice(trj.topology.select('name H'))
-    area = trj.unitcell_lengths[0][0] * trj.unitcell_lengths[0][2]
+project = signac.get_project()
+
+def number_density(job):
     dim = 1
+    box_range = [0.167, 1.167]
     pore_center = (box_range[1]-box_range[0])/2 + box_range[0]
-    
+    o_densities = list()
+    h_densities = list()
     fig, ax = plt.subplots()
-    for water_trj in (water_o, water_h):
-        bins, density = compute_density(water_trj, area, dim, pore_center=pore_center, max_distance=0.5)
-        label_name = list(set([i.name for i in water_trj.topology.atoms]))
-        plt.plot(bins, density, label=label_name[0])
-    
+    for trj in md.iterload(os.path.join(job.ws, 'nvt.trr'), top=os.path.join(job.ws, 'nvt.gro'), chunk=5000, skip=10001):
+        water_o = trj.atom_slice(trj.topology.select('name O'))
+        water_h = trj.atom_slice(trj.topology.select('name H'))
+        area = trj.unitcell_lengths[0][0] * trj.unitcell_lengths[0][2]
+          
+        for water_trj in (water_o, water_h):
+            bins, density = compute_density(water_trj, area, dim, pore_center=pore_center, bin_width=0.01)
+            label_name = list(set([i.name for i in water_trj.topology.atoms]))
+            if label_name[0] == 'O':
+                o_densities.append(density)
+            else:
+                h_densities.append(density)
+
+    o_mean = np.mean(o_densities, axis=0)
+    h_mean = np.mean(h_densities, axis=0)
+    o_std = np.std(o_densities, axis=0)
+    h_std = np.std(h_densities, axis=0)
+
+    plt.plot(bins, o_mean, label='O')
+    plt.fill_between(bins, o_mean + o_std, o_mean - o_std, alpha=0.2)
+    plt.plot(bins, h_mean, label='H')
+    plt.fill_between(bins, h_mean + h_std, h_mean - h_std, alpha=0.2)
     plt.xlabel('z-position (nm)')
     plt.ylabel('Number Density ($nm^-3$)')
     
     plt.legend()
-    plt.savefig(f'{nmols}_mols/numberdensity.pdf')
+    with job:
+       np.savetxt('o_density.txt', np.transpose(np.vstack([bins, o_mean, o_std])),
+                  header='Bins\tDensity_mean\tDensity_std')
 
-def s_order(nmols, box_range):
-    trj = md.load(f'{nmols}_mols/sample.trr', top=f'{nmols}_mols/init.mol2')
+       np.savetxt('h_density.txt', np.transpose(np.vstack([bins, h_mean, h_std])),
+                  header='Bins\tDensity_mean\tDensity_std')
+       plt.savefig('numberdensity.pdf')
+
+def s_order(job):
     dim = 1
+    box_range = [0.167, 1.167]
     pore_center = (box_range[1]-box_range[0])/2 + box_range[0]
-
     fig, ax = plt.subplots()
-    bins, s_values = compute_s(trj, dim, pore_center=pore_center)
-    plt.plot(bins, s_values)
+    s_list = list()
+    for trj in md.iterload(os.path.join(job.ws, 'nvt.trr'), top=os.path.join(job.ws, 'init.mol2'), chunk=5000, skip=10001):
+        bins, s_values = compute_s(trj, dim, pore_center=pore_center)
+        s_list.append(s_values)
 
+    s_mean = np.mean(s_list, axis=0)
+    s_std = np.std(s_list, axis=0)
+
+    plt.plot(bins, s_mean)
+    plt.fill_between(bins, s_mean + s_std, s_mean - s_std, alpha=0.2)
     plt.xlabel('z-position (nm)')
     plt.ylabel('S')
-    plt.savefig(f'{nmols}_mols/s_order.pdf')
 
-def area(nmols, cutoff, box_range):
+    with job:
+        plt.savefig('s_order.pdf')
+
+        np.savetxt('s_order.txt', np.transpose(np.vstack([bins, s_mean, s_std])),
+                   header='Bins\tS_mean\tS_std')
+
+def area(job):
     """Calculate molecules of water per area on graphene surface"""
-    trj = md.load(f'{nmols}_mols/sample.trr', top=f'{nmols}_mols/sample.gro')[5000:]
+    with job:
+        trj = md.load('sample.trr', top='sample.gro')[5000:]
 
+    box_range = [0.167, 1.167]
     area = trj.unitcell_lengths[0][0] * trj.unitcell_lengths[0][2]
     dim = 1
     
@@ -59,7 +95,10 @@ def area(nmols, cutoff, box_range):
     plt.text(0.5, 5, f'n_molecules = {(area_sum):.3f}')
     plt.xlabel('z-position (nm)')
     plt.ylabel('cumulative sum of molecules')
-    plt.savefig(f'{nmols}_mols/cumsum.pdf')
+    with job:
+        plt.savefig('cumulative_area.pdf')
 
-number_density(23, box_range = [0.167, 1.167])
-area(23, 0.5, box_range = [0.167, 1.167])
+if __name__ == '__main__':
+    for job in project.find_jobs():
+        number_density(job)
+        s_order(job)
