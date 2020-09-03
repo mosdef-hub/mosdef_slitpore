@@ -2,6 +2,7 @@ import numpy as np
 import mdtraj as md
 import matplotlib.pyplot as plt
 import signac
+import os
 from mosdef_slitpore.analysis import compute_density, compute_s
 
 project = signac.get_project()
