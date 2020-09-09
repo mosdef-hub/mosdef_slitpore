@@ -70,6 +70,7 @@ def initialize(job):
     typed_gph = ff.apply(gph)
 
     typed_pore = typed_gph + typed_water
+    typed_pore.box[1] = 20
 
     with job:
         typed_pore.save('init.gro', combine='all', overwrite=True)
