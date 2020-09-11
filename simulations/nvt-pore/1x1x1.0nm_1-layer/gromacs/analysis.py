@@ -47,6 +47,11 @@ def number_density(job):
        np.savetxt('h_density.txt', np.transpose(np.vstack([bins, h_mean, h_std])),
                   header='Bins\tDensity_mean\tDensity_std')
        plt.savefig('numberdensity.pdf')
+    np.savetxt(f'data/{job.sp.nwater}_mol_o_density.txt', np.transpose(np.vstack([bins, o_mean, o_std])),
+               header='Bins\tDensity_mean\tDensity_std')
+
+    np.savetxt(f'data/{job.sp.nwater}_mol_h_density.txt', np.transpose(np.vstack([bins, h_mean, h_std])),
+               header='Bins\tDensity_mean\tDensity_std')
 
 def s_order(job):
     dim = 1
@@ -71,6 +76,8 @@ def s_order(job):
 
         np.savetxt('s_order.txt', np.transpose(np.vstack([bins, s_mean, s_std])),
                    header='Bins\tS_mean\tS_std')
+    np.savetxt(f'data/{job.sp.nwater}_mol_s_order.txt', np.transpose(np.vstack([bins, s_mean, s_std])),
+               header='Bins\tS_mean\tS_std')
 
 def area(job):
     """Calculate molecules of water per area on graphene surface"""

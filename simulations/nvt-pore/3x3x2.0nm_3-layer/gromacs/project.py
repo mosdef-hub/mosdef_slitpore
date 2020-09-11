@@ -4,6 +4,7 @@ import warnings
 import os
 import foyer
 import mbuild as mb
+import environment
 from flow import FlowProject, directives
 from mosdef_slitpore.utils.utils import get_ff
 from mosdef_slitpore.utils.gromacs import write_ndx, add_settles
@@ -66,8 +67,8 @@ def initialize(job):
         else:
             gph.add(mb.clone(child)) 
 
-    typed_water = ff.apply(water, residues='SOL')
-    typed_gph = ff.apply(gph)
+    typed_water = ff.apply(water, residues='SOL', combining_rule='lorentz')
+    typed_gph = ff.apply(gph, combining_rule='lorentz')
 
     typed_pore = typed_gph + typed_water
     typed_pore.box[1] = 60
@@ -77,7 +78,7 @@ def initialize(job):
         typed_pore.save('init.top', combine='all', overwrite=True)
         typed_pore.save('init.mol2', overwrite=True)
 
-        add_settles('init.top')
+        #add_settles('init.top')
         write_ndx(path='.')
 
 @Project.operation
@@ -97,7 +98,7 @@ def run_nvt(job):
 def _gromacs_str(mdp, op_name, gro_name):
     """Helper function, returns grompp command string for operation """
     mdp = signac.get_project().fn("files/{}.mdp".format(op_name))
-    cmd = "gmx grompp -f {mdp} -c {gro_name}.gro -p init.top -o {op_name}.tpr --maxwarn 1 && gmx mdrun -deffnm {op_name}"
+    cmd = "gmx grompp -f {mdp} -c {gro_name}.gro -p init.top -o {op_name}.tpr --maxwarn 1 && gmx mdrun -deffnm {op_name} -ntmpi 1"
     return workspace_command(
         cmd.format(mdp=mdp, op_name=op_name, gro_name=gro_name)
     )
