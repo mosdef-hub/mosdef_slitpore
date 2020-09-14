@@ -18,8 +18,12 @@ rcoulomb            = 0.49
 rvdw                = 0.49
 
 coulombtype         = PME
-fourierspacing      = 0.16
+fourierspacing      = 0.12
 ewald-geometry      = 3d
+ewald-rtol          = 1e-7
+fourier-nx          = 10
+fourier-ny          = 20
+fourier-nz          = 10
 
 gen_vel             = yes
 gen-temp            = 298
