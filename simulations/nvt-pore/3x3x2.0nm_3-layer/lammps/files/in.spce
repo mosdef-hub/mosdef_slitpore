@@ -26,7 +26,7 @@ neigh_modify   every 1 delay 0 check yes
 #fix            Freeze gph freeze
 
 # Run NVT sampling
-fix            NVTsample water nvt temp 300.0 300.0 1000.0
+fix            NVTsample water nvt temp 298.0 298.0 1000.0
 dump           sampledump all dcd 1000 nvt.dcd
 run            2000000
 write_data     data.sample
