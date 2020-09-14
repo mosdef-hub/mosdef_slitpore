@@ -29,7 +29,7 @@ class Project(FlowProject):
 @Project.label
 def init_complete(job):
     """Verify that initialization has completed"""
-    return job.isfile('init.gro')
+    return job.isfile('data.spce')
 
 @Project.label
 def nvt_complete(job):
