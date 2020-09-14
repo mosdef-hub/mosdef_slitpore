@@ -56,7 +56,6 @@ def initialize(job):
         x_bulk=0,
     )
    
-    pore.periodicity[1] = 2.0
     
     ff = foyer.Forcefield(get_ff("pore-spce.xml"))
     
@@ -72,14 +71,13 @@ def initialize(job):
     typed_gph = ff.apply(gph, combining_rule='lorentz')
 
     typed_pore = typed_gph + typed_water
-    typed_pore.box[1] = 60
+    typed_pore.box[1] = 20
 
     with job:
         typed_pore.save('init.gro', combine='all', overwrite=True)
         typed_pore.save('init.top', combine='all', overwrite=True)
         typed_pore.save('init.mol2', overwrite=True)
 
-        #add_settles('init.top')
         write_ndx(path='.')
 
 
