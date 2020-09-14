@@ -4,6 +4,7 @@ import warnings
 import os
 import foyer
 import mbuild as mb
+import environment
 from flow import FlowProject, directives
 from mosdef_slitpore.utils.utils import get_ff
 from mosdef_slitpore.utils.gromacs import write_ndx, add_settles
@@ -82,7 +83,7 @@ def run_nvt(job):
 
 def _lammps_str(job):
     root = job._project.root_directory()
-    cmd = ('mpirun -np 1 lmp -i {0}/files/in.spce')
+    cmd = ('mpirun -n 1 lmp -i {0}/files/in.spce')
 
     return workspace_command(cmd.format(root))
 
