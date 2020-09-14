@@ -1,4 +1,5 @@
 import numpy as np
+import os
 import mdtraj as md
 import matplotlib.pyplot as plt
 import signac
@@ -13,7 +14,7 @@ def number_density(job):
     o_densities = list()
     h_densities = list()
     fig, ax = plt.subplots()
-    for trj in md.iterload(os.path.join(job.ws, 'nvt.trr'), top=os.path.join(job.ws, 'nvt.gro'), chunk=5000, skip=10001):
+    for trj in md.iterload(os.path.join(job.ws, 'nvt.trr'), top=os.path.join(job.ws, 'nvt.gro'), chunk=1000, skip=5001):
         water_o = trj.atom_slice(trj.topology.select('name O'))
         water_h = trj.atom_slice(trj.topology.select('name H'))
         area = trj.unitcell_lengths[0][0] * trj.unitcell_lengths[0][2]
@@ -53,7 +54,7 @@ def s_order(job):
     pore_center = (box_range[1]-box_range[0])/2 + box_range[0]
     fig, ax = plt.subplots()
     s_list = list()
-    for trj in md.iterload(os.path.join(job.ws, 'nvt.trr'), top=os.path.join(job.ws, 'init.mol2'), chunk=5000, skip=10001):
+    for trj in md.iterload(os.path.join(job.ws, 'nvt.trr'), top=os.path.join(job.ws, 'init.mol2'), chunk=1000, skip=5001):
         bins, s_values = compute_s(trj, dim, pore_center=pore_center)
         s_list.append(s_values)
 
@@ -64,6 +65,7 @@ def s_order(job):
     plt.fill_between(bins, s_mean + s_std, s_mean - s_std, alpha=0.2)
     plt.xlabel('z-position (nm)')
     plt.ylabel('S')
+    plt.ylim((-0.45, 0.45))
 
     with job:
         plt.savefig('s_order.pdf')
@@ -72,6 +74,6 @@ def s_order(job):
                    header='Bins\tS_mean\tS_std')
 
 if __name__ == '__main__':
-    for job in project.find_jobs():
+    for job in project.find_jobs({"nwater": 485}):
         number_density(job)
         s_order(job)

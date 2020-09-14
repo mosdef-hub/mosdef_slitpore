@@ -8,6 +8,7 @@ import environment
 from flow import FlowProject, directives
 from mosdef_slitpore.utils.utils import get_ff
 from mosdef_slitpore.utils.gromacs import write_ndx, add_settles
+from mosdef_slitpore.utils.cassandra import spce_water
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -42,7 +43,7 @@ def nvt_complete(job):
 @Project.operation
 @Project.post(init_complete)
 def initialize(job):
-    water = mb.load('O', smiles=True)
+    water = spce_water()
     water.name = 'SOL'
     pore = mb.recipes.GraphenePoreSolvent(
         pore_width=1.0,
@@ -71,7 +72,7 @@ def initialize(job):
     typed_gph = ff.apply(gph, combining_rule='lorentz')
 
     typed_pore = typed_gph + typed_water
-    typed_pore.box[1] = 20
+    typed_pore.box[1] = 60
 
     with job:
         typed_pore.save('init.gro', combine='all', overwrite=True)
