@@ -58,7 +58,6 @@ def run_adsorption(pore, temperature, mu, nsteps, pore_width=1.6 * u.nm):
     # Set thermodynamic properties
     thermo_props = [
         "energy_total",
-        "pressure",
         "volume",
         "nmols",
         "mass_density",
@@ -88,6 +87,130 @@ def run_adsorption(pore, temperature, mu, nsteps, pore_width=1.6 * u.nm):
         moveset=moves,
         run_type="equilibration",
         run_length=nsteps,
+        temperature=temperature,
+        chemical_potentials=["none", mu],
+        **custom_args,
+    )
+
+
+def run_desorption_new(
+    filled_pore,
+    pore_width,
+    temperature,
+    mu,
+    nsteps_nvt,
+    nsteps_gcmc,
+    **custom_args,
+):
+    """Run desorption simulation at the specified temperature
+    and chemical potential
+
+    Parameters
+    ----------
+    filled_pore : porebuilder.GraphenePoreSolvent
+        pore filled with water
+    pore_width : u.unyt_quantity (length)
+        width of pore for restricted insertions
+    temperature: u.unyt_quantity (temperature)
+        desired temperature
+    mu : u.unyt_quantity (energy)
+        desired chemical potential
+    nsteps_nvt : int
+        number of MC steps for NVT equilibration
+    nsteps_gcmc : int
+        number of MC steps for GCMC simulation
+
+    Returns
+    -------
+    None: runs simulation
+    """
+    # Load foyer ff
+    ff = foyer.Forcefield(get_ff("pore-spce.xml"))
+    
+    # Extract just the pore and apply ff
+    empty_pore = filled_pore.children[0]
+    typed_pore = ff.apply(empty_pore)
+
+    # Create a water molecule with the spce geometry and apply ff
+    water = spce_water()
+    typed_water = ff.apply(water)
+
+    # Determine the number of waters in the pore
+    nwater = len([child for child in filled_pore.children])-1
+
+    # Create box and species list
+    box_list = [filled_pore]
+    species_list = [typed_pore, typed_water]
+
+    # Specify mols at start of the simulation
+    mols_in_boxes = [[1, nwater]]
+
+    # Create MC system
+    system = mc.System(box_list, species_list, mols_in_boxes=mols_in_boxes)
+    moves = mc.MoveSet("nvt", species_list)
+
+    # Set move probabilities
+    moves.prob_translate = 0.5
+    moves.prob_rotate = 0.5
+    moves.prob_regrow = 0.0
+
+    # Set thermodynamic properties
+    thermo_props = [
+        "energy_total",
+        "nmols",
+    ]
+
+    default_args = {
+        "run_name" : "nvt",
+        "cutoff_style": "cut",
+        "charge_style": "ewald",
+        "rcut_min": 0.5 * u.angstrom,
+        "vdw_cutoff": 9.0 * u.angstrom,
+        "charge_cutoff": 9.0 * u.angstrom,
+        "properties": thermo_props,
+        "angle_style": ["harmonic", "fixed"],
+        "run_name": "equil",
+        "coord_freq": 100000,
+    }
+
+    custom_args = { **default_args, **custom_args}
+
+    # Run NVT equilibration
+    mc.run(
+        system=system,
+        moveset=moves,
+        run_type="equilibration",
+        run_length=nsteps_eq,
+        temperature=temperature,
+        **custom_args,
+    )
+
+    # Create MC system
+    equilibrated_box = load_final_frame("nvt.out.xyz")
+    box_list = [equilibrated_box]
+    system = mc.System(box_list, species_list, mols_in_boxes=mols_in_boxes)
+    moves = mc.MoveSet("gcmc", species_list)
+
+    # Set move probabilities
+    moves.prob_translate = 0.25
+    moves.prob_rotate = 0.25
+    moves.prob_insert = 0.25
+    moves.prob_regrow = 0.0
+
+    # Specify the restricted insertion
+    restricted_type = [[None, "slitpore"]]
+    restricted_value = [[None, 0.5 * pore_width]]
+    moves.add_restricted_insertions(
+        species_list, restricted_type, restricted_value
+    )
+
+    # Run GCMC
+    custom_args["run_name"] = "gcmc"
+    mc.run(
+        system=system,
+        moveset=moves,
+        run_type="equilibration",
+        run_length=nsteps_prod,
         temperature=temperature,
         chemical_potentials=["none", mu],
         **custom_args,
@@ -158,7 +281,6 @@ def run_desorption(
     # Set thermodynamic properties
     thermo_props = [
         "energy_total",
-        "pressure",
         "volume",
         "nmols",
         "mass_density",
@@ -167,6 +289,130 @@ def run_desorption(
     custom_args = {
         "cutoff_style": "cut",
         "charge_style": "ewald",
+        "rcut_min": 0.5 * u.angstrom,
+        "vdw_cutoff": 9.0 * u.angstrom,
+        "charge_cutoff": 9.0 * u.angstrom,
+        "properties": thermo_props,
+        "angle_style": ["harmonic", "fixed"],
+        "run_name": "equil",
+        "coord_freq": 50000,
+    }
+
+    custom_args["run_name"] = "equil.nvt"
+
+    # Run NVT equilibration
+    mc.run(
+        system=system,
+        moveset=moves,
+        run_type="equilibration",
+        run_length=nsteps_eq,
+        temperature=temperature,
+        **custom_args,
+    )
+
+    # Create MC system
+    equilibrated_box = load_final_frame("equil.nvt.out.xyz")
+    box_list = [equilibrated_box]
+    system = mc.System(box_list, species_list, mols_in_boxes=mols_in_boxes)
+    moves = mc.MoveSet("gcmc", species_list)
+
+    # Set move probabilities
+    moves.prob_translate = 0.25
+    moves.prob_rotate = 0.25
+    moves.prob_insert = 0.25
+    moves.prob_regrow = 0.0
+
+    # Specify the restricted insertion
+    restricted_type = [[None, "slitpore"]]
+    restricted_value = [[None, 0.5 * pore_width]]
+    moves.add_restricted_insertions(
+        species_list, restricted_type, restricted_value
+    )
+
+    # Run GCMC
+    custom_args["run_name"] = "equil.gcmc"
+    mc.run(
+        system=system,
+        moveset=moves,
+        run_type="equilibration",
+        run_length=nsteps_prod,
+        temperature=temperature,
+        chemical_potentials=["none", mu],
+        **custom_args,
+    )
+
+def run_desorption_dsf(
+    empty_pore,
+    filled_pore,
+    nwater,
+    temperature,
+    mu,
+    nsteps_eq,
+    nsteps_prod,
+    pore_width=1.6 * u.nm,
+):
+    """Run desorption simulation at the specified temperature
+    and chemical potential
+
+    Parameters
+    ----------
+    empty_pore : mbuild.Compound
+        empty pore system to simulate
+    filled_pore : mbuild.Compound
+        pore filled with water
+    nwater : int
+        number of waters in the pore
+    temperature: u.unyt_quantity (temperature)
+        desired temperature
+    mu : u.unyt_quantity (energy)
+        desired chemical potential
+    nsteps_eq : int
+        number of MC steps for NVT equilibration
+    nsteps_prod : int
+        number of MC steps for GCMC simulation
+    pore_width : opt, u.unyt_quantity (length)
+        width of pore for restricted insertions
+
+    Returns
+    -------
+    None: runs simulation
+    """
+    # Verify inputs
+    # Apply ff
+    ff = foyer.Forcefield(get_ff("pore-spce.xml"))
+    typed_pore = ff.apply(empty_pore)
+
+    # Create a water molecule with the spce geometry
+    water = spce_water()
+    typed_water = ff.apply(water)
+
+    # Create box and species list
+    box_list = [filled_pore]
+    species_list = [typed_pore, typed_water]
+
+    # Specify mols at start of the simulation
+    mols_in_boxes = [[1, nwater]]
+
+    # Create MC system
+    system = mc.System(box_list, species_list, mols_in_boxes=mols_in_boxes)
+    moves = mc.MoveSet("nvt", species_list)
+
+    # Set move probabilities
+    moves.prob_translate = 0.5
+    moves.prob_rotate = 0.5
+    moves.prob_regrow = 0.0
+
+    # Set thermodynamic properties
+    thermo_props = [
+        "energy_total",
+        "volume",
+        "nmols",
+        "mass_density",
+    ]
+
+    custom_args = {
+        "cutoff_style": "cut",
+        "charge_style": "dsf",
         "rcut_min": 0.5 * u.angstrom,
         "vdw_cutoff": 9.0 * u.angstrom,
         "charge_cutoff": 9.0 * u.angstrom,
@@ -228,6 +474,7 @@ def run_nvt(
     nsteps_eq,
     nsteps_prod,
     pore_width=1.6 * u.nm,
+    **custom_args,
 ):
     """Run nvt simulation at the specified temperature
 
@@ -282,7 +529,8 @@ def run_nvt(
         "energy_total",
     ]
 
-    custom_args = {
+    default_args = {
+        "run_name": "equil.nvt",
         "cutoff_style": "cut",
         "charge_style": "ewald",
         "rcut_min": 0.5 * u.angstrom,
@@ -290,12 +538,11 @@ def run_nvt(
         "charge_cutoff": 9.0 * u.angstrom,
         "properties": thermo_props,
         "angle_style": ["harmonic", "fixed"],
-        "run_name": "equil",
         "coord_freq": 10000,
         "prop_freq": 1000,
     }
 
-    custom_args["run_name"] = "equil.nvt"
+    custom_args = { **default_args, **custom_args}
 
     # Run NVT equilibration
     mc.run(
@@ -320,7 +567,93 @@ def run_nvt(
     )
 
 
-def spce_water():
+def run_adsorption_dsf(pore, temperature, mu, nsteps, pore_width=1.6 * u.nm):
+    """Run adsorption simulation at the specified temperature
+    and chemical potential
+
+    Parameters
+    ----------
+    pore : mbuild.Compound
+        empty pore system to simulate
+    temperature: u.unyt_quantity (temperature)
+        desired temperature
+    mu : u.unyt_quantity (energy)
+        desired chemical potential
+    nsteps : int
+        number of MC steps in simulation
+    pore_width : opt, u.unyt_quantity (length)
+        width of pore for restricted insertions
+
+    Returns
+    -------
+    None: runs simulation
+    """
+    # Verify inputs
+
+    # Apply ff
+    ff = foyer.Forcefield(get_ff("pore-spce.xml"))
+    typed_pore = ff.apply(pore)
+
+    # Create a water molecule with the spce geometry
+    water = spce_water()
+    typed_water = ff.apply(water)
+
+    # Create box and species list
+    box_list = [pore]
+    species_list = [typed_pore, typed_water]
+
+    # Specify mols at start of the simulation
+    mols_in_boxes = [[1, 0]]
+
+    # Create MC system
+    system = mc.System(box_list, species_list, mols_in_boxes=mols_in_boxes)
+    moves = mc.MoveSet("gcmc", species_list)
+
+    # Set move probabilities
+    moves.prob_translate = 0.25
+    moves.prob_rotate = 0.25
+    moves.prob_insert = 0.25
+    moves.prob_regrow = 0.0
+
+    # Set thermodynamic properties
+    thermo_props = [
+        "energy_total",
+        "volume",
+        "nmols",
+        "mass_density",
+    ]
+
+    custom_args = {
+        "cutoff_style": "cut",
+        "charge_style": "dsf",
+        "rcut_min": 0.5 * u.angstrom,
+        "vdw_cutoff": 9.0 * u.angstrom,
+        "charge_cutoff": 9.0 * u.angstrom,
+        "properties": thermo_props,
+        "angle_style": ["harmonic", "fixed"],
+        "run_name": "equil",
+        "coord_freq": 50000,
+    }
+
+    # Specify the restricted insertion
+    restricted_type = [[None, "slitpore"]]
+    restricted_value = [[None, 0.5 * pore_width ]]
+    moves.add_restricted_insertions(
+        species_list, restricted_type, restricted_value
+    )
+
+    mc.run(
+        system=system,
+        moveset=moves,
+        run_type="equilibration",
+        run_length=nsteps,
+        temperature=temperature,
+        chemical_potentials=["none", mu],
+        **custom_args,
+    )
+
+
+def create_spce_water():
     """Generate a single water molecule with the SPC/E geometry
 
     Paper DOI: 10.1021/j100308a038
@@ -351,6 +684,10 @@ def spce_water():
     water.add_bond([O, H2])
 
     return water
+
+
+# Instantiate a single water into the namespace
+spce_water = create_spce_water()
 
 
 def load_final_frame(fname):
@@ -409,3 +746,39 @@ def load_final_frame(fname):
     frame.periodicity = np.diagonal(box_matrix / 10.0)
 
     return frame
+
+
+def check_simulation(filen, nsteps):
+    """Check the energy file to determine if the simualtion is complete
+
+    Parameters
+    ----------
+    filen : string
+        energy file name to check
+    nsteps : int
+        number of steps in simulation
+
+    Returns
+    -------
+    complete : bool
+        True if the simulation has reached nsteps, else false
+    """
+    try:
+        with open(filen) as f:
+            for line in f:
+                pass
+            last = line.strip().split()
+    except OSError:
+        return False
+
+    if int(last[0]) == nsteps:
+        return True
+    else:
+        return False
+
+
+def mu_from_mu_cassandra(mu_shift, beta):
+    q_rot = 43.45
+    return mu_shift - (1./beta) * np.log(q_rot)
+
+
