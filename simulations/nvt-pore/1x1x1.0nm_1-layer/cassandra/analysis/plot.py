@@ -70,7 +70,7 @@ def main():
     ax.set_xlim(-0.4, 0.4)
     ax.set_ylim(-0.5, 0.5)
     ax.set_xlabel(r"$\mathregular{z, nm}$", fontsize=18, labelpad=15)
-    ax.set_ylabel(r"$\mathregular{\rho(z), nm^{-3}}$", fontsize=18, labelpad=15)
+    ax.set_ylabel(r"Order parameter", fontsize=18, labelpad=15)
 
     ax.tick_params(axis="both", which="both", direction="in", labelsize=12, pad=6)
     ax.xaxis.set_minor_locator(MultipleLocator(0.05))
