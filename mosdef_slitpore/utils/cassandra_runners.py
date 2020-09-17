@@ -4,19 +4,20 @@ import unyt as u
 import mosdef_cassandra as mc
 import numpy as np
 
+
 from mosdef_slitpore.utils.utils import get_ff
 from mosdef_slitpore.utils.cassandra_helpers import spce_water
-
+from mosdef_slitpore.utils.cassandra_helpers import load_final_frame
 
 def run_adsorption(
     empty_pore, pore_width, temperature, mu, nsteps, **custom_args,
-    ):
+):
     """Run adsorption simulation at the specified temperature
     and chemical potential
 
     Parameters
     ----------
-    pore : mbuild.Compound
+    empty_pore : porebuilder.GraphenePore
         empty pore system to simulate
     pore_width : u.unyt_quantity (length)
         width of pore for restricted insertions
@@ -26,11 +27,15 @@ def run_adsorption(
         desired chemical potential
     nsteps : int
         number of MC steps in simulation
+    custom_args : opt, additional keyword arguments
+        provide additional custom keyword arguments to MoSDeF Cassandra
+        and override the default values
 
     Returns
     -------
     None: runs simulation
     """
+
     # Load foyer ff
     ff = foyer.Forcefield(get_ff("pore-spce.xml"))
 
@@ -67,6 +72,8 @@ def run_adsorption(
     # Set thermodynamic properties
     thermo_props = [
         "energy_total",
+        "energy_intervdw",
+        "energy_interq",
         "nmols",
     ]
 
@@ -121,11 +128,16 @@ def run_desorption(
         number of MC steps for NVT equilibration
     nsteps_gcmc : int
         number of MC steps for GCMC simulation
+    custom_args : opt, additional keyword arguments
+        provide additional custom keyword arguments to MoSDeF Cassandra
+        and override the default values
+
 
     Returns
     -------
     None: runs simulation
     """
+
     # Load foyer ff
     ff = foyer.Forcefield(get_ff("pore-spce.xml"))
 
@@ -158,6 +170,8 @@ def run_desorption(
     # Set thermodynamic properties
     thermo_props = [
         "energy_total",
+        "energy_intervdw",
+        "energy_interq",
         "nmols",
     ]
 
@@ -181,7 +195,7 @@ def run_desorption(
         system=system,
         moveset=moves,
         run_type="equilibration",
-        run_length=nsteps_eq,
+        run_length=nsteps_nvt,
         temperature=temperature,
         **custom_args,
     )
@@ -211,7 +225,7 @@ def run_desorption(
         system=system,
         moveset=moves,
         run_type="equilibration",
-        run_length=nsteps_prod,
+        run_length=nsteps_gcmc,
         temperature=temperature,
         chemical_potentials=["none", mu],
         **custom_args,
@@ -231,11 +245,15 @@ def run_nvt(filled_pore, temperature, nsteps_eq, nsteps_prod, **custom_args):
         number of MC steps for NVT equilibration
     nsteps_prod : int
         number of MC steps for GCMC simulation
+    custom_args : opt, additional keyword arguments
+        provide additional custom keyword arguments to MoSDeF Cassandra
+        and override the default values
 
     Returns
     -------
     None: runs simulation
     """
+
     # Load foyer ff
     ff = foyer.Forcefield(get_ff("pore-spce.xml"))
 
@@ -268,6 +286,8 @@ def run_nvt(filled_pore, temperature, nsteps_eq, nsteps_prod, **custom_args):
     # Set thermodynamic properties
     thermo_props = [
         "energy_total",
+        "energy_intervdw",
+        "energy_interq",
     ]
 
     default_args = {
