@@ -15,16 +15,18 @@ def init_project():
         -54.0 * u.kJ / u.mol,
         -51.0 * u.kJ / u.mol,
         -48.0 * u.kJ / u.mol,
-        -46.5 * u.kJ / u.mol,
         -45.0 * u.kJ / u.mol,
-        -44.625 * u.kJ / u.mol,
-        -44.25 * u.kJ / u.mol,
+        -44.6 * u.kJ / u.mol,
+        -44.3 * u.kJ / u.mol,
         -43.5 * u.kJ / u.mol,
         -42.0 * u.kJ / u.mol,
     ]
 
-    # Run for 150 M steps
-    nsteps = 150000000
+    # Run for 300 M steps
+    nsteps_gcmc = 300000000
+
+    # For reproducibility
+    np.random.seed(1058587)
 
     for mu in mus:
         for run in range(3):
@@ -32,7 +34,9 @@ def init_project():
             state_point = {
                 "T": float(temperature.in_units(u.K).value),
                 "mu": float(mu.in_units(u.kJ / u.mol).value),
-                "nsteps": nsteps,
+                "nsteps_gcmc": nsteps_gcmc,
+                "seed1" : np.random.randint(10**8),
+                "seed2" : np.random.randint(10**8),
                 "run": run,
             }
 

@@ -23,7 +23,8 @@ def main():
          y=np.log(data_nd_pure["press_bar"].values)
     )
 
-    pvap_spce = 0.01 * u.bar
+    # NIST SPCE 300 K, 1 bar
+    pvap_spce = 0.01017 * u.bar
 
     nd_ads16_n = data_nd_ads16.groupby("mu-cassandra_kJmol").mean()["nmols_per_nm^2"].values
     nd_ads10_n = data_nd_ads10.groupby("mu-cassandra_kJmol").mean()["nmols_per_nm^2"].values
@@ -187,6 +188,19 @@ def main():
     fig.savefig("ads-des_compare.pdf")
 
 
+
+def ppsat(a, a_0, rho_0):
+    return (2 * a * a_0**2 + (rho_0-a_0)*a**2) / (rho_0 + a_0)*a_0**2
+
+def activity(mu, debroglie, beta):
+    return np.exp(beta * mu) / debroglie**3
+
+def mu_from_mushift(mu_shift, beta):
+    q_rot = 43.45
+    return mu_shift - (1./beta) * np.log(q_rot)
+
+def debroglie(mass, beta):
+    return u.h / np.sqrt(2 * np.pi * mass / beta)
 
 if __name__ == "__main__":
     main()
