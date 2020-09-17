@@ -38,6 +38,8 @@ def run_desorption(job):
     from mosdef_slitpore.utils.cassandra_runners import run_desorption
     from mosdef_slitpore.utils.cassandra_helpers import spce_water
 
+    pore_width = 2.0 * u.nm
+
     temperature = job.sp.T * u.K
     mu = job.sp.mu * u.kJ / u.mol
     nwater = job.sp.nwater
@@ -50,7 +52,7 @@ def run_desorption(job):
     filled_pore = mbuild.recipes.GraphenePoreSolvent(
         pore_length=3.0,
         pore_depth=3.0,
-        pore_width=2.0,
+        pore_width=pore_width.to_value("nm"),
         n_sheets=3,
         slit_pore_dim=2,
         x_bulk=0,
@@ -67,7 +69,7 @@ def run_desorption(job):
     with job:
         run_desorption(
             filled_pore,
-            2.0 * u.nm,
+            pore_width,
             temperature,
             mu,
             nsteps_nvt,

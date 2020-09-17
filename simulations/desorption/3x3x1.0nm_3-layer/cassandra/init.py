@@ -12,38 +12,44 @@ def init_project():
     temperature = 298.0 * u.K
     # Define chemical potentials
     mus = [
-        -63.0 * u.kJ / u.mol,
         -60.0 * u.kJ / u.mol,
         -57.0 * u.kJ / u.mol,
-        -54.0 * u.kJ / u.mol,
         -53.0 * u.kJ / u.mol,
         -52.0 * u.kJ / u.mol,
         -51.0 * u.kJ / u.mol,
         -50.0 * u.kJ / u.mol,
-        -49.0 * u.kJ / u.mol,
         -48.0 * u.kJ / u.mol,
         -45.0 * u.kJ / u.mol,
     ]
 
-    # Run for 150 M steps
-    nsteps_eq = 5000000
-    nsteps_prod = 150000000
+    # Run for 300 M steps
+    nsteps_nvt = 5000000
+    nsteps_gcmc = 300000000
 
-    # Start with 205 waters in pore
-    nwater = 205
+    # Start with 210 waters in pore
+    nwater = 210
+
+    # For reproducibility
+    np.random.seed(858397)
 
     for mu in mus:
-        # Define the state point
-        state_point = {
-            "T": float(temperature.in_units(u.K).value),
-            "mu": float(mu.in_units(u.kJ / u.mol).value),
-            "nwater": nwater,
-            "nsteps_eq": nsteps_eq,
-            "nsteps_prod": nsteps_prod,
-        }
+        for run in range(3):
+            # Define the state point
+            state_point = {
+                "T": float(temperature.in_units(u.K).value),
+                "mu": float(mu.in_units(u.kJ / u.mol).value),
+                "nwater": nwater,
+                "nsteps": {
+                    "nvt" : nsteps_nvt,
+                    "gcmc" : nsteps_gcmc,
+                },
+                "seed1" : np.random.randint(10**8),
+                "seed2" : np.random.randint(10**8),
+                "run": run,
+            }
 
-        job = project.open_job(state_point)
-        job.init()
+            job = project.open_job(state_point)
+            job.init()
 
 
 if __name__ == "__main__":
