@@ -16,9 +16,9 @@ rcoulomb            = 0.9
 rvdw                = 0.9
 
 coulombtype         = PME
-fourierspacing      = 0.16
+fourierspacing      = 0.12
 ewald-geometry      = 3d
-ewald-rtol          = 1e-6
+ewald-rtol          = 1e-5
 vdw-modifier        = None
 coulomb-modifier    = None
 

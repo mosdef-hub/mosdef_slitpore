@@ -16,14 +16,16 @@ ns_type             = grid
 nstlist             = 10
 rcoulomb            = 0.49
 rvdw                = 0.49
+vdw-modifier        = None
+coulomb-modifier    = None
 
 coulombtype         = PME
 fourierspacing      = 0.12
 ewald-geometry      = 3d
-ewald-rtol          = 1e-4
-fourier-nx          = 10
-fourier-ny          = 20
-fourier-nz          = 10
+ewald-rtol          = 1e-5
+fourier-nx          = 16
+fourier-ny          = 27
+fourier-nz          = 18
 
 gen_vel             = yes
 gen-temp            = 298
