@@ -22,11 +22,8 @@ fix            1 all shake 1.0e-4 200 0 b 1 a 1
 neighbor       1.0 bin
 neigh_modify   every 1 delay 0 check yes
 
-# Set Fix Freeze
-#fix            Freeze gph freeze
-
 # Run NVT sampling
 fix            NVTsample water nvt temp 298.0 298.0 1000.0
 dump           sampledump all dcd 100 nvt.dcd
-run            10000000
+run            20000000
 write_data     data.sample
