@@ -9,12 +9,12 @@ project = signac.get_project()
 
 def number_density(job):
     dim = 1
-    box_range = [0.167, 1.168]
+    box_range = [0.167, 1.167]
     pore_center = (box_range[1]-box_range[0])/2 + box_range[0]
     o_densities = list()
     h_densities = list()
     fig, ax = plt.subplots()
-    for trj in md.iterload(os.path.join(job.ws, 'nvt.trr'), top=os.path.join(job.ws, 'nvt.gro'), chunk=1000, skip=5001):
+    for trj in md.iterload(os.path.join(job.ws, 'nvt.trr'), top=os.path.join(job.ws, 'nvt.gro'), chunk=5000, skip=5001):
         water_o = trj.atom_slice(trj.topology.select('name O'))
         water_h = trj.atom_slice(trj.topology.select('name H'))
         area = trj.unitcell_lengths[0][0] * trj.unitcell_lengths[0][2]
@@ -59,8 +59,8 @@ def s_order(job):
     pore_center = (box_range[1]-box_range[0])/2 + box_range[0]
     fig, ax = plt.subplots()
     s_list = list()
-    for trj in md.iterload(os.path.join(job.ws, 'nvt.trr'), top=os.path.join(job.ws, 'init.mol2'), chunk=10000, skip=10001):
-        bins, s_values = compute_s(trj, dim, pore_center=pore_center, bin_width=0.02)
+    for trj in md.iterload(os.path.join(job.ws, 'nvt.trr'), top=os.path.join(job.ws, 'init.mol2'), chunk=5000, skip=5001):
+        bins, s_values = compute_s(trj, dim, pore_center=pore_center, bin_width=0.01)
         s_list.append(s_values)
 
     s_mean = np.mean(s_list, axis=0)
