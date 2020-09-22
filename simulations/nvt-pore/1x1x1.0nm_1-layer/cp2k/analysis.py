@@ -65,7 +65,7 @@ def s_order(job):
                 unitcell_angles = np.tile([90.,90.,90.], (trj.n_frames,1)),
             )
 
-        bins, s_values = compute_s_cp2k(trj, dim, pore_center=pore_center)
+        bins, s_values = compute_s(trj, dim, pore_center=pore_center)
         s_list.append(s_values)
 
     s_mean = np.mean(s_list, axis=0)
