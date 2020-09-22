@@ -12,13 +12,13 @@ def temp(job):
     
     with job:
         os.chdir(job.ws)
-        call("awk '{print $4}' carbon_water-1.ener >temp.txt",shell=True)
+        call("awk '{print $4}' carbon_water-1.ener > temp.txt",shell=True)
 
         fig, ax = plt.subplots()
         f = open("temp.txt", "r")
         temp=[];
         a=f.readline()
-
+      
 
         while a is not '':
             a=f.readline()
@@ -27,8 +27,9 @@ def temp(job):
                 break
     
             temp.append(float(a))
-    
-        call("awk '{print $2}' carbon_water-1.ener >time.txt",shell=True)
+        f.close()
+
+        call("awk '{print $2}' carbon_water-1.ener > time.txt",shell=True)
 
         f = open("time.txt", "r")
         time=[];
@@ -41,6 +42,8 @@ def temp(job):
                 break
     
             time.append(float(a)/1000)
+        
+        f.close()
 
         plt.plot(time, temp)
         plt.xlabel('Time (ps)')
@@ -55,7 +58,7 @@ def temp(job):
 def pot(job):
     with job:
         os.chdir(job.ws)
-        call("awk '{print $5}' carbon_water-1.ener >pot.txt",shell=True)
+        call("awk '{print $5}' carbon_water-1.ener > pot.txt",shell=True)
 
         fig, ax = plt.subplots()
         f = open("pot.txt", "r")
@@ -70,8 +73,9 @@ def pot(job):
                 break
     
             pot.append(float(a))
-    
-        call("awk '{print $2}' carbon_water-1.ener >time.txt",shell=True)
+        f.close()
+
+        call("awk '{print $2}' carbon_water-1.ener > time.txt",shell=True)
 
         f = open("time.txt", "r")
         time=[];
@@ -84,6 +88,7 @@ def pot(job):
                 break
     
             time.append(float(a)/1000)
+        f.close()
 
         plt.plot(time, pot)
         plt.xlabel('Time (ps)')

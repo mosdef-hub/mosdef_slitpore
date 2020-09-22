@@ -1,18 +1,7 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
 import mbuild as mb
 import subprocess
 from cssi_cp2k.classes import SIM as sim
 import math
-# read this: https://www.cp2k.org/_media/events:2015_cecam_tutorial:watkins_optimization.pdf for more knowledge
-
-
-# In[2]:
-
 
 def info_molecule(molecule):
     num_atoms=len(molecule.atoms)
@@ -24,8 +13,6 @@ def info_molecule(molecule):
     
     return name_atoms,mass_atoms
 
-
-# In[ ]:
 
 
 def remove_duplicate(x):
@@ -50,8 +37,6 @@ def is_cubic(box):
     return True
 
 
-# In[ ]:
-
 
 def basis_set_setter(element_symbol):
     #HERE I should define all the elements and all the basis set
@@ -65,8 +50,6 @@ def basis_set_setter(element_symbol):
         return "DZVP-MOLOPT-SR-GTH"
         
 
-
-# In[ ]:
 
 
 def potential(element_symbol,functional):

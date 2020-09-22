@@ -3,7 +3,7 @@ import numpy as np
 import mdtraj as md
 import matplotlib.pyplot as plt
 import signac
-from mosdef_slitpore.analysis import compute_density, compute_s_cp2k
+from mosdef_slitpore.analysis import compute_density, compute_s
 
 project = signac.get_project()
 
@@ -54,7 +54,17 @@ def s_order(job):
     pore_center = (box_range[1]-box_range[0])/2 + box_range[0]
     fig, ax = plt.subplots()
     s_list = list()
+    trj=md.load(os.path.join(job.ws, 'carbon_water-pos-1.pdb'));
+    trj.save(os.path.join(job.ws, 'carbon_water-pos-1.xyz'))
+
     for trj in md.iterload(os.path.join(job.ws, 'carbon_water-pos-1.pdb'), top=os.path.join(job.ws, 'init.mol2'),  chunk=4000, skip=4000):
+         trj = md.Trajectory(
+                trj.xyz,
+                trj.top,
+                unitcell_lengths = np.tile([0.9824 ,  2.0000   ,1.0635], (trj.n_frames,1)),
+                unitcell_angles = np.tile([90.,90.,90.], (trj.n_frames,1)),
+            )
+
         bins, s_values = compute_s_cp2k(trj, dim, pore_center=pore_center)
         s_list.append(s_values)
 

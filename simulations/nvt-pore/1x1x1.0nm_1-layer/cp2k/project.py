@@ -40,8 +40,6 @@ def md_completed(job):
     except:
         return False
 
-
-
 @Project.operation
 @Project.post(has_setter)
 def copy_setter(job):
@@ -87,7 +85,6 @@ def md_files(job):
     with job:
         import os
         import glob
-        typed_pore.save('init.mol2',overwrite=True)
         import numpy as np
         import unyt as u
         import mbuild as mb
@@ -97,6 +94,7 @@ def md_files(job):
         import setter
 
 
+        typed_pore.save('init.mol2',overwrite=True)
         temperature = job.sp.T * u.K
         #Defining the molecule we want to simulate
 
