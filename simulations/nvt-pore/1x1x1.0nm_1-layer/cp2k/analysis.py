@@ -3,9 +3,21 @@ import numpy as np
 import mdtraj as md
 import matplotlib.pyplot as plt
 import signac
+import shutil
 from mosdef_slitpore.analysis import compute_density, compute_s
 
 project = signac.get_project()
+
+def create_data_folder():
+    data_path = 'data'
+    if os.path.exists(data_path):
+        shutil.rmtree(data_path)
+    os.makedirs(data_path)
+
+def create_individual_data_folder(job):
+    os.chdir('data')
+    os.makedirs(str(job.sp.nwater)+'water_data')
+    os.chdir('..')
 
 def number_density(job):
     dim = 1
@@ -41,12 +53,12 @@ def number_density(job):
     
     plt.legend()
     with job:
-       np.savetxt('o_density.txt', np.transpose(np.vstack([bins, o_mean, o_std])),
+       np.savetxt(project.root_directory()+'/data/{}/o_density.txt'.format(str(job.sp.nwater)+'water_data'), np.transpose(np.vstack([bins, o_mean, o_std])),
                   header='Bins\tDensity_mean\tDensity_std')
 
-       np.savetxt('h_density.txt', np.transpose(np.vstack([bins, h_mean, h_std])),
+       np.savetxt(project.root_directory()+'/data/{}/h_density.txt'.format(str(job.sp.nwater)+'water_data'), np.transpose(np.vstack([bins, h_mean, h_std])),
                   header='Bins\tDensity_mean\tDensity_std')
-       plt.savefig('numberdensity.pdf')
+       plt.savefig(project.root_directory()+'/data/{}/numberdensity.pdf'.format(str(job.sp.nwater)+'water_data'))
 
 def s_order(job):
     dim = 1
@@ -55,10 +67,10 @@ def s_order(job):
     fig, ax = plt.subplots()
     s_list = list()
     trj=md.load(os.path.join(job.ws, 'carbon_water-pos-1.pdb'));
-    trj.save(os.path.join(job.ws, 'carbon_water-pos-1.xyz'))
+    trj.save(os.path.join(job.ws, 'carbon_water-pos-1.xyz'),force_overwrite=True)
 
-    for trj in md.iterload(os.path.join(job.ws, 'carbon_water-pos-1.pdb'), top=os.path.join(job.ws, 'init.mol2'),  chunk=4000, skip=4000):
-         trj = md.Trajectory(
+    for trj in md.iterload(os.path.join(job.ws, 'carbon_water-pos-1.xyz'), top=os.path.join(job.ws, 'init.mol2'),  chunk=4000, skip=4000):
+        trj = md.Trajectory(
                 trj.xyz,
                 trj.top,
                 unitcell_lengths = np.tile([0.9824 ,  2.0000   ,1.0635], (trj.n_frames,1)),
@@ -77,12 +89,14 @@ def s_order(job):
     plt.ylabel('S')
 
     with job:
-        plt.savefig('s_order.pdf')
+        plt.savefig(project.root_directory()+'/data/{}/s_order.pdf'.format(str(job.sp.nwater)+'water_data'))
 
-        np.savetxt('s_order.txt', np.transpose(np.vstack([bins, s_mean, s_std])),
+        np.savetxt(project.root_directory()+'/data/{}/s_order.txt'.format(str(job.sp.nwater)+'water_data'), np.transpose(np.vstack([bins, s_mean, s_std])),
                    header='Bins\tS_mean\tS_std')
 
 if __name__ == '__main__':
+    create_data_folder()
     for job in project.find_jobs():
+        create_individual_data_folder(job)        
         number_density(job)
         s_order(job)
