@@ -25,8 +25,8 @@ def write_slurm(file_out, task, Ncores,server_run_directory):
     Line_7 = 'echo  "Running on host" hostname'
     Line_8 = 'echo  "Time is" date'
     Line_9 = "module swap gnu7/7.3.0 intel/2019"
-    goto_directory = os.getcwd()
-    #goto_directory = server_run_directory   #set if if you want to build locally and run on server
+    #goto_directory = os.getcwd()
+    goto_directory = server_run_directory
     file = open(file_out, 'w')
 
     file.write(intro+"\n")
@@ -54,7 +54,7 @@ def write_slurm(file_out, task, Ncores,server_run_directory):
 
 prog = '/wsu/home/hf/hf68/hf6839/GOMC-2_6-master/bin/GOMC_CPU_GCMC'
 #prog = '/home/brad/Programs/GOMC/GOMC-2_6-master/bin/GOMC_CPU_GCMC'
-server_run_directory = 'Simulations/Graphene_water/Graphene_water_MoSDeF/mosdef_slitpore/simulations/desorption/3x3x1.6nm_3-layer/gomc/set1' #set if if you want to build locally and run on server
+server_run_directory = 'Simulations/Graphene_water/Graphene_water_MoSDeF/mosdef_slitpore/simulations/desorption/3x3x1.6nm_3-layer/gomc/set1'
 job_name='wp_16'
 parameters='../../../../../gomc_pdb_psf_FF/Grapene_Water_builder/GOMC_pore_fake_water_FF.inp'
 outputname = 'SPCE_PORE_16'

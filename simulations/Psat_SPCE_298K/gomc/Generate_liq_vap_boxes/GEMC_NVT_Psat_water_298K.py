@@ -1,0 +1,61 @@
+import mbuild as mb
+from foyer import Forcefield
+import mbuild.formats.charmm_writer as mf_charmm
+
+Water_res_name = 'H2O'
+Fake_water_res_name = 'h2o'
+
+FF_file_water = '../../../mosdef_slitpore/ffxml/pore-spce.xml'
+FF_file_fake_water = '../../../mosdef_slitpore/ffxml/FF_Fake_SPCE.xml'
+
+Water_mol2_file = 'files/tip3p.mol2'
+Fake_water_mol2_file = 'files/fake_tip3p.mol2'
+
+water = mb.load('O', smiles=True)
+water.name = Water_res_name
+water.energy_minimization(forcefield = FF_file_water , steps=10**9)
+
+fake_water = mb.load('O', smiles=True)
+fake_water.name = Fake_water_res_name
+fake_water.energy_minimization(forcefield = FF_file_fake_water , steps=10**9)
+
+
+
+
+FF_Dict = {water.name: FF_file_water , fake_water.name: FF_file_fake_water }
+
+residues_List = [water.name, fake_water.name ]
+
+Fix_bonds_angles_residues = [ water.name, fake_water.name ]
+
+
+
+print('Running: filling liquid box')
+water_box_liq = mb.fill_box(compound=[water,fake_water],
+                            density= 950 ,
+                            compound_ratio = [1-0.0035*998/950, 0.00335*998/950] ,
+                            box=[3.0, 3.0, 3.0] )
+print('Completed: filling liquid box')
+
+print('Running: filling vapor box')
+water_box_vap = mb.fill_box(compound=[water,fake_water],
+                            n_compounds = [47, 3],
+                            box=[60, 60, 60])
+print('Completed: filling vapor box')
+
+
+
+print('Running: GOMC FF file, and the psf and pdb files')
+mf_charmm.charmm_psf_psb_FF(water_box_liq,
+                            'Box_0_liq_water_fake_water_30A_L_cubed_box',
+                            structure_1 = water_box_vap ,
+                            filename_1 = 'Box_1_vap_water_fake_water_600A_L_cubed_box',
+                            GOMC_FF_filename ="GOMC_water_fake_water_FF" ,
+                            forcefield_files = FF_Dict,
+                            residues= residues_List ,
+                            Bead_to_atom_name_dict = None,
+                            fix_residue = None,
+                            fix_res_bonds_angles = Fix_bonds_angles_residues,
+                            reorder_res_in_pdb_psf = False
+                            )
+print('Completed: GOMC FF file, and the psf and pdb files')
