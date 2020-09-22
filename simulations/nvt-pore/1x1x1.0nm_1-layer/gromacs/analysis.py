@@ -14,7 +14,7 @@ def number_density(job):
     o_densities = list()
     h_densities = list()
     fig, ax = plt.subplots()
-    for trj in md.iterload(os.path.join(job.ws, 'nvt.trr'), top=os.path.join(job.ws, 'nvt.gro'), chunk=5000, skip=10001):
+    for trj in md.iterload(os.path.join(job.ws, 'nvt.trr'), top=os.path.join(job.ws, 'nvt.gro'), chunk=5000, skip=5001):
         water_o = trj.atom_slice(trj.topology.select('name O'))
         water_h = trj.atom_slice(trj.topology.select('name H'))
         area = trj.unitcell_lengths[0][0] * trj.unitcell_lengths[0][2]
@@ -47,6 +47,11 @@ def number_density(job):
        np.savetxt('h_density.txt', np.transpose(np.vstack([bins, h_mean, h_std])),
                   header='Bins\tDensity_mean\tDensity_std')
        plt.savefig('numberdensity.pdf')
+    np.savetxt(f'data/{job.sp.nwater}_mol_o_density.txt', np.transpose(np.vstack([bins, o_mean, o_std])),
+               header='Bins\tDensity_mean\tDensity_std')
+
+    np.savetxt(f'data/{job.sp.nwater}_mol_h_density.txt', np.transpose(np.vstack([bins, h_mean, h_std])),
+               header='Bins\tDensity_mean\tDensity_std')
 
 def s_order(job):
     dim = 1
@@ -54,8 +59,8 @@ def s_order(job):
     pore_center = (box_range[1]-box_range[0])/2 + box_range[0]
     fig, ax = plt.subplots()
     s_list = list()
-    for trj in md.iterload(os.path.join(job.ws, 'nvt.trr'), top=os.path.join(job.ws, 'init.mol2'), chunk=5000, skip=10001):
-        bins, s_values = compute_s(trj, dim, pore_center=pore_center)
+    for trj in md.iterload(os.path.join(job.ws, 'nvt.trr'), top=os.path.join(job.ws, 'init.mol2'), chunk=5000, skip=5001):
+        bins, s_values = compute_s(trj, dim, pore_center=pore_center, bin_width=0.01)
         s_list.append(s_values)
 
     s_mean = np.mean(s_list, axis=0)
@@ -71,6 +76,8 @@ def s_order(job):
 
         np.savetxt('s_order.txt', np.transpose(np.vstack([bins, s_mean, s_std])),
                    header='Bins\tS_mean\tS_std')
+    np.savetxt(f'data/{job.sp.nwater}_mol_s_order.txt', np.transpose(np.vstack([bins, s_mean, s_std])),
+               header='Bins\tS_mean\tS_std')
 
 def area(job):
     """Calculate molecules of water per area on graphene surface"""
@@ -100,6 +107,6 @@ def area(job):
         plt.savefig('cumulative_area.pdf')
 
 if __name__ == '__main__':
-    for job in project.find_jobs():
+    for job in project.find_jobs({"nwater": 24}):
         number_density(job)
         s_order(job)
