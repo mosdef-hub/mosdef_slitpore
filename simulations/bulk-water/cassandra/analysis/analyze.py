@@ -29,7 +29,7 @@ def main():
     )
     df["mu-cassandra_kJmol"] = mus.to_value("kJ/mol")
     df["pressure_bar"] = pressures.to_value("bar")
-    df.to_csv("results_nd.csv")
+    df.to_csv("results.csv")
 
 
 if __name__ == "__main__":
