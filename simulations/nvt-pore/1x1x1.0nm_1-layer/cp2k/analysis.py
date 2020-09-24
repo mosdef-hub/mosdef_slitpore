@@ -32,8 +32,8 @@ def number_density(job):
     for trj in md.iterload(
         os.path.join(job.ws, "carbon_water-pos-1.pdb"),
         top=os.path.join(job.ws, "init.mol2"),
-        chunk=4000,
-        skip=4000,
+        chunk=5000,
+        skip=6000,
     ):
         water_o = trj.atom_slice(trj.topology.select("name O"))
         water_h = trj.atom_slice(trj.topology.select("name H"))
@@ -94,8 +94,8 @@ def s_order(job):
     for trj in md.iterload(
         os.path.join(job.ws, "carbon_water-pos-1.xyz"),
         top = os.path.join(job.ws, "init.mol2"),
-        chunk = 4000,
-        skip = 4000,
+        chunk = 5000,
+        skip = 6000,
     ):
         trj = md.Trajectory(
             trj.xyz,
