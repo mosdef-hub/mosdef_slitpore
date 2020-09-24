@@ -40,13 +40,13 @@ def run_adsorption(
     ff = foyer.Forcefield(get_ff("pore-spce.xml"))
 
     # Apply ff
-    typed_pore = ff.apply(pore)
+    typed_pore = ff.apply(empty_pore)
 
     # Create a water molecule with the spce geometry
     typed_water = ff.apply(spce_water)
 
     # Create box and species list
-    box_list = [pore]
+    box_list = [empty_pore]
     species_list = [typed_pore, typed_water]
 
     # Specify mols at start of the simulation
@@ -87,6 +87,7 @@ def run_adsorption(
         "properties": thermo_props,
         "angle_style": ["harmonic", "fixed"],
         "coord_freq": 100000,
+        "prop_freq": 1000,
     }
 
     custom_args = { **default_args, **custom_args}
