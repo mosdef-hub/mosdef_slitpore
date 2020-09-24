@@ -2,9 +2,9 @@ import signac
 import unyt as u
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
 from mosdef_cassandra.analysis import ThermoProps
+
 
 def main():
 
