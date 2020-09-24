@@ -2,8 +2,10 @@ import signac
 import unyt as u
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 from mosdef_cassandra.analysis import ThermoProps
+
 
 def main():
 
@@ -13,17 +15,14 @@ def main():
     mus = []
     nmols = []
     runs = []
-    for run in range(3):
-        for job in project:
-            if job.sp.run == run:
-                runs.append(run)
-                mus.append(job.sp.mu * u.kJ/u.mol)
-                thermo = ThermoProps(job.fn("equil.gcmc.out.prp"))
-                nmols.append(thermo.prop("Nmols_2", start=50000000).mean())
+    for job in project:
+        runs.append(job.sp.run)
+        mus.append(job.sp.mu * u.kJ/u.mol)
+        thermo = ThermoProps(job.fn("gcmc.out.prp"))
+        nmols.append(thermo.prop("Nmols_2", start=250000000).mean())
 
     mus = u.unyt_array(mus * u.kJ/u.mol)
     nmols = np.asarray(nmols)
-    nmols_unc = np.asarray(nmols_unc)
     runs = np.asarray(runs)
     df = pd.DataFrame(
         columns=["mu-cassandra_kJmol", "run", "nmols_per_nm^2"]
@@ -33,6 +32,7 @@ def main():
     df["nmols"] = nmols
     df["nmols_per_nm^2"] = nmols / pore_area.to_value(u.nm**2)
     df.to_csv("results_nd.csv")
+
 
 if __name__ == "__main__":
     main()
