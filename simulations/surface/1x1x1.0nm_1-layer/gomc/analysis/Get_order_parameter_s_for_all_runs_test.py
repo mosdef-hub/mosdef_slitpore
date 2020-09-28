@@ -1,30 +1,9 @@
-
-
 import main_files.analysis as analysis
+import mdtraj as md
 import numpy as np
 import pandas as pd
-import os
-import sys
-import mdtraj as md
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-
-import scipy as sp
-import numpy as np
 import matplotlib.pyplot as plt
 import csv as csv
-import pandas as pd
-import itertools as it
-import statistics
-from collections import defaultdict
-import os
-import shutil
-import matplotlib.axis as axis
-from scipy.optimize import curve_fit
-from scipy.interpolate import interp1d
-from scipy.signal import savgol_filter
-from sklearn.linear_model import LinearRegression
-from scipy import stats
 
 
 # Note: You may want to use VMD to convert the GOMC generated pdb file into a single pdb frame (frame 0 only)

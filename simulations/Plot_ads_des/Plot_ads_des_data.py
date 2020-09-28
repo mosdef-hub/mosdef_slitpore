@@ -1,24 +1,11 @@
-import scipy as sp
 import numpy as np
 import matplotlib.pyplot as plt
 import csv as csv
 import pandas as pd
-import itertools as it
-from collections import defaultdict
-import os
-import shutil
-import matplotlib as matplotlib
-import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
-import matplotlib.axis as axis
-from scipy.optimize import curve_fit
-from scipy.interpolate import interp1d
-from scipy.signal import savgol_filter
-import math
 from matplotlib import rcParams
 rcParams['font.family'] = 'sans-serif'
 rcParams['font.sans-serif'] = ['Arial']
-import pylab as plot
 from scipy.stats import linregress
 import seaborn as sns
 from matplotlib.colors import ListedColormap
@@ -26,19 +13,6 @@ from matplotlib.colors import ListedColormap
 
 sns.color_palette("deep",2)
 
-
-
-#********************************
-#Notes
-#********************************
-
-#Plots 2 item:
-#1) a pairwise energy for indiviual peeling strands, and non-peeling strands
-#2)
-#********************************
-#End Notes
-#********************************
-# only change the below reading_file
 E_vs_P_Psat_saving_name = "E_vs_P_div_Psat.pdf"
 
 axis_Label_font_size = 22
@@ -51,7 +25,7 @@ Reg_Density_Linestyle = '--'  #'-' =  solid, '--' = dashed, ':'= dotted
 Critical_Density_Linestyle = None
 
 
-Psat_data_file = '../Psat_SPCE_298K/analysis/SPCE_Pvap_at_298K_df.csv'
+Psat_data_file = '../Psat_SPCE_298K/gomc/analysis/SPCE_Pvap_at_298K_df.csv'
 Psat_data = pd.read_csv(Psat_data_file, sep=',', header=0, na_values='NaN',
 						usecols=[0,1], index_col=False)
 
@@ -134,9 +108,6 @@ Avg_E_No_water_per_nm_sq_10A_ads_Gubbins = calc_data_10A_ads_Gubbins_df.loc[:, '
 Avg_E_No_water_per_nm_sq_16A_ads_Gubbins = calc_data_16A_ads_Gubbins_df.loc[:, 'nmols_per_nm^2' ].tolist()
 Avg_E_No_water_per_nm_sq_10A_des_Gubbins = calc_data_10A_des_Gubbins_df.loc[:, 'nmols_per_nm^2' ].tolist()
 Avg_E_No_water_per_nm_sq_16A_des_Gubbins = calc_data_16A_des_Gubbins_df.loc[:, 'nmols_per_nm^2' ].tolist()
-
-
-
 
 
 #import GOMC data
@@ -335,40 +306,14 @@ tuples = zip(*sorted_pairs)
 P_div_Po_16A_des_Cass_list, Avg_of_E_per_area_16A_des_Cass_list, Std_Dev_E_per_area_16A_des_Cass_list  = [ list(tuple) for tuple in tuples]
 
 
-# ********************************
-#  End File importing (end)
-# ********************************
-
-
-#********************************
-# Do calcs on Cassandra data (start)
-#********************************
-
-
-
-
-#********************************
-# Do calcs on Cassandra data (start)
-#********************************
-
-
-
 #****************************************
-#Plot Number 2  (P vs T) (start)
+#Plot Number 1  (start)
 #****************************************
-
-# Plotting curve data below
 
 fig1, ax1 = plt.subplots(2, 1, sharex=True)
-# Remove horizontal space between axes
-
 
 plt.xlabel('$P/P_{sat}$', fontname="Arial", fontsize=axis_Label_font_size)
 plt.ylabel('        $\u03BE$ (No. waters / nm$^2$)', fontname="Arial", fontsize=axis_Label_font_size)
-
-
-# Matplotlib colors b : blue, g : green, r : red, c : cyan, m : magenta, y : yellow, k : black, w : white, gray='x' (x=0 to 1)
-
 
 ax1[0].set_xticks(np.arange(0, 100, 10))
 ax1[1].set_xticks(np.arange(0, 100, 10))
@@ -379,23 +324,6 @@ ax1[1].xaxis.set_major_locator(ticker.LogLocator(base=10.0, numticks=5))
 
 WSU_color = '#ff7f0e'
 NDU_color = '#1f77b4'
-
-"""
-# no error bars
-ax1[0].plot(P_div_Po_10A_ads_Cass_list, Avg_of_E_per_area_10A_ads_Cass_list, color=NDU_color , marker='D', linestyle='-' , markersize=PointSizes+2, linewidth=ConnectionLineSizes, fillstyle='full', label= "Cassandra - adsorb", label= "10 $\AA$ ads") #label=File_label_No1
-ax1[0].plot(P_div_Po_10A_des_Cass_list, Avg_of_E_per_area_10A_des_Cass_list, color=NDU_color,  marker='D', linestyle='--' , markersize=PointSizes+2, linewidth=ConnectionLineSizes, fillstyle='none', label= "16 $\AA$ des") #label=File_label_No1
-
-ax1[0].plot(Psat_ratio_10A_ads, Avg_E_No_water_per_nm_sq_10A_ads, color=WSU_color , marker='o', linestyle='-' , markersize=PointSizes, linewidth=ConnectionLineSizes, fillstyle='full', label= "GOMC - adsorb", label= "10 $\AA$ ads") #label=File_label_No1
-ax1[0].plot(Psat_ratio_10A_des, Avg_E_No_water_per_nm_sq_10A_des ,  color=WSU_color , marker='o', linestyle='--' , markersize=PointSizes, linewidth=ConnectionLineSizes, fillstyle='none', label= "16 $\AA$ des") #label=File_label_No1
-
-ax1[1].plot(P_div_Po_16A_ads_Cass_list, Avg_of_E_per_area_16A_ads_Cass_list, color=NDU_color , marker='D', linestyle='-' , markersize=PointSizes+2, linewidth=ConnectionLineSizes, fillstyle='full', label= "16 $\AA$ ads") #label=File_label_No1
-ax1[1].plot(P_div_Po_16A_des_Cass_list, Avg_of_E_per_area_16A_des_Cass_list, color=NDU_color,  marker='D', linestyle='--' , markersize=PointSizes+2, linewidth=ConnectionLineSizes, fillstyle='none', label= "Cassandra - desorb", label= "16 $\AA$ des") #label=File_label_No1
-
-ax1[1].plot(Psat_ratio_16A_ads, Avg_E_No_water_per_nm_sq_16A_ads, color=WSU_color , marker='o', linestyle='-' , markersize=PointSizes, linewidth=ConnectionLineSizes, fillstyle='full', label= "16 $\AA$ ads") #label=File_label_No1
-ax1[1].plot(Psat_ratio_16A_des, Avg_E_No_water_per_nm_sq_16A_des, color=WSU_color ,  marker='o', linestyle='--' , markersize=PointSizes, linewidth=ConnectionLineSizes, fillstyle='none', label= "GOMC - desorb", label= "16 $\AA$ des") #label=File_label_No1
-"""
-
-
 
 ax1[0].errorbar(P_div_Po_10A_ads_Cass_list, Avg_of_E_per_area_10A_ads_Cass_list, Std_Dev_E_per_area_10A_ads_Cass_list ,
                 color=NDU_color , marker='D', linestyle='-' , markersize=PointSizes+2, linewidth=ConnectionLineSizes,
@@ -459,17 +387,13 @@ ax1[0].tick_params(axis='both', which='major', length=4, width=2, labelsize=axis
 ax1[1].tick_params(axis='both', which='major', length=4, width=2, labelsize=axis_number_font_size, top=True, right=True, direction='in')
 
 ax1[0].legend(ncol=2,loc='upper left', fontsize=legend_font_size, prop={'family':'Arial','size': legend_font_size}, framealpha=1,bbox_to_anchor=(-0.22, 2.05))
-#ax1[1].legend(ncol=1,loc='upper left', fontsize=legend_font_size, prop={'family':'Arial','size': legend_font_size}, framealpha=1)
-
 
 ax1[0].text(0.0020, 6.1, "1.0 nm slit", fontsize=legend_font_size)
 ax1[1].text(0.0020, 12.2, "1.6 nm slit", fontsize=legend_font_size)
 
 plt.tight_layout()  # centers layout nice for final paper
 
-
 plt.gcf().subplots_adjust(left=None, bottom=None, right=None, top=0.70, wspace=None, hspace=None) # moves plot  so x label not cutoff
-
 
 plt.xscale("log")
 fig1.subplots_adjust(hspace=0)
@@ -485,7 +409,7 @@ ax1[1].grid()
 plt.show()
 fig1.savefig(E_vs_P_Psat_saving_name)
 #****************************************
-#Plot Number 1  P vs T) (end)
+#Plot Number 1 (end)
 #****************************************
 
 

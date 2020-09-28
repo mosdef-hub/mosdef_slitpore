@@ -1,36 +1,16 @@
-
-
 import main_files.analysis as analysis
+import mdtraj as md
 import numpy as np
 import pandas as pd
-import os
-import sys
-import mdtraj as md
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-
-import scipy as sp
-import numpy as np
 import matplotlib.pyplot as plt
 import csv as csv
-import pandas as pd
-import itertools as it
-import statistics
-from collections import defaultdict
-import os
-import shutil
-import matplotlib.axis as axis
-from scipy.optimize import curve_fit
-from scipy.interpolate import interp1d
-from scipy.signal import savgol_filter
-from sklearn.linear_model import LinearRegression
-from scipy import stats
+
 
 # Note: You may want to use VMD to convert the GOMC generated pdb file into a single pdb frame (frame 0 only)
 # and an xyz file containing all the frames
-# This will speed up analsyis and not consume >100GB memory. You will need to use only the step 0 frame from VMD
+# This will speed up analsyis and not consume >200GB memory. You will need to use only the step 0 frame from VMD
 # as the pdb file and all frames of the pdb file converted into an xyz file.  The new files will need to be named
-# SPCE_PORE_NVT_10_BOX_0_water_only.xyz and SPCE_PORE_NVT_10_BOX_0_at_0M_steps_water_only.pdb for the xyz and pdb file
+# SPCE_PORE_NVT_20_BOX_0_water_only.xyz and SPCE_PORE_NVT_20_BOX_0_at_0M_steps_water_only.pdb for the xyz and pdb file
 # respectively.  This will need to be done for all 5 runs (i.e., 1r1, 1r2, 1r3, 1r4, 1r5), and changed as in the
 # use_pdb_only_or_pdb_and_xyz varabile below.
 # indicated in the notes below

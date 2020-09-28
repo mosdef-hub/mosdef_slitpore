@@ -1,53 +1,23 @@
-#from mbuild.lib.recipes.porebuilder import GraphenePoreSolvent
-#from mbuild.lib.recipes.porebuilder import GraphenePore
-from mbuild.recipes.porebuilder import GraphenePoreSolvent
 from mbuild.recipes.porebuilder import GraphenePore
 import mbuild as mb
 from foyer import Forcefield
-#import mbuild.utils.specific_FF_to_residue as specific_FF_to_residue
-import parmed.structure
-import foyer
-#from mbuild.recipes.porebuilder import porebuilder as recipes
 import mbuild.formats.charmm_writer as mf_charmm
-#**************************************************************
-#**************************************************************
-# variables to change  (start)
-#**************************************************************
-#**************************************************************
+
+
 Water_res_name = 'H2O'
 Fake_water_res_name = 'h2o'
-
 
 FF_file = '../../../mosdef_slitpore/ffxml/pore-spce.xml'
 FF_file_fake_water = '../../../mosdef_slitpore/ffxml/FF_Fake_SPCE.xml'
 
 
-
-#**************************************************************
-#**************************************************************
-# variables to change  (end)
-#**************************************************************
-#**************************************************************
-
-
-#**************************************************************
-#**************************************************************
-# auto-build empty graphene slit, filled water slit, and
-# water box.  Generates the FF.inp, psf, and pdb files  (start)
-#**************************************************************
-#**************************************************************
-
-#**************************************************************
-# molecule and residue naming and lists (start)
-#**************************************************************
-
 water = mb.load('O', smiles=True)
 water.name = Water_res_name
-water.energy_minimization(forcefield = FF_file , steps=10**9)
+water.energy_minimize(forcefield = FF_file , steps=10**9)
 
 Fake_water = mb.load('O', smiles=True)
 Fake_water.name = Fake_water_res_name
-Fake_water.energy_minimization(forcefield = FF_file_fake_water , steps=10**9)
+Fake_water.energy_minimize(forcefield = FF_file_fake_water , steps=10**9)
 
 FF_Graphene_pore_w_solvent_Dict = {'H2O' : FF_file, 'BOT' : FF_file, 'TOP' : FF_file}
 residues_Graphene_pore_w_solvent_List = [ water.name,   'BOT', 'TOP']
@@ -59,14 +29,10 @@ Fix_bonds_angles_fake_water_residues = [ water.name, Fake_water.name]
 
 Fix_Graphene_residue = [ 'BOT', 'TOP']
 
-
-#note since graphene is atom type 1 this is OK otherwise we would need to insert
-# at least 1 water to get the proper FFs for the current MoSDeF writers.
-
-
 #**************************************************************
 # builds water reservoir (start)
 #**************************************************************
+
 
 box_reservior = mb.fill_box(compound=[water,water],density=600,
                             box=[6,6,6], compound_ratio=[0.8,0.2])

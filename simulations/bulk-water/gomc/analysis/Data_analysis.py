@@ -1,19 +1,6 @@
-import scipy as sp
 import numpy as np
-import matplotlib.pyplot as plt
 import csv as csv
 import pandas as pd
-import itertools as it
-import statistics
-from collections import defaultdict
-import os
-import shutil
-import matplotlib.axis as axis
-from scipy.optimize import curve_fit
-from scipy.interpolate import interp1d
-from scipy.signal import savgol_filter
-from sklearn.linear_model import LinearRegression
-from scipy import stats
 
 #check all thermal expansion errors and cp errors before providing data
 
@@ -38,7 +25,7 @@ Chemical_being_analyzed = 'water'
 #  need to insert blocking_std_dev method to calculate accuated Std. Deviations to get accurate results
 #*******************************************************************************************************************
 
-Psat_data_file = '../../../Psat_SPCE_298K/analysis/SPCE_Pvap_at_298K_df.csv'
+Psat_data_file = '../../../Psat_SPCE_298K/gomc/analysis/SPCE_Pvap_at_298K_df.csv'
 Psat_data = pd.read_csv(Psat_data_file, sep=',', header=0, na_values='NaN',
 						usecols=[0,1], index_col=False)
 

@@ -1,22 +1,10 @@
-import scipy as sp
 import numpy as np
 import matplotlib.pyplot as plt
 import csv as csv
 import pandas as pd
-import itertools as it
-import statistics
-from collections import defaultdict
-import os
-import shutil
-import matplotlib.axis as axis
-from scipy.optimize import curve_fit
-from scipy.interpolate import interp1d
-from scipy.signal import savgol_filter
-from sklearn.linear_model import LinearRegression
-from scipy import stats
 from scipy.stats import linregress
 
-#check all thermal expansion errors and cp errors before providing data
+
 adsoption_or_desorbtion = 'adsorption' # 'adsoption' or 'desorbtion'
 pore_size_A = 16
 
@@ -24,9 +12,9 @@ pore_size_A = 16
 
 
 
-Set_List =     [ 'set1', 'set2','set3' ,'set4', 'set5'] #  [ 'set1', 'set2','set3', 'set4', 'set5']
+Set_List =     [ 'set1', 'set2','set3' ,'set4', 'set5']
 
-ChemPot_List =     [   -5212, -4852, -4491, -4130, -4085, -4040, -3950, -3769] # for 10A adsorption [-5573, -5212, -4852, -4491, -4370, -4250, -4130, -3769]
+ChemPot_List =     [   -5212, -4852, -4491, -4130, -4085, -4040, -3950, -3769]
 file_folder_list = [    '1r1', '1r2', '1r3', '1r4', '1r5', '1r6', '1r7', '1r8']
 phase_list     =        ['v',   'v',   'v',   'v',   'v',   'l',   'l',   'l']
 Start_Msteps_avg_list = [ 100,  100,   100,   100,   100,    20,    20,    20]
@@ -42,7 +30,13 @@ mu_K_list = calc_data_df.loc[:, 'ChemPot_K' ].tolist()
 P_div_Psat = calc_data_df.loc[:, 'Psat_ratio' ].tolist()
 ln_P_div_Psat = [np.log(x) for x in P_div_Psat]
 
-slope, intercept, r_value, p_value, stderr = linregress(mu_K_list, y = ln_P_div_Psat )
+Chempot_correction_to_abs_Chempot = -1282.30449445439
+
+mu_K_list_corrected = [x + Chempot_correction_to_abs_Chempot for x in mu_K_list]
+
+ChemPot_List_corrected = [x + Chempot_correction_to_abs_Chempot for x in ChemPot_List]
+
+slope, intercept, r_value, p_value, stderr = linregress(mu_K_list_corrected, y = ln_P_div_Psat )
 
 
 
@@ -55,13 +49,11 @@ surface_area_nm_sq = (29.472)/10 * (29.777)/10 *2
 Chemical_being_analyzed = 'slit'
 Box_data_save_file_name = str(adsoption_or_desorbtion)+'_'+str(pore_size_A)+'A'
 
-Column_no_Step = 0  # must be iteration value
-
-Column_no_Total_Molecules = 9  # column for TOT_MOL
-Column_no_Density = 10  # column for TOT_DENS
-Column_no_Water_or_fake_water_molp_1 = 13  # column for VOLUME
-
-Column_no_Water_or_fake_water_molp_2  = 14  # column for VOLUME
+Column_no_Step = 0
+Column_no_Total_Molecules = 9
+Column_no_Density = 10
+Column_no_Water_or_fake_water_molp_1 = 13
+Column_no_Water_or_fake_water_molp_2  = 14
 
 Psat_ratio_for_sets_list = []
 E_No_water_for_sets_list = []
@@ -71,10 +63,6 @@ for n in range(0, len(Set_List)):
 	Psat_ratio_list = []
 	set_iteration = Set_List[n]
 
-
-	#*******************************************************************************************************************
-	#  need to insert blocking_std_dev method to calculate accuated Std. Deviations to get accurate results
-	#*******************************************************************************************************************
 	Temp_List = []
 	Pressure_Box_0_List = []
 	Total_waters_Box_0_List = []
@@ -82,47 +70,29 @@ for n in range(0, len(Set_List)):
 	E_No_water_per_nm_sq_list = []
 
 
-	# ***********************
-	# calc the avg data from the liq and vap boxes (start)
-	# ***********************
-
 	for j in range(len(file_folder_list)):
-		#concentration 1 files and inputs
 		file_folder_list_run_file_file1= j
 
 		reading_file_Box_0 ='../'+str(set_iteration)+'/'+str(file_folder_list[j])+'/Blk_SPCE_PORE_'+str(pore_size_A)+'_BOX_0.dat'
 
-		#*******************************************************************************************************
-		#end major variables
-		# *******************************************************************************************************
-		Column_Psat_ratio_Title = 'Psat_ratio'  #
-		Column_ChemPot_Title = 'ChemPot_K'  # column title Title for PRESSURE
-		Column_Step_Title = 'Step'  # column title Title for iteration value
-		Column_Water_molp_Title = 'molp_H2O'  # column title Title for PRESSURE
-		Column_Total_Molecules_Title = "No_mol"  # column title Title for TOT_MOL
-		Column_Total_water_Molecules_Title = "No_waters"  # column title Title for TOT_MOL
+		Column_Psat_ratio_Title = 'Psat_ratio'
+		Column_ChemPot_Title = 'ChemPot_K'
+		Column_Step_Title = 'Step'
+		Column_Water_molp_Title = 'molp_H2O'
+		Column_Total_Molecules_Title = "No_mol"
+		Column_Total_water_Molecules_Title = "No_waters"
 
-		Column_Avg_Water_molp_Title = 'Avg_molp_H2O'  # column title Title for PRESSURE
-		Column_StdDev_Water_molp_Title = 'StdDev_molp_H2O'  # column title Title for PRESSURE
+		Column_Avg_Water_molp_Title = 'Avg_molp_H2O'
+		Column_StdDev_Water_molp_Title = 'StdDev_molp_H2O'
 		Column_Avg_E_Title = 'Avg_E_No_water_per_nm_sq'
 		Column_StdDev_E_Title = 'StdDev_E_No_water_per_nm_sq'
 
 		Extracted_Data_file_Titles = [Column_Step_Title, Column_Total_Molecules_Title, Column_Water_molp_Title ]
 
-		Psat_ratio_list.append(np.exp (slope * ChemPot_List[j] + intercept ))
+		Psat_ratio_list.append(np.exp (slope * ChemPot_List_corrected[j] + intercept ))
 
-
-		#Programmed data
 		Step_start_string = str(int(Start_Msteps_avg_list[j]*10**6))
 		Step_finish_string = str(int(End_Msteps_avg_list[j]*10**6))
-
-		#*************************
-		#drawing in data from single file and extracting specific rows for the liquid box (start)
-		# *************************
-		#data_Box_0 = pd.read_csv(reading_file_Box_0, names=Extracted_Data_file_Titles, sep='\s+', header=0,
-								 #na_values='NaN',
-								 #usecols=[Column_no_Step, Column_no_Total_Molecules, Column_no_Water_molp,
-										  #Column_no_Water_molp_for_1r5_restart], index_col=False)
 
 		Column_Step_read_title = '#STEPS'
 		Column_Step_read_title_mod = 'STEPS'
@@ -150,8 +120,6 @@ for n in range(0, len(Set_List)):
 		data_Box_0 = pd.DataFrame(data_Box_0)
 
 		data_Box_0 = data_Box_0.query(Step_start_string +' <= ' + 'STEPS'   + ' <= ' + Step_finish_string)
-		##print('Liquid data')
-		#print(data_Box_0)
 
 		Iteration_no_Box_0 = data_Box_0.loc[:,Column_Step_read_title_mod]
 		Iteration_no_Box_0 = list(Iteration_no_Box_0)
@@ -213,8 +181,6 @@ for n in range(0, len(Set_List)):
 		Total_waters_Box_0 = np.transpose(Total_waters_list)
 		Total_waters_Box_0_Mean = np.nanmean(Total_waters_list)
 
-
-
 		E_No_water_per_nm_sq = Total_waters_Box_0_Mean/surface_area_nm_sq
 
 		Total_waters_Box_0_List.append(Total_waters_Box_0_Mean)
@@ -224,9 +190,6 @@ for n in range(0, len(Set_List)):
 	E_No_water_for_sets_list.append(E_No_water_per_nm_sq_list)
 
 
-		#*************************
-		#drawing in data from single file and extracting specific rows for the vapor box (end)
-		# *************************
 Avg_No_waters_for_sets_list = []
 StdDev_No_waters_for_sets_list = []
 
@@ -259,7 +222,7 @@ for h in range(0, len(E_No_water_for_sets_list[0])):
 Box_0_data_dataframe =pd.DataFrame(np.column_stack([Psat_ratio_list,
 													Avg_E_No_water_per_nm_sq_for_sets_list, StdDev_E_No_water_per_nm_sq_for_sets_list,
 													Avg_No_waters_for_sets_list, StdDev_No_waters_for_sets_list,
-													ChemPot_List]))
+													ChemPot_List_corrected]))
 
 Box_0_data_dataframe.to_csv(Box_data_save_file_name + '_'+str(Chemical_being_analyzed)+'_df.txt', sep="	",
 							header=[Column_Psat_ratio_Title,

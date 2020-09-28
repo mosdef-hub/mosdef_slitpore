@@ -1,17 +1,9 @@
-from mbuild.recipes.porebuilder import GraphenePoreSolvent
 from mbuild.recipes.porebuilder import GraphenePore
 import mbuild as mb
 from foyer import Forcefield
-#import mbuild.utils.specific_FF_to_residue as specific_FF_to_residue
-import parmed.structure
-import foyer
-#from mbuild.recipes.porebuilder import porebuilder as recipes
 import mbuild.formats.charmm_writer as mf_charmm
-#**************************************************************
-#**************************************************************
-# variables to change  (start)
-#**************************************************************
-#**************************************************************
+
+
 Water_res_name = 'H2O'
 Fake_water_res_name = 'h2o'
 
@@ -19,27 +11,6 @@ Fake_water_res_name = 'h2o'
 FF_file = '../../../../../mosdef_slitpore/ffxml/pore-spce.xml'
 FF_file_fake_water = '../../../../../mosdef_slitpore/ffxml/FF_Fake_SPCE.xml'
 
-
-
-
-
-#**************************************************************
-#**************************************************************
-# variables to change  (end)
-#**************************************************************
-#**************************************************************
-
-
-#**************************************************************
-#**************************************************************
-# auto-build empty graphene slit, filled water slit, and
-# water box.  Generates the FF.inp, psf, and pdb files  (start)
-#**************************************************************
-#**************************************************************
-
-#**************************************************************
-# molecule and residue naming and lists (start)
-#**************************************************************
 
 water = mb.load('O', smiles=True)
 water.name = Water_res_name
@@ -59,9 +30,6 @@ Fix_bonds_angles_fake_water_residues = [ water.name, Fake_water.name]
 Fix_Graphene_residue = [ 'BOT', 'TOP']
 
 
-#note since graphene is atom type 1 this is OK otherwise we would need to insert
-# at least 1 water to get the proper FFs for the current MoSDeF writers.
-
 
 #**************************************************************
 # builds water reservoir (start)
@@ -75,7 +43,7 @@ box_reservior_w_fake_water = mb.fill_box(compound=[water,Fake_water],density=600
 #**************************************************************
 
 #**************************************************************
-# builds empty graphene slit  for 10 Ang or 1nm (start)
+# builds filled graphene slit  for 16 Ang or 1.6nm (start)
 #**************************************************************
 # Create graphene system
 pore_width_nm = 1.6
@@ -133,7 +101,7 @@ mf_charmm.charmm_psf_psb_FF(filled_pore,
 
 
 #**************************************************************
-# builds empty graphene slit  for 10 Ang or 1nm (end)
+# builds filled graphene slit  for 16 Ang or 1.6nm (end)
 #**************************************************************
 
 
