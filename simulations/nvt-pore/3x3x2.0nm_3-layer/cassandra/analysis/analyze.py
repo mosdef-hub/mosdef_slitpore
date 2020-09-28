@@ -1,10 +1,11 @@
 import signac
 import mbuild
-import mdtraj as md
 import numpy as np
 import pandas as pd
+import unyt as u
+import mdtraj as md
 
-from mosdef_slitpore.utils.cassandra import spce_water
+from mosdef_slitpore.utils.cassandra_helpers import spce_water
 from mosdef_slitpore.analysis import compute_density
 from mosdef_slitpore.analysis import compute_s
 
@@ -13,34 +14,29 @@ def main():
 
     project = signac.get_project("../")
 
-    empty_pore = mbuild.recipes.GraphenePore(
-        pore_width=2.0,
-        pore_length=3.0,
-        pore_depth=3.0,
-        n_sheets=3,
-        slit_pore_dim=2,
-    )
-
-    empty_pore.translate(-empty_pore.center)
-    empty_pore.periodicity[2] = 6.0
-    empty_pore.name = 'RES'
-
-    # Create a water molecule with the spce geometry
-    single_water = spce_water()
-    single_water.name = 'SOL'
 
     for nwater, group in project.groupby("nwater"):
         # New dataframe to save the results
         df = pd.DataFrame()
 
-        # Create a topology for the given system
-        water_box = mbuild.Box([3.0, 3.0, 1.8]) #nm
-        water = mbuild.fill_box(single_water, n_compounds=nwater, box=water_box)
-        water.translate(-water.center)
-        filled_pore = mbuild.Compound()
-        empty_pore.parent = None
-        filled_pore.add(empty_pore, inherit_periodicity=True)
-        filled_pore.add(water, inherit_periodicity=False)
+        # Create pore system
+        pore_width = 2.0 * u.nm
+
+        filled_pore = mbuild.recipes.GraphenePoreSolvent(
+            pore_length=3.0,
+            pore_depth=3.0,
+            pore_width=pore_width.to_value("nm"),
+            n_sheets=3,
+            slit_pore_dim=2,
+            x_bulk=0,
+            solvent=spce_water,
+            n_solvent=nwater,
+        )
+        # Translate to centered at 0,0,0 and make box larger in z
+        box_center = filled_pore.periodicity/2.0
+        filled_pore.translate(-box_center)
+        filled_pore.periodicity[2] = 6.0
+
         xy_area = filled_pore.periodicity[0] * filled_pore.periodicity[1]
         top = filled_pore.to_trajectory(residues=["RES", "SOL"])
 
@@ -87,7 +83,7 @@ def main():
         means = df.groupby("z-loc_nm").mean().drop(columns=["run"]).add_suffix("_mean")
         stds = df.groupby("z-loc_nm").std().drop(columns=["run"]).add_suffix("_std")
         combined = means.merge(stds, on="z-loc_nm")
-        combined.to_csv(f"results_nd_{nwater}-water.csv")
+        combined.to_csv(f"results_{nwater}-water.csv")
 
 
 if __name__ == "__main__":

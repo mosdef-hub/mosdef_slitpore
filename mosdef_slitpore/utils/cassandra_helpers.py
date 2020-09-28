@@ -17,7 +17,7 @@ def create_spce_water():
     """
     OH_bl = 0.1  # nm
     HOH_angle = 109.47  # degrees
-    water = mbuild.Compound(name="water")
+    water = mbuild.Compound(name="SOL")
     O = mbuild.Compound(name="O", pos=[0.0, 0.0, 0.0])
     H1 = mbuild.Compound(name="H", pos=[OH_bl, 0.0, 0.0])
     H2 = mbuild.Compound(

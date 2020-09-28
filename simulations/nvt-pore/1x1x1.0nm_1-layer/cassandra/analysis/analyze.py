@@ -53,7 +53,7 @@ def main():
                 unitcell_angles = np.tile([90.,90.,90.], (full_traj.n_frames,1)),
             )
             # Keep only water
-            slice_water = full_traj.top.select("name O H")
+            slice_water = full_traj.top.select("water and name O H")
             traj = full_traj.atom_slice(slice_water)
             slice_ow = traj.top.select("name O")
             slice_hw = traj.top.select("name H")
