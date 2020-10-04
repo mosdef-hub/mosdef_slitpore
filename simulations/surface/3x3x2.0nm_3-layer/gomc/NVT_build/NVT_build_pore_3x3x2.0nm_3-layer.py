@@ -1,13 +1,9 @@
-#from mbuild.lib.recipes.porebuilder import GraphenePoreSolvent
-#from mbuild.lib.recipes.porebuilder import GraphenePore
 from mbuild.recipes.porebuilder import GraphenePoreSolvent
 from mbuild.recipes.porebuilder import GraphenePore
 import mbuild as mb
 from foyer import Forcefield
-#import mbuild.utils.specific_FF_to_residue as specific_FF_to_residue
 import parmed.structure
 import foyer
-#from mbuild.recipes.porebuilder import porebuilder as recipes
 import mbuild.formats.charmm_writer as mf_charmm
 #**************************************************************
 #**************************************************************
