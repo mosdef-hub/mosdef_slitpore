@@ -15,45 +15,44 @@ class Project(FlowProject):
 
 
 @Project.label
-def nvt_complete(job):
-    """Check if the NVT simulation has completed"""
-    return check_simulation(job.fn("nvt.out.prp"), job.sp.nsteps.nvt)
+def equil_complete(job):
+    """Check if the equilibration simulation has completed"""
+    return check_simulation(job.fn("equil.nvt.out.prp"), job.sp.nsteps.equil)
 
 
 @Project.label
-def gcmc_complete(job):
-    """Check if the GCMC simulation has completed"""
-    return check_simulation(job.fn("gcmc.out.prp"), job.sp.nsteps.gcmc)
+def prod_complete(job):
+    """Check if the production simulation has completed"""
+    return check_simulation(job.fn("prod.nvt.out.prp"), job.sp.nsteps.prod)
 
 
 @Project.operation
-@Project.post(gcmc_complete)
+@Project.post(prod_complete)
 @directives(omp_num_threads=4)
-def run_desorption(job):
-    """Run desorption simulation for the given statepoint"""
+def run_simulation(job):
+    """Run NVT simulations for the given statepoint"""
 
     import mbuild
     import unyt as u
 
-    from mosdef_slitpore.utils.cassandra_runners import run_desorption
+    from mosdef_slitpore.utils.cassandra_runners import run_nvt
     from mosdef_slitpore.utils.cassandra_helpers import spce_water
 
-    pore_width = 1.6 * u.nm
+    pore_width = 1.0 * u.nm
 
     temperature = job.sp.T * u.K
-    mu = job.sp.mu * u.kJ / u.mol
     nwater = job.sp.nwater
-    nsteps_nvt = job.sp.nsteps.nvt
-    nsteps_gcmc = job.sp.nsteps.gcmc
+    nsteps_eq = job.sp.nsteps.equil
+    nsteps_prod = job.sp.nsteps.prod
     seed1 = job.sp.seed1
     seed2 = job.sp.seed2
 
     # Create pore system
     filled_pore = mbuild.recipes.GraphenePoreSolvent(
-        pore_length=3.0,
-        pore_depth=3.0,
+        pore_length=1.0,
+        pore_depth=1.1,
         pore_width=pore_width.to_value("nm"),
-        n_sheets=3,
+        n_sheets=1,
         slit_pore_dim=2,
         x_bulk=0,
         solvent=spce_water,
@@ -63,18 +62,18 @@ def run_desorption(job):
     # Translate to centered at 0,0,0 and make box larger in z
     box_center = filled_pore.periodicity/2.0
     filled_pore.translate(-box_center)
-    filled_pore.periodicity[2] = 6.0
+    filled_pore.periodicity[2] = 2.0
 
     # Run simulation from inside job dir
     with job:
-        run_desorption(
+        run_nvt(
             filled_pore,
-            pore_width,
             temperature,
-            mu,
-            nsteps_nvt,
-            nsteps_gcmc,
-            seeds = [seed1, seed2]
+            nsteps_eq,
+            nsteps_prod,
+            seeds = [seed1, seed2],
+            vdw_cutoff=4.9 * u.angstrom,
+            charge_cutoff=4.9 * u.angstrom
         )
 
 

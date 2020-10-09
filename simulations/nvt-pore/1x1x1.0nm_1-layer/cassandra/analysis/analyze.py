@@ -20,13 +20,13 @@ def main():
         df = pd.DataFrame()
 
         # Create pore system
-        pore_width = 2.0 * u.nm
+        pore_width = 1.0 * u.nm
 
         filled_pore = mbuild.recipes.GraphenePoreSolvent(
-            pore_length=3.0,
-            pore_depth=3.0,
+            pore_length=1.0,
+            pore_depth=1.1,
             pore_width=pore_width.to_value("nm"),
-            n_sheets=3,
+            n_sheets=1,
             slit_pore_dim=2,
             x_bulk=0,
             solvent=spce_water,
@@ -35,7 +35,7 @@ def main():
         # Translate to centered at 0,0,0 and make box larger in z
         box_center = filled_pore.periodicity/2.0
         filled_pore.translate(-box_center)
-        filled_pore.periodicity[2] = 6.0
+        filled_pore.periodicity[2] = 2.0
 
         xy_area = filled_pore.periodicity[0] * filled_pore.periodicity[1]
         top = filled_pore.to_trajectory(residues=["RES", "SOL"])

@@ -6,20 +6,20 @@ import unyt as u
 def init_project():
 
     # Initialize project
-    project = signac.init_project("nvt-3x3x2nm_3-layer")
+    project = signac.init_project("nvt-1x1x1nm_1-layer")
 
     # Define temperature
     temperature = 298.0 * u.K
 
     # Define number of waters in the pore
-    nwater = 485
+    nwater = 24
 
-    # Run for 100 M steps
+    # Run for 500 M steps
     nsteps_eq = 5000000
-    nsteps_prod = 155000000
+    nsteps_prod = 505000000
 
     # For reproducibility
-    np.random.seed(10)
+    np.random.seed(1)
 
     for run in range(3):
         # Define the state point

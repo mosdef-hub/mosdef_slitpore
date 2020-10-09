@@ -6,22 +6,35 @@ import unyt as u
 def init_project():
 
     # Initialize project
-    project = signac.init_project("nvt-3x3x2nm_3-layer")
+    project = signac.init_project("bulk-water")
 
     # Define temperature
     temperature = 298.0 * u.K
 
-    # Define number of waters in the pore
-    nwater = 485
+    # Define chemical potentials
+    mus = [
+        -66 * u.kJ / u.mol,
+        -63 * u.kJ / u.mol,
+        -60 * u.kJ / u.mol,
+        -57 * u.kJ / u.mol,
+        -54 * u.kJ / u.mol,
+        -51 * u.kJ / u.mol,
+        -48 * u.kJ / u.mol,
+        -47 * u.kJ / u.mol,
+        -46 * u.kJ / u.mol,
+        -45 * u.kJ / u.mol,
+        -44 * u.kJ / u.mol,
+        -43 * u.kJ / u.mol,
+    ]
 
-    # Run for 100 M steps
-    nsteps_eq = 5000000
-    nsteps_prod = 155000000
+    # Run for 5 M steps
+    nsteps_eq = 1000000
+    nsteps_prod = 6000000
 
     # For reproducibility
-    np.random.seed(10)
+    np.random.seed(22)
 
-    for run in range(3):
+    for mu in mus:
         # Define the state point
         state_point = {
             "T": float(temperature.in_units(u.K).value),
@@ -29,8 +42,7 @@ def init_project():
                 "equil" : nsteps_eq,
                 "prod" : nsteps_prod,
             },
-            "run": run,
-            "nwater" : nwater,
+            "mu": mu.to_value("kJ/mol"),
             "seed1" : np.random.randint(10**8),
             "seed2" : np.random.randint(10**8),
         }

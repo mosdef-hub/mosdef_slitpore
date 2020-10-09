@@ -4,42 +4,49 @@ import unyt as u
 import mosdef_cassandra as mc
 import numpy as np
 
+
 from mosdef_slitpore.utils.utils import get_ff
+from mosdef_slitpore.utils.cassandra_helpers import spce_water
+from mosdef_slitpore.utils.cassandra_helpers import load_final_frame
 
-
-def run_adsorption(pore, temperature, mu, nsteps, pore_width=1.6 * u.nm):
+def run_adsorption(
+    empty_pore, pore_width, temperature, mu, nsteps, **custom_args,
+):
     """Run adsorption simulation at the specified temperature
     and chemical potential
 
     Parameters
     ----------
-    pore : mbuild.Compound
+    empty_pore : porebuilder.GraphenePore
         empty pore system to simulate
+    pore_width : u.unyt_quantity (length)
+        width of pore for restricted insertions
     temperature: u.unyt_quantity (temperature)
         desired temperature
     mu : u.unyt_quantity (energy)
         desired chemical potential
     nsteps : int
         number of MC steps in simulation
-    pore_width : opt, u.unyt_quantity (length)
-        width of pore for restricted insertions
+    custom_args : opt, additional keyword arguments
+        provide additional custom keyword arguments to MoSDeF Cassandra
+        and override the default values
 
     Returns
     -------
     None: runs simulation
     """
-    # Verify inputs
+
+    # Load foyer ff
+    ff = foyer.Forcefield(get_ff("pore-spce.xml"))
 
     # Apply ff
-    ff = foyer.Forcefield(get_ff("pore-spce.xml"))
-    typed_pore = ff.apply(pore)
+    typed_pore = ff.apply(empty_pore)
 
     # Create a water molecule with the spce geometry
-    water = spce_water()
-    typed_water = ff.apply(water)
+    typed_water = ff.apply(spce_water)
 
     # Create box and species list
-    box_list = [pore]
+    box_list = [empty_pore]
     species_list = [typed_pore, typed_water]
 
     # Specify mols at start of the simulation
@@ -55,16 +62,23 @@ def run_adsorption(pore, temperature, mu, nsteps, pore_width=1.6 * u.nm):
     moves.prob_insert = 0.25
     moves.prob_regrow = 0.0
 
+    # Specify the restricted insertion
+    restricted_type = [[None, "slitpore"]]
+    restricted_value = [[None, 0.5 * pore_width ]]
+    moves.add_restricted_insertions(
+        species_list, restricted_type, restricted_value
+    )
+
     # Set thermodynamic properties
     thermo_props = [
         "energy_total",
-        "pressure",
-        "volume",
+        "energy_intervdw",
+        "energy_interq",
         "nmols",
-        "mass_density",
     ]
 
-    custom_args = {
+    default_args = {
+        "run_name" : "gcmc",
         "cutoff_style": "cut",
         "charge_style": "ewald",
         "rcut_min": 0.5 * u.angstrom,
@@ -72,16 +86,11 @@ def run_adsorption(pore, temperature, mu, nsteps, pore_width=1.6 * u.nm):
         "charge_cutoff": 9.0 * u.angstrom,
         "properties": thermo_props,
         "angle_style": ["harmonic", "fixed"],
-        "run_name": "equil",
-        "coord_freq": 50000,
+        "coord_freq": 100000,
+        "prop_freq": 1000,
     }
 
-    # Specify the restricted insertion
-    restricted_type = [[None, "slitpore"]]
-    restricted_value = [[None, 0.5 * pore_width ]]
-    moves.add_restricted_insertions(
-        species_list, restricted_type, restricted_value
-    )
+    custom_args = { **default_args, **custom_args}
 
     mc.run(
         system=system,
@@ -95,49 +104,53 @@ def run_adsorption(pore, temperature, mu, nsteps, pore_width=1.6 * u.nm):
 
 
 def run_desorption(
-    empty_pore,
     filled_pore,
-    nwater,
+    pore_width,
     temperature,
     mu,
-    nsteps_eq,
-    nsteps_prod,
-    pore_width=1.6 * u.nm,
+    nsteps_nvt,
+    nsteps_gcmc,
+    **custom_args,
 ):
     """Run desorption simulation at the specified temperature
     and chemical potential
 
     Parameters
     ----------
-    empty_pore : mbuild.Compound
-        empty pore system to simulate
-    filled_pore : mbuild.Compound
+    filled_pore : porebuilder.GraphenePoreSolvent
         pore filled with water
-    nwater : int
-        number of waters in the pore
+    pore_width : u.unyt_quantity (length)
+        width of pore for restricted insertions
     temperature: u.unyt_quantity (temperature)
         desired temperature
     mu : u.unyt_quantity (energy)
         desired chemical potential
-    nsteps_eq : int
+    nsteps_nvt : int
         number of MC steps for NVT equilibration
-    nsteps_prod : int
+    nsteps_gcmc : int
         number of MC steps for GCMC simulation
-    pore_width : opt, u.unyt_quantity (length)
-        width of pore for restricted insertions
+    custom_args : opt, additional keyword arguments
+        provide additional custom keyword arguments to MoSDeF Cassandra
+        and override the default values
+
 
     Returns
     -------
     None: runs simulation
     """
-    # Verify inputs
-    # Apply ff
+
+    # Load foyer ff
     ff = foyer.Forcefield(get_ff("pore-spce.xml"))
+
+    # Extract just the pore and apply ff
+    empty_pore = filled_pore.children[0]
     typed_pore = ff.apply(empty_pore)
 
-    # Create a water molecule with the spce geometry
-    water = spce_water()
-    typed_water = ff.apply(water)
+    # Create a water molecule with the spce geometry and apply ff
+    typed_water = ff.apply(spce_water)
+
+    # Determine the number of waters in the pore
+    nwater = len([child for child in filled_pore.children])-1
 
     # Create box and species list
     box_list = [filled_pore]
@@ -158,13 +171,13 @@ def run_desorption(
     # Set thermodynamic properties
     thermo_props = [
         "energy_total",
-        "pressure",
-        "volume",
+        "energy_intervdw",
+        "energy_interq",
         "nmols",
-        "mass_density",
     ]
 
-    custom_args = {
+    default_args = {
+        "run_name" : "nvt",
         "cutoff_style": "cut",
         "charge_style": "ewald",
         "rcut_min": 0.5 * u.angstrom,
@@ -172,24 +185,24 @@ def run_desorption(
         "charge_cutoff": 9.0 * u.angstrom,
         "properties": thermo_props,
         "angle_style": ["harmonic", "fixed"],
-        "run_name": "equil",
-        "coord_freq": 50000,
+        "coord_freq": 100000,
+        "prop_freq": 1000,
     }
 
-    custom_args["run_name"] = "equil.nvt"
+    custom_args = { **default_args, **custom_args}
 
     # Run NVT equilibration
     mc.run(
         system=system,
         moveset=moves,
         run_type="equilibration",
-        run_length=nsteps_eq,
+        run_length=nsteps_nvt,
         temperature=temperature,
         **custom_args,
     )
 
     # Create MC system
-    equilibrated_box = load_final_frame("equil.nvt.out.xyz")
+    equilibrated_box = load_final_frame("nvt.out.xyz")
     box_list = [equilibrated_box]
     system = mc.System(box_list, species_list, mols_in_boxes=mols_in_boxes)
     moves = mc.MoveSet("gcmc", species_list)
@@ -208,58 +221,52 @@ def run_desorption(
     )
 
     # Run GCMC
-    custom_args["run_name"] = "equil.gcmc"
+    custom_args["run_name"] = "gcmc"
     mc.run(
         system=system,
         moveset=moves,
         run_type="equilibration",
-        run_length=nsteps_prod,
+        run_length=nsteps_gcmc,
         temperature=temperature,
         chemical_potentials=["none", mu],
         **custom_args,
     )
 
 
-def run_nvt(
-    empty_pore,
-    filled_pore,
-    nwater,
-    temperature,
-    nsteps_eq,
-    nsteps_prod,
-    pore_width=1.6 * u.nm,
-):
-    """Run nvt simulation at the specified temperature
+def run_nvt(filled_pore, temperature, nsteps_eq, nsteps_prod, **custom_args):
+    """Run an NVT MC simulation at the specified temperature
 
     Parameters
     ----------
-    empty_pore : mbuild.Compound
-        empty pore system to simulate
-    filled_pore : mbuild.Compound
+    filled_pore : porebuilder.GraphenePoreSolvent
         pore filled with water
-    nwater : int
-        number of waters in the pore
     temperature: u.unyt_quantity (temperature)
         desired temperature
     nsteps_eq : int
         number of MC steps for NVT equilibration
     nsteps_prod : int
         number of MC steps for GCMC simulation
-    pore_width : opt, u.unyt_quantity (length)
-        width of pore for restricted insertions
+    custom_args : opt, additional keyword arguments
+        provide additional custom keyword arguments to MoSDeF Cassandra
+        and override the default values
 
     Returns
     -------
     None: runs simulation
     """
-    # Verify inputs
-    # Apply ff
+
+    # Load foyer ff
     ff = foyer.Forcefield(get_ff("pore-spce.xml"))
+
+    # Extract just the pore and apply ff
+    empty_pore = filled_pore.children[0]
     typed_pore = ff.apply(empty_pore)
 
-    # Create a water molecule with the spce geometry
-    water = spce_water()
-    typed_water = ff.apply(water)
+    # Create a water molecule with the spce geometry and apply ff
+    typed_water = ff.apply(spce_water)
+
+    # Determine the number of waters in the pore
+    nwater = len([child for child in filled_pore.children])-1
 
     # Create box and species list
     box_list = [filled_pore]
@@ -280,9 +287,12 @@ def run_nvt(
     # Set thermodynamic properties
     thermo_props = [
         "energy_total",
+        "energy_intervdw",
+        "energy_interq",
     ]
 
-    custom_args = {
+    default_args = {
+        "run_name": "equil.nvt",
         "cutoff_style": "cut",
         "charge_style": "ewald",
         "rcut_min": 0.5 * u.angstrom,
@@ -290,12 +300,11 @@ def run_nvt(
         "charge_cutoff": 9.0 * u.angstrom,
         "properties": thermo_props,
         "angle_style": ["harmonic", "fixed"],
-        "run_name": "equil",
         "coord_freq": 10000,
         "prop_freq": 1000,
     }
 
-    custom_args["run_name"] = "equil.nvt"
+    custom_args = { **default_args, **custom_args}
 
     # Run NVT equilibration
     mc.run(
@@ -319,93 +328,3 @@ def run_nvt(
         **custom_args,
     )
 
-
-def spce_water():
-    """Generate a single water molecule with the SPC/E geometry
-
-    Paper DOI: 10.1021/j100308a038
-
-    Arguments
-    ---------
-    None
-
-    Returns
-    -------
-    mbuild.Compound
-    """
-    OH_bl = 0.1  # nm
-    HOH_angle = 109.47  # degrees
-    water = mbuild.Compound(name="water")
-    O = mbuild.Compound(name="O", pos=[0.0, 0.0, 0.0])
-    H1 = mbuild.Compound(name="H", pos=[OH_bl, 0.0, 0.0])
-    H2 = mbuild.Compound(
-        name="H",
-        pos=[
-            OH_bl * np.cos(np.radians(HOH_angle)),
-            OH_bl * np.sin(np.radians(HOH_angle)),
-            0.0,
-        ],
-    )
-    water.add([O, H1, H2])
-    water.add_bond([O, H1])
-    water.add_bond([O, H2])
-
-    return water
-
-
-def load_final_frame(fname):
-    """Return the final frame of a Cassandra .xyz file as an mbuild.Compound
-
-    Assumes there is a .H file with the same name. E.g., if the .xyz file
-    is 'equil.out.xyz', there should also be an 'equil.out.H' containing
-    the box information.
-
-    Arguments
-    ---------
-    fname : str
-        path to of the xyz file
-    """
-    if not isinstance(fname, str):
-        raise TypeError("'fname' must be a string")
-    if fname[-4:] == ".xyz":
-        fname = fname[:-4]
-
-    data = []
-    with open(fname + ".xyz") as f:
-        for line in f:
-            data.append(line.strip().split())
-
-    for iline, line in enumerate(data):
-        if len(line) > 0:
-            if line[0] == "MC_STEP:":
-                natom_line = iline - 1
-
-    final_frame = data[natom_line + 2 :]
-    natoms = int(data[natom_line][0])
-    with open(fname + "-final.xyz", "w") as f:
-        f.write(f"{natoms}\nAtoms\n")
-        for coord in final_frame:
-            f.write(
-                "{}\t{}\t{}\t{}\n".format(
-                    coord[0], coord[1], coord[2], coord[3],
-                )
-            )
-    data = []
-    with open(fname + ".H") as f:
-        for line in f:
-            data.append(line.strip().split())
-
-    nspecies = int(data[-1][0])
-    box_matrix = np.asarray(
-        data[-(nspecies + 5) : -(nspecies + 2)], dtype=np.float32
-    )
-    assert box_matrix.shape == (3, 3)
-    if np.count_nonzero(box_matrix - np.diag(np.diagonal(box_matrix))) > 0:
-        raise ValueError("Only orthogonal boxes are currently supported")
-
-    # If all is well load in the final frame
-    frame = mbuild.load(fname + "-final.xyz")
-    # mbuild.Compounds use nanometers!
-    frame.periodicity = np.diagonal(box_matrix / 10.0)
-
-    return frame

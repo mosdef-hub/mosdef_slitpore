@@ -1,7 +1,11 @@
 import flow
-from flow import FlowProject, directives
 import templates.ndcrc
 import warnings
+
+
+from flow import FlowProject, directives
+from mosdef_slitpore.utils.cassandra_helpers import check_simulation
+
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -11,23 +15,13 @@ class Project(FlowProject):
 
 
 @Project.label
-def simulation_complete(job):
-    "Verify that the simulation has completed"
-
-    import numpy as np
-
-    try:
-        thermo_data = np.genfromtxt(job.fn("equil.out.prp"), skip_header=3)
-        completed = int(thermo_data[-1][0]) == job.sp.nsteps
-    except:
-        completed = False
-        pass
-
-    return completed
+def gcmc_complete(job):
+    """Check if the GCMC simulation has completed"""
+    return check_simulation(job.fn("gcmc.out.prp"), job.sp.nsteps_gcmc)
 
 
 @Project.operation
-@Project.post(simulation_complete)
+@Project.post(gcmc_complete)
 @directives(omp_num_threads=4)
 def run_adsorption(job):
     """Run adsorption simulation for the given statepoint"""
@@ -35,28 +29,40 @@ def run_adsorption(job):
     import mbuild
     import unyt as u
 
-    from mosdef_slitpore.utils.cassandra import run_adsorption
+    from mosdef_slitpore.utils.cassandra_runners import run_adsorption
+
+    pore_width = 1.6 * u.nm
 
     temperature = job.sp.T * u.K
     mu = job.sp.mu * u.kJ / u.mol
-    nsteps = job.sp.nsteps
+    nsteps_gcmc = job.sp.nsteps_gcmc
+    seed1 = job.sp.seed1
+    seed2 = job.sp.seed2
 
-    # Create graphene system
-    pore = mbuild.recipes.GraphenePore(
-        pore_width=1.6,
+    # Create empty pore system
+    empty_pore = mbuild.recipes.GraphenePore(
         pore_length=3.0,
         pore_depth=3.0,
+        pore_width=pore_width.to_value("nm"),
         n_sheets=3,
         slit_pore_dim=2,
     )
 
     # Translate to centered at 0,0,0 and make box larger in z
-    pore.translate(-pore.center)
-    pore.periodicity[2] = 6.0
+    box_center = empty_pore.periodicity/2.0
+    empty_pore.translate(-box_center)
+    empty_pore.periodicity[2] = 6.0
 
     # Run simulation from inside job dir
     with job:
-        run_adsorption(pore, temperature, mu, nsteps)
+        run_adsorption(
+            empty_pore,
+            pore_width,
+            temperature,
+            mu,
+            nsteps_gcmc,
+            seeds = [seed1, seed2]
+        )
 
 
 if __name__ == "__main__":
