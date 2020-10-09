@@ -110,8 +110,8 @@ def main():
 
     ax.tick_params(axis="both", which="both", direction="in", labelsize=16, pad=6)
     ax.xaxis.set_minor_locator(MultipleLocator(0.05))
-    ax.yaxis.set_major_locator(MultipleLocator(20))
-    ax.yaxis.set_minor_locator(MultipleLocator(10))
+    ax.yaxis.set_major_locator(MultipleLocator(40))
+    ax.yaxis.set_minor_locator(MultipleLocator(20))
     ax.xaxis.set_ticks_position("both")
     ax.yaxis.set_ticks_position("both")
 
