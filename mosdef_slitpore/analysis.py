@@ -249,6 +249,6 @@ def compute_angles(
             cos_angles < bin_center + 0.5 * bin_width
         )
         bin_centers.append(bin_center)
-        angles.append(mask.sum())
+        angles.append(mask.sum()/len(cos_angles))
 
     return bin_centers, angles
