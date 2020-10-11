@@ -222,8 +222,8 @@ def compute_angles(
 
     # Discard molecules not within 0.1 nm of center of pore
     distance_mask = np.logical_and(
-        traj_ow.xyz[:,:,2] > pore_center - distance_criteria,
-        traj_ow.xyz[:,:,2] < pore_center + distance_criteria
+        traj_ow.xyz[:,:,surface_normal_dim] > pore_center - distance_criteria,
+        traj_ow.xyz[:,:,surface_normal_dim] < pore_center + distance_criteria
     )
 
     # Compute angles between surface normal ([0,0,1]) and h-o-h bisector
