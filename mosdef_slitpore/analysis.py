@@ -181,3 +181,74 @@ def compute_mol_per_area(traj, area,
         new_bins = [(bi-shift_value) for bi in new_bins]
     
     return (areas, new_bins)
+
+def compute_angles(
+    traj,
+    surface_normal_dim=2,
+    pore_center = 0.0,
+    max_distance = 1.0,
+    bin_width=0.01,
+    distance_criteria=0.05
+    ):
+    """Compute the "s" order parameter
+
+    Parameters
+    ----------
+    traj : mdtraj.Trajectory,
+        trajectory to analyze
+    surface_normal_dim : enum (0,1,2), optional, default = 2
+        direction normal to the surface (x:0, y:1, z:2)
+    pore_center : float, optional, default = 0.0
+        coordinate of the pore center along surface_normal_dim
+    max_distance : float, optional, default = 1.0
+        max distance to consider from the center of the pore
+    bin_width : float, optional, default = 0.01
+        width of the bin for computing s
+
+    Returns
+    -------
+    bin_centers : np.ndarray
+        the bin centers, shifted so that pore_center is at 0.0
+    s_values : np.ndarray
+        the value of s for each bin
+    """
+    # Make molecules whole first
+    traj.make_molecules_whole(inplace=True)
+    # Select ow and hw
+    water_o = traj.top.select("water and name O")
+    water_h = traj.top.select("water and name H")
+    traj_ow = traj.atom_slice(water_o)
+    traj_hw = traj.atom_slice(water_h)
+
+    # Discard molecules not within 0.1 nm of center of pore
+    distance_mask = np.logical_and(
+        traj_ow.xyz[:,:,2] > pore_center - distance_criteria,
+        traj_ow.xyz[:,:,2] < pore_center + distance_criteria
+    )
+
+    # Compute angles between surface normal ([0,0,1]) and h-o-h bisector
+    hw_midpoints = traj_hw.xyz.reshape(traj_hw.n_frames,-1,2,3).mean(axis=2)
+    vectors = (traj_ow.xyz - hw_midpoints)
+    normal = np.full(np.shape(traj_ow.xyz), [0, 1, 0])
+    # Use distance mask
+    vectors = vectors[distance_mask]
+    normal = normal[distance_mask]
+    vectors = np.array([v1 / np.linalg.norm(v1) for v1 in vectors])
+    normal = np.array([v1 / np.linalg.norm(v1) for v1 in normal])
+    cos_angles = list()
+    for i in range(len(vectors)):
+        angle = np.arccos(np.dot(vectors[i], normal[i])) * (180/np.pi)
+        cos_angles.append(angle)
+
+    # Compute distances -- center of pore already @ 0,0; use OW position
+    bin_centers = []
+    angles = []
+    for bin_center in np.arange(0, 180, bin_width):
+        mask = np.logical_and(
+            cos_angles > bin_center - 0.5 * bin_width,
+            cos_angles < bin_center + 0.5 * bin_width
+        )
+        bin_centers.append(bin_center)
+        angles.append(mask.sum())
+
+    return bin_centers, angles
