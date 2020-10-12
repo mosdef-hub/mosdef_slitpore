@@ -6,7 +6,8 @@ def compute_density(
     surface_normal_dim=2,
     pore_center=0.0,
     max_distance = 1.0,
-    bin_width = 0.01
+    bin_width = 0.01,
+    symmetrize=False
     ):
     """Compute the density of traj in atoms/nm^3
 
@@ -24,7 +25,8 @@ def compute_density(
         max distance to consider from the center of the pore
     bin_width : float, optional, default = 0.01
         width of the bin for computing s
-
+    symmetrize : bool, optional, default = False
+        if binning should be done in abs(z) instead of z
     Returns
     -------
     bin_centers : np.ndarray
@@ -32,7 +34,10 @@ def compute_density(
     density : np.ndarray
         the density (atoms / nm^3) in each bin
     """
-    distances = traj.xyz[:,:,surface_normal_dim] - pore_center
+    if symmetrize:
+        distances = abs(traj.xyz[:,:,surface_normal_dim] - pore_center)
+    else:
+        distances = traj.xyz[:,:,surface_normal_dim] - pore_center
     bin_centers = []
     density = []
     for bin_center in np.arange(-max_distance, max_distance, bin_width):
@@ -41,7 +46,10 @@ def compute_density(
             distances < bin_center + 0.5 * bin_width
         )
         bin_centers.append(bin_center)
-        density.append(mask.sum() / (area * bin_width * traj.n_frames))
+        if symmetrize:
+            density.append(mask.sum() / (area *2* bin_width * traj.n_frames))
+        else:
+            density.append(mask.sum() / (area * bin_width * traj.n_frames))
 
     return bin_centers, density
 
@@ -50,7 +58,8 @@ def compute_s(
     surface_normal_dim=2,
     pore_center = 0.0,
     max_distance = 1.0,
-    bin_width=0.01
+    bin_width=0.01,
+    symmetrize=False
     ):
     """Compute the "s" order parameter
 
@@ -66,7 +75,8 @@ def compute_s(
         max distance to consider from the center of the pore
     bin_width : float, optional, default = 0.01
         width of the bin for computing s
-
+    symmetrize : bool, optional, default = False
+        if binning should be done in abs(z) instead of z
     Returns
     -------
     bin_centers : np.ndarray
@@ -89,7 +99,10 @@ def compute_s(
     cos_angles = vectors[:,:,surface_normal_dim]
 
     # Compute distances -- center of pore already @ 0,0; use OW position
-    distances = traj_ow.xyz[:,:,surface_normal_dim] - pore_center
+    if symmetrize:
+        distances = abs(traj_ow.xyz[:,:,surface_normal_dim] - pore_center)
+    else:
+        distances = traj_ow.xyz[:,:,surface_normal_dim] - pore_center
     bin_centers = []
     s_values = []
     for bin_center in np.arange(-max_distance, max_distance, bin_width):
