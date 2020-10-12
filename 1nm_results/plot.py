@@ -19,6 +19,17 @@ def get_color(engine):
 
     return color_dict[engine]
 
+def get_ls(engine):
+    ls_dict = {
+            'Cassandra': '-',
+            'GOMC': '--',
+            'GROMACS': '-.',
+            'LAMMPS': ':',
+            'CP2K': '--',
+            }
+
+    return ls_dict[engine]
+
 def main():
 
     #seaborn.set_palette("dark")
@@ -51,7 +62,8 @@ def main():
         label="Cassandra",
         linewidth=3,
         alpha=0.85,
-        color=get_color("Cassandra")
+        color=get_color("Cassandra"),
+        linestyle=get_ls("Cassandra"),
     )
     ax.fill_between(
         all_cass["z-loc_nm"],
@@ -63,7 +75,7 @@ def main():
     ax.plot(
         ow_gomc["distance_nm"],
         ow_gomc["Avg_No_density_per_nm_sq"],
-        '--',
+        linestyle=get_ls("GOMC"),
         dashes=(4,3),
         label="GOMC",
         linewidth=3,
@@ -80,8 +92,7 @@ def main():
     ax.plot(
         ow_gmx[:,0],
         ow_gmx[:,1],
-        ':',
-        dashes=(1,2),
+        linestyle=get_ls("GROMACS"),
         label="GROMACS",
         linewidth=3,
         alpha=0.85,
@@ -97,7 +108,7 @@ def main():
     ax.plot(
         ow_lmp[:,0],
         ow_lmp[:,1],
-        ':',
+        linestyle=get_ls("LAMMPS"),
         dashes=(1,2),
         label="LAMMPS",
         linewidth=3,
@@ -114,8 +125,8 @@ def main():
     ax.plot(
         ow_cp2k[:,0],
         ow_cp2k[:,1],
-        ':',
-        dashes=(1,2),
+        linestyle=get_ls("CP2K"),
+        dashes=(1,1),
         label="CP2K",
         linewidth=3,
         alpha=0.85,
@@ -150,6 +161,7 @@ def main():
     ax.plot(
         all_cass["z-loc_nm"],
         all_cass["density-hw_nm^-3_mean"],
+        linestyle=get_ls("Cassandra"),
         linewidth=3,
         alpha=0.85,
         label="Cassandra",
@@ -165,7 +177,7 @@ def main():
     ax.plot(
         hw_gomc["distance_nm"],
         hw_gomc["Avg_No_density_per_nm_sq"],
-        '--',
+        linestyle=get_ls("GOMC"),
         dashes=(4,3),
         linewidth=3,
         alpha=0.85,
@@ -182,8 +194,7 @@ def main():
     ax.plot(
         hw_gmx[:,0],
         hw_gmx[:,1],
-        ':',
-        dashes=(1,2),
+        linestyle=get_ls("GROMACS"),
         linewidth=3,
         alpha=0.85,
         label="GROMACS",
@@ -199,7 +210,7 @@ def main():
     ax.plot(
         hw_lmp[:,0],
         hw_lmp[:,1],
-        ':',
+        linestyle=get_ls("LAMMPS"),
         dashes=(1,2),
         linewidth=3,
         alpha=0.85,
@@ -216,8 +227,8 @@ def main():
     ax.plot(
         hw_cp2k[:,0],
         hw_cp2k[:,1],
-        ':',
-        dashes=(1,2),
+        linestyle=get_ls("CP2K"),
+        dashes=(1,1),
         label="CP2K",
         linewidth=3,
         alpha=0.85,
@@ -243,8 +254,6 @@ def main():
     ax.xaxis.set_ticks_position("both")
     ax.yaxis.set_ticks_position("both")
 
-    #ax.legend(loc=(0.75,0.80), fontsize=12)
-
     # Plot S
     ax = axes[2]
     ax.text(0.05, 0.90, 'c)', transform=ax.transAxes,
@@ -252,6 +261,7 @@ def main():
     ax.plot(
         all_cass["z-loc_nm"],
         all_cass["s_value_mean"],
+        linestyle=get_ls("Cassandra"),
         label="Cassandra",
         linewidth=3,
         alpha=0.9,
@@ -266,7 +276,7 @@ def main():
     ax.plot(
         s_gomc["distance_nm"],
         s_gomc["Avg_order_param"],
-        '--',
+        linestyle=get_ls("GOMC"),
         dashes=(4,3),
         label="GOMC",
         linewidth=3,
@@ -283,8 +293,7 @@ def main():
     ax.plot(
         s_gmx[:,0],
         s_gmx[:,1],
-        ':',
-        dashes=(1,2),
+        linestyle=get_ls("GROMACS"),
         label="GROMACS",
         linewidth=3,
         alpha=0.9,
@@ -299,7 +308,7 @@ def main():
     ax.plot(
         s_lmp[:,0],
         s_lmp[:,1],
-        ':',
+        linestyle=get_ls("LAMMPS"),
         dashes=(1,2),
         label="LAMMPS",
         linewidth=3,
@@ -315,8 +324,8 @@ def main():
     ax.plot(
         s_cp2k[:,0],
         s_cp2k[:,1],
-        ':',
-        dashes=(1,2),
+        linestyle=get_ls("CP2K"),
+        dashes=(1,1),
         label="CP2K",
         linewidth=3,
         alpha=0.9,

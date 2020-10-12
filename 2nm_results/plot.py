@@ -18,6 +18,16 @@ def get_color(engine):
 
     return color_dict[engine]
 
+def get_ls(engine):
+    ls_dict = {
+            'Cassandra': '-',
+            'GOMC': '--',
+            'GROMACS': '-.',
+            'LAMMPS': ':',
+            }
+
+    return ls_dict[engine]
+
 def main():
 
     #seaborn.set_palette("dark")
@@ -47,6 +57,7 @@ def main():
         linewidth=3,
         alpha=0.85,
         color=get_color("Cassandra"),
+        linestyle=get_ls("Cassandra"),
     )
     ax.fill_between(
         all_cass["z-loc_nm"],
@@ -57,7 +68,7 @@ def main():
     ax.plot(
         ow_gomc["distance_nm"],
         ow_gomc["Avg_No_density_per_nm_sq"],
-        '--',
+        linestyle=get_ls("GOMC"),
         dashes=(4,3),
         label="GOMC",
         linewidth=3,
@@ -73,8 +84,7 @@ def main():
     ax.plot(
         ow_gmx[:,0],
         ow_gmx[:,1],
-        ':',
-        dashes=(1,2),
+        linestyle=get_ls("GROMACS"),
         label="GROMACS",
         linewidth=3,
         alpha=0.85,
@@ -89,7 +99,7 @@ def main():
     ax.plot(
         ow_lmp[:,0],
         ow_lmp[:,1],
-        ':',
+        linestyle=get_ls("LAMMPS"),
         dashes=(1,2),
         label="LAMMPS",
         linewidth=3,
@@ -125,6 +135,7 @@ def main():
         linewidth=3,
         alpha=0.85,
         color=get_color("Cassandra"),
+        linestyle=get_ls("Cassandra"),
     )
     ax.fill_between(
         all_cass["z-loc_nm"],
@@ -135,7 +146,7 @@ def main():
     ax.plot(
         hw_gomc["distance_nm"],
         hw_gomc["Avg_No_density_per_nm_sq"],
-        '--',
+        linestyle=get_ls("GOMC"),
         dashes=(4,3),
         linewidth=3,
         alpha=0.85,
@@ -150,8 +161,7 @@ def main():
     ax.plot(
         hw_gmx[:,0],
         hw_gmx[:,1],
-        ':',
-        dashes=(1,2),
+        linestyle=get_ls("GROMACS"),
         linewidth=3,
         alpha=0.85,
         color=get_color("GROMACS"),
@@ -165,7 +175,7 @@ def main():
     ax.plot(
         hw_lmp[:,0],
         hw_lmp[:,1],
-        ':',
+        linestyle=get_ls("LAMMPS"),
         dashes=(1,2),
         linewidth=3,
         alpha=0.85,
@@ -203,6 +213,7 @@ def main():
         linewidth=3,
         alpha=0.9,
         color=get_color("Cassandra"),
+        linestyle=get_ls("Cassandra"),
     )
     ax.fill_between(
         all_cass["z-loc_nm"],
@@ -213,7 +224,7 @@ def main():
     ax.plot(
         s_gomc["distance_nm"],
         s_gomc["Avg_order_param"],
-        '--',
+        linestyle=get_ls("GOMC"),
         dashes=(4,3),
         label="GOMC",
         linewidth=3,
@@ -229,8 +240,7 @@ def main():
     ax.plot(
         s_gmx[:,0],
         s_gmx[:,1],
-        ':',
-        dashes=(1,2),
+        linestyle=get_ls("GROMACS"),
         label="GROMACS",
         linewidth=3,
         alpha=0.9,
@@ -245,7 +255,7 @@ def main():
     ax.plot(
         s_lmp[:,0],
         s_lmp[:,1],
-        ':',
+        linestyle=get_ls("LAMMPS"),
         dashes=(1,2),
         label="LAMMPS",
         linewidth=3,
@@ -257,6 +267,7 @@ def main():
         s_lmp[:,1] - s_lmp[:,2],
         s_lmp[:,1] + s_lmp[:,2],
         alpha=0.3,
+        color=get_color("LAMMPS"),
     )
 
     ax.set_xlim(-0.75, 0.75)
