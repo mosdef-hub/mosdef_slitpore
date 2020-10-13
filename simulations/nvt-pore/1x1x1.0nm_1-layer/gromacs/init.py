@@ -14,10 +14,15 @@ def init_project():
     nwaters = [1, 23, 24]
 
     for nwater in nwaters:
+        if nwater == 1:
+            nsteps = 100000000
+        else:
+            nsteps = 50000000
         # Define the state point
         state_point = {
             "T": float(temperature.in_units(u.K).value),
             "nwater": nwater,
+            "nsteps": nsteps,
         }
 
         job = project.open_job(state_point)
