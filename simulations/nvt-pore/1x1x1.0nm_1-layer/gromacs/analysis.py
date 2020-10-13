@@ -107,6 +107,6 @@ def area(job):
         plt.savefig('cumulative_area.pdf')
 
 if __name__ == '__main__':
-    for job in project.find_jobs({"nwater": 24}):
+    for job in project.find_jobs({"nwater": 1}):
         number_density(job)
         s_order(job)
