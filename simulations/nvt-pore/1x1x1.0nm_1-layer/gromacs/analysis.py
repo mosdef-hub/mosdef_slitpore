@@ -14,7 +14,7 @@ def number_density(job):
     box_range = [0.167, 1.167]
     pore_center = (box_range[1] - box_range[0]) / 2 + box_range[0]
     if job.sp.nwater == 1:
-        symmetrize = True
+        symmetrize = False
     else:
         symmetrize = False
     o_densities = list()
