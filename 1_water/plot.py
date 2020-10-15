@@ -165,6 +165,7 @@ def main():
         s_gmx[:,0],
         s_gmx[:,1] - s_gmx[:,2],
         s_gmx[:,1] + s_gmx[:,2],
+        color=get_color("GROMACS"),
         alpha=0.3,
     )
     ax.plot(
