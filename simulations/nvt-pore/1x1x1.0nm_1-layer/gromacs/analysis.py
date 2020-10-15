@@ -13,10 +13,10 @@ def number_density(job):
     dim = 1
     box_range = [0.167, 1.167]
     pore_center = (box_range[1] - box_range[0]) / 2 + box_range[0]
-    if job.sp.nwater == 1:
-        symmetrize = True
-    else:
-        symmetrize = False
+    #if job.sp.nwater == 1:
+    #    symmetrize = True
+    #else:
+    symmetrize = False
     o_densities = list()
     h_densities = list()
     fig, ax = plt.subplots()
