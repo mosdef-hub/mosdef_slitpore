@@ -93,11 +93,15 @@ def run_em(job):
 @Project.post(nvt_complete)
 @flow.cmd
 def run_nvt(job):
-    return _gromacs_str("nvt.mdp", "nvt", "em")
+    if job.sp.nsteps == 100000000:
+        mdp = "nvt_1_water.mdp"
+    else:
+        mdp = "nvt.mdp"
+    return _gromacs_str(mdp, "nvt", "em")
 
 def _gromacs_str(mdp, op_name, gro_name):
     """Helper function, returns grompp command string for operation """
-    mdp = signac.get_project().fn("files/{}.mdp".format(op_name))
+    mdp = signac.get_project().fn("files/{}".format(mdp))
     cmd = "gmx grompp -f {mdp} -c {gro_name}.gro -p init.top -o {op_name}.tpr --maxwarn 1 && gmx mdrun -deffnm {op_name} -ntmpi 1"
     return workspace_command(
         cmd.format(mdp=mdp, op_name=op_name, gro_name=gro_name)
