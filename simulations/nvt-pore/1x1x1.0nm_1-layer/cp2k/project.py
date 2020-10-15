@@ -5,7 +5,7 @@ import shutil
 import os
 from mosdef_slitpore.utils.utils import get_ff
 from mosdef_slitpore.utils.gromacs import write_ndx, add_settles
-from mosdef_slitpore.utils.cassandra import spce_water
+from mosdef_slitpore.utils.cassandra_helpers import create_spce_water
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -60,7 +60,7 @@ def md_files(job):
     import mbuild as mb
     import foyer
 
-    water = spce_water()
+    water = create_spce_water()
     water.name = "SOL"
     pore = mb.recipes.GraphenePoreSolvent(
         pore_width=1.0,

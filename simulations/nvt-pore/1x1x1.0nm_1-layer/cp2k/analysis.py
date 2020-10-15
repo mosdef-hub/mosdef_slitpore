@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import signac
 import shutil
 from mosdef_slitpore.analysis import compute_density, compute_s
+from scipy import stats
 
 project = signac.get_project()
 
@@ -67,14 +68,14 @@ def number_density(job):
             project.root_directory()
             + "/data/{}/o_density.txt".format(str(job.sp.nwater) + "water_data"),
             np.transpose(np.vstack([bins, o_mean, o_std])),
-            header = "Bins\tDensity_mean\tDensity_std",
+            header="Bins\tDensity_mean\tDensity_std",
         )
 
         np.savetxt(
             project.root_directory()
             + "/data/{}/h_density.txt".format(str(job.sp.nwater) + "water_data"),
             np.transpose(np.vstack([bins, h_mean, h_std])),
-            header = "Bins\tDensity_mean\tDensity_std",
+            header="Bins\tDensity_mean\tDensity_std",
         )
         plt.savefig(
             project.root_directory()
@@ -93,15 +94,15 @@ def s_order(job):
 
     for trj in md.iterload(
         os.path.join(job.ws, "carbon_water-pos-1.xyz"),
-        top = os.path.join(job.ws, "init.mol2"),
-        chunk = 5000,
-        skip = 6000,
+        top=os.path.join(job.ws, "init.mol2"),
+        chunk=5000,
+        skip=6000,
     ):
         trj = md.Trajectory(
             trj.xyz,
             trj.top,
-            unitcell_lengths = np.tile([0.9824, 2.0000, 1.0635], (trj.n_frames, 1)),
-            unitcell_angles = np.tile([90.0, 90.0, 90.0], (trj.n_frames, 1)),
+            unitcell_lengths=np.tile([0.9824, 2.0000, 1.0635], (trj.n_frames, 1)),
+            unitcell_angles=np.tile([90.0, 90.0, 90.0], (trj.n_frames, 1)),
         )
 
         bins, s_values = compute_s(trj, dim, pore_center=pore_center)
@@ -109,6 +110,7 @@ def s_order(job):
 
     s_mean = np.mean(s_list, axis=0)
     s_std = np.std(s_list, axis=0)
+    s_stdem = stats.sem(s_list, axis=0)
 
     plt.plot(bins, s_mean)
     plt.fill_between(bins, s_mean + s_std, s_mean - s_std, alpha=0.2)
@@ -124,8 +126,8 @@ def s_order(job):
         np.savetxt(
             project.root_directory()
             + "/data/{}/s_order.txt".format(str(job.sp.nwater) + "water_data"),
-            np.transpose(np.vstack([bins, s_mean, s_std])),
-            header = "Bins\tS_mean\tS_std",
+            np.transpose(np.vstack([bins, s_mean, s_stdem, s_std])),
+            header="Bins\tS_mean\tS_stdem\tS_std",
         )
 
 
