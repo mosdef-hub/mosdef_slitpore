@@ -131,7 +131,7 @@ def main():
     ax.set_xlim(-0.01, 0.5)
     ax.set_ylim(-2, 25)
     ax.set_xlabel(r"$\mathregular{\vert z \vert, nm}$", fontsize=22, labelpad=15)
-    ax.set_ylabel(r"$\mathregular{\rho(\vert z \vert), nm^{-3}}$", fontsize=22, labelpad=15)
+    ax.set_ylabel(r"$\mathregular{\rho(z), nm^{-3}}$", fontsize=22, labelpad=15)
 
     ax.tick_params(axis="both", which="both", direction="in", labelsize=16, pad=6)
     ax.xaxis.set_minor_locator(MultipleLocator(0.05))
@@ -161,7 +161,7 @@ def main():
         alpha=0.3,
         color=get_color("GROMACS")
     )
-    rect = [0.7, 0.7, 0.4, 0.4]
+    rect = [0.69, 0.7, 0.4, 0.4]
     ax2 = add_subplot_axes(ax, rect)
     ax2.plot(
         hw_gmx[:,0],
@@ -252,7 +252,7 @@ def main():
         color=get_color("CP2K")
     )
 
-    ax.set_xlim(0.0, 0.5)
+    ax.set_xlim(0.0, 0.25)
     ax.set_ylim(-0.5, 0.5)
     ax.set_xlabel(r"$\mathregular{\vert z \vert, nm}$", fontsize=22, labelpad=15)
     #ax.set_ylabel(r"$\mathregular{\rho(\vert z \vert), nm^{-3}}$", fontsize=22, labelpad=15)
