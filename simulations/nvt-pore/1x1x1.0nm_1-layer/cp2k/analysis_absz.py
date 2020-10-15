@@ -11,14 +11,14 @@ project = signac.get_project()
 
 
 def create_data_folder():
-    data_path = "data"
+    data_path = "data_absz"
     if os.path.exists(data_path):
         shutil.rmtree(data_path)
     os.makedirs(data_path)
 
 
 def create_individual_data_folder(job):
-    os.chdir("data")
+    os.chdir("data_absz")
     os.makedirs(str(job.sp.nwater) + "water_data")
     os.chdir("..")
 
@@ -42,7 +42,12 @@ def number_density(job):
 
         for water_trj in (water_o, water_h):
             bins, density = compute_density(
-                water_trj, area, dim, pore_center=pore_center, bin_width=0.01
+                water_trj,
+                area,
+                dim,
+                pore_center=pore_center,
+                bin_width=0.01,
+                symmetrize=True,
             )
             label_name = list(set([i.name for i in water_trj.topology.atoms]))
             if label_name[0] == "O":
@@ -66,20 +71,22 @@ def number_density(job):
     with job:
         np.savetxt(
             project.root_directory()
-            + "/data/{}/o_density.txt".format(str(job.sp.nwater) + "water_data"),
+            + "/data_absz/{}/o_density.txt".format(str(job.sp.nwater) + "water_data"),
             np.transpose(np.vstack([bins, o_mean, o_std])),
             header="Bins\tDensity_mean\tDensity_std",
         )
 
         np.savetxt(
             project.root_directory()
-            + "/data/{}/h_density.txt".format(str(job.sp.nwater) + "water_data"),
+            + "/data_absz/{}/h_density.txt".format(str(job.sp.nwater) + "water_data"),
             np.transpose(np.vstack([bins, h_mean, h_std])),
             header="Bins\tDensity_mean\tDensity_std",
         )
         plt.savefig(
             project.root_directory()
-            + "/data/{}/numberdensity.pdf".format(str(job.sp.nwater) + "water_data")
+            + "/data_absz/{}/numberdensity.pdf".format(
+                str(job.sp.nwater) + "water_data"
+            )
         )
 
 
@@ -105,7 +112,7 @@ def s_order(job):
             unitcell_angles=np.tile([90.0, 90.0, 90.0], (trj.n_frames, 1)),
         )
 
-        bins, s_values = compute_s(trj, dim, pore_center=pore_center)
+        bins, s_values = compute_s(trj, dim, pore_center=pore_center, symmetrize=True)
         s_list.append(s_values)
 
     s_mean = np.mean(s_list, axis=0)
@@ -120,12 +127,12 @@ def s_order(job):
     with job:
         plt.savefig(
             project.root_directory()
-            + "/data/{}/s_order.pdf".format(str(job.sp.nwater) + "water_data")
+            + "/data_absz/{}/s_order.pdf".format(str(job.sp.nwater) + "water_data")
         )
 
         np.savetxt(
             project.root_directory()
-            + "/data/{}/s_order.txt".format(str(job.sp.nwater) + "water_data"),
+            + "/data_absz/{}/s_order.txt".format(str(job.sp.nwater) + "water_data"),
             np.transpose(np.vstack([bins, s_mean, s_stdem, s_std])),
             header="Bins\tS_mean\tS_stdem\tS_std",
         )
