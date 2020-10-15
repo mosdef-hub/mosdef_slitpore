@@ -88,7 +88,7 @@ def main():
     ax.set_xlim(0.0, 0.5)
     ax.set_ylim(-2, 20)
     ax.set_xlabel(r"$\mathregular{\vert z \vert, nm}$", fontsize=22, labelpad=15)
-    ax.set_ylabel(r"$\mathregular{\rho(z), nm^{-3}}$", fontsize=22, labelpad=15)
+    ax.set_ylabel(r"$\mathregular{\rho(\vert z \vert), nm^{-3}}$", fontsize=22, labelpad=15)
 
     ax.tick_params(axis="both", which="both", direction="in", labelsize=16, pad=6)
     ax.xaxis.set_minor_locator(MultipleLocator(0.05))
@@ -139,7 +139,7 @@ def main():
     ax.set_xlim(0.0, 0.5)
     ax.set_ylim(-2, 20)
     ax.set_xlabel(r"$\mathregular{\vert z \vert, nm}$", fontsize=22, labelpad=15)
-    ax.set_ylabel(r"$\mathregular{\rho(z), nm^{-3}}$", fontsize=22, labelpad=15)
+    ax.set_ylabel(r"$\mathregular{\rho(\vert z \vert), nm^{-3}}$", fontsize=22, labelpad=15)
 
     ax.tick_params(axis="both", which="both", direction="in", labelsize=16, pad=6)
     ax.xaxis.set_minor_locator(MultipleLocator(0.05))
@@ -189,6 +189,7 @@ def main():
     ax.set_xlim(0.0, 0.5)
     ax.set_ylim(-0.5, 0.5)
     ax.set_xlabel(r"$\mathregular{\vert z \vert, nm}$", fontsize=22, labelpad=15)
+    #ax.set_ylabel(r"$\mathregular{\rho(\vert z \vert), nm^{-3}}$", fontsize=22, labelpad=15)
     ax.set_ylabel(r"$\mathregular{S}$", fontsize=22, labelpad=15)
 
     ax.tick_params(axis="both", which="both", direction="in", labelsize=16, pad=6)
