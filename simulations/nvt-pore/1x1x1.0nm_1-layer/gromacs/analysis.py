@@ -62,27 +62,31 @@ def number_density(job):
     plt.ylabel("Number Density ($nm^-3$)")
 
     plt.legend()
+    if symmetrize == True:
+        extension = "_symmetrize"
+    else:
+        extension = ""
     with job:
         np.savetxt(
-            "o_density.txt",
+            f"o_density{extension}.txt",
             np.transpose(np.vstack([bins, o_mean, o_std])),
             header="Bins\tDensity_mean\tDensity_std",
         )
 
         np.savetxt(
-            "h_density.txt",
+            f"h_density{extension}.txt",
             np.transpose(np.vstack([bins, h_mean, h_std])),
             header="Bins\tDensity_mean\tDensity_std",
         )
-        plt.savefig("numberdensity.pdf")
+        plt.savefig(f"numberdensity{extension}.pdf")
     np.savetxt(
-        f"data/{job.sp.nwater}_mol_o_density.txt",
+        f"data/{job.sp.nwater}_mol_o_density{extension}.txt",
         np.transpose(np.vstack([bins, o_mean, o_std])),
         header="Bins\tDensity_mean\tDensity_std",
     )
 
     np.savetxt(
-        f"data/{job.sp.nwater}_mol_h_density.txt",
+        f"data/{job.sp.nwater}_mol_h_density{extension}.txt",
         np.transpose(np.vstack([bins, h_mean, h_std])),
         header="Bins\tDensity_mean\tDensity_std",
     )
