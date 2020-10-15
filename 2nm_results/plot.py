@@ -31,19 +31,23 @@ def get_ls(engine):
 def main():
 
     #seaborn.set_palette("dark")
-    ow_gmx = np.genfromtxt("results_gmx_ow_density.txt", skip_header=1)
-    hw_gmx = np.genfromtxt("results_gmx_hw_density.txt", skip_header=1)
-    s_gmx = np.genfromtxt("results_gmx_s.txt", skip_header=1)
+    data_path = '../simulations/nvt-pore/3x3x2.0nm_3-layer/'
+    gmx_path = 'gromacs/data/'
+    ow_gmx = np.genfromtxt(data_path+gmx_path+"485_mol_o_density.txt", skip_header=1)
+    hw_gmx = np.genfromtxt(data_path+gmx_path+"485_mol_h_density.txt", skip_header=1)
+    s_gmx = np.genfromtxt(data_path+gmx_path+"485_mol_s_order.txt", skip_header=1)
 
-    ow_lmp = np.genfromtxt("results_lmp_ow_density.txt", skip_header=1)
-    hw_lmp = np.genfromtxt("results_lmp_hw_density.txt", skip_header=1)
-    s_lmp = np.genfromtxt("results_lmp_s.txt", skip_header=1)
+    lmp_path = 'lammps/data/'
+    ow_lmp = np.genfromtxt(data_path+lmp_path+"485_mol_o_density.txt", skip_header=1)
+    hw_lmp = np.genfromtxt(data_path+lmp_path+"485_mol_h_density.txt", skip_header=1)
+    s_lmp = np.genfromtxt(data_path+lmp_path+"485_mol_s_order.txt", skip_header=1)
 
     ow_gomc = pd.read_csv("results_gomc_ow_density.csv", index_col=0)
     hw_gomc = pd.read_csv("results_gomc_hw_density.csv", index_col=0)
     s_gomc = pd.read_csv("results_gomc_s.csv", index_col=0)
 
-    all_cass = pd.read_csv("results_cass_485-water.csv")
+    cass_path = 'cassandra/analysis/'
+    all_cass = pd.read_csv(data_path+cass_path+"results_485-water.csv")
 
     fig, axes = plt.subplots(1, 3, figsize=(15,5))
     # Plot OW

@@ -33,23 +33,28 @@ def get_ls(engine):
 def main():
 
     #seaborn.set_palette("dark")
-    ow_gmx = np.genfromtxt("results_gmx_ow_density.txt", skip_header=1)
-    hw_gmx = np.genfromtxt("results_gmx_hw_density.txt", skip_header=1)
-    s_gmx = np.genfromtxt("results_gmx_s.txt", skip_header=1)
+    data_path = '../simulations/nvt-pore/1x1x1.0nm_1-layer/'
+    gmx_path = 'gromacs/data/'
+    ow_gmx = np.genfromtxt(data_path+gmx_path+"24_mol_o_density.txt", skip_header=1)
+    hw_gmx = np.genfromtxt(data_path+gmx_path+"24_mol_h_density.txt", skip_header=1)
+    s_gmx = np.genfromtxt(data_path+gmx_path+"24_mol_s_order.txt", skip_header=1)
 
-    ow_lmp = np.genfromtxt("results_lmp_ow_density.txt", skip_header=1)
-    hw_lmp = np.genfromtxt("results_lmp_hw_density.txt", skip_header=1)
-    s_lmp = np.genfromtxt("results_lmp_s.txt", skip_header=1)
+    lmp_path = 'lammps/data/'
+    ow_lmp = np.genfromtxt(data_path+lmp_path+"24_mol_o_density.txt", skip_header=1)
+    hw_lmp = np.genfromtxt(data_path+lmp_path+"24_mol_h_density.txt", skip_header=1)
+    s_lmp = np.genfromtxt(data_path+lmp_path+"24_mol_s_order.txt", skip_header=1)
 
     ow_gomc = pd.read_csv("results_gomc_ow_density.csv", index_col=0)
     hw_gomc = pd.read_csv("results_gomc_hw_density.csv", index_col=0)
     s_gomc = pd.read_csv("results_gomc_s.csv", index_col=0)
 
-    ow_cp2k = np.genfromtxt("results_cp2k_ow_density.txt", skip_header=1)
-    hw_cp2k = np.genfromtxt("results_cp2k_hw_density.txt", skip_header=1)
-    s_cp2k = np.genfromtxt("results_cp2k_s.txt", skip_header=1)
+    cp2k_path = 'cp2k/data/24water_data/'
+    ow_cp2k = np.genfromtxt(data_path+cp2k_path+"o_density.txt", skip_header=1)
+    hw_cp2k = np.genfromtxt(data_path+cp2k_path+"h_density.txt", skip_header=1)
+    s_cp2k = np.genfromtxt(data_path+cp2k_path+"s_order.txt", skip_header=1)
 
-    all_cass = pd.read_csv("results_cass_24-water.csv")
+    cass_path = 'cassandra/analysis/'
+    all_cass = pd.read_csv(data_path+cass_path+"results_24-water.csv")
 
     fig, axes = plt.subplots(1, 3, figsize=(15,5))
     # Plot OW
