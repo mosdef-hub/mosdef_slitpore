@@ -8,6 +8,27 @@ from matplotlib import rcParams
 rcParams['font.sans-serif'] = 'Arial'
 rcParams['font.family'] = 'sans-serif'
 
+def add_subplot_axes(ax,rect):
+    fig = plt.gcf()
+    box = ax.get_position()
+    width = box.width
+    height = box.height
+    inax_position  = ax.transAxes.transform(rect[0:2])
+    transFigure = fig.transFigure.inverted()
+    infig_position = transFigure.transform(inax_position)
+    x = infig_position[0]
+    y = infig_position[1]
+    width *= rect[2]
+    height *= rect[3]  # <= Typo was here
+    subax = fig.add_axes([x,y,width,height])
+    x_labelsize = subax.get_xticklabels()[0].get_size()
+    y_labelsize = subax.get_yticklabels()[0].get_size()
+    x_labelsize *= rect[2]**0.5
+    y_labelsize *= rect[3]**0.5
+    subax.xaxis.set_tick_params(labelsize=x_labelsize)
+    subax.yaxis.set_tick_params(labelsize=y_labelsize)
+    return subax
+
 def get_color(engine):
     color_dict = {
             'Cassandra': '#1f77b4',
@@ -45,12 +66,34 @@ def main():
     s_cp2k = np.genfromtxt(data_path+cp2k_path+"s_order.txt", skip_header=1)
 
 
-    #fig, axes = plt.subplots(3, 1, figsize=(5,10), sharex=True)
     fig, axes = plt.subplots(1, 3, figsize=(15,5))
     # Plot OW
     ax = axes[0]
     ax.text(0.05, 0.90, 'a)', transform=ax.transAxes,
             size=20, weight='bold')
+    rect = [0.465, 0.7, 0.4, 0.4]
+    ax2 = add_subplot_axes(ax, rect)
+    ax2.plot(
+        ow_gmx[:,0],
+        ow_gmx[:,1],
+        linestyle=get_ls("GROMACS"),
+        label="GROMACS",
+        linewidth=3,
+        alpha=0.85,
+        color=get_color("GROMACS")
+    )
+    ax2.fill_between(
+        ow_gmx[:,0],
+        ow_gmx[:,1] - ow_gmx[:,2],
+        ow_gmx[:,1] + ow_gmx[:,2],
+        alpha=0.3,
+        color=get_color("GROMACS")
+    )
+    ax2.set_xlim((-0.3, 0.3))
+    ax2.set_ylim((0.0, 25))
+    ax2.set_xlabel(r"$\mathregular{z, nm}$", fontsize=12, labelpad=9)
+    ax2.set_ylabel(r"$\mathregular{\rho(z), nm^{-3}}$", fontsize=12,
+            labelpad=9)
     ax.plot(
         ow_gmx[:,0],
         ow_gmx[:,1],
@@ -85,8 +128,8 @@ def main():
         color=get_color("CP2K")
     )
 
-    ax.set_xlim(0.0, 0.5)
-    ax.set_ylim(-2, 20)
+    ax.set_xlim(-0.01, 0.5)
+    ax.set_ylim(-2, 25)
     ax.set_xlabel(r"$\mathregular{\vert z \vert, nm}$", fontsize=22, labelpad=15)
     ax.set_ylabel(r"$\mathregular{\rho(\vert z \vert), nm^{-3}}$", fontsize=22, labelpad=15)
 
@@ -118,6 +161,29 @@ def main():
         alpha=0.3,
         color=get_color("GROMACS")
     )
+    rect = [0.7, 0.7, 0.4, 0.4]
+    ax2 = add_subplot_axes(ax, rect)
+    ax2.plot(
+        hw_gmx[:,0],
+        hw_gmx[:,1],
+        linestyle=get_ls("GROMACS"),
+        label="GROMACS",
+        linewidth=3,
+        alpha=0.85,
+        color=get_color("GROMACS")
+    )
+    ax2.fill_between(
+        hw_gmx[:,0],
+        hw_gmx[:,1] - hw_gmx[:,2],
+        hw_gmx[:,1] + hw_gmx[:,2],
+        alpha=0.3,
+        color=get_color("GROMACS")
+    )
+    ax2.set_xlim((-0.3, 0.3))
+    ax2.set_ylim((0.0, 25))
+    ax2.set_xlabel(r"$\mathregular{z, nm}$", fontsize=12, labelpad=9)
+    ax2.set_ylabel(r"$\mathregular{\rho(z), nm^{-3}}$", fontsize=12,
+            labelpad=9)
     ax.plot(
         hw_cp2k[:,0],
         hw_cp2k[:,1],
@@ -136,10 +202,10 @@ def main():
         color=get_color("CP2K")
     )
 
-    ax.set_xlim(0.0, 0.5)
-    ax.set_ylim(-2, 20)
+    ax.set_xlim(-0.01, 0.5)
+    ax.set_ylim(-2, 25)
     ax.set_xlabel(r"$\mathregular{\vert z \vert, nm}$", fontsize=22, labelpad=15)
-    ax.set_ylabel(r"$\mathregular{\rho(\vert z \vert), nm^{-3}}$", fontsize=22, labelpad=15)
+    ax.set_ylabel(r"$\mathregular{\rho(z), nm^{-3}}$", fontsize=22, labelpad=15)
 
     ax.tick_params(axis="both", which="both", direction="in", labelsize=16, pad=6)
     ax.xaxis.set_minor_locator(MultipleLocator(0.05))
