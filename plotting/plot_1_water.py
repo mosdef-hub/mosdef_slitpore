@@ -59,6 +59,9 @@ def main():
     ow_gmx = np.genfromtxt(data_path+gmx_path+"1_mol_o_density.txt", skip_header=1)
     hw_gmx = np.genfromtxt(data_path+gmx_path+"1_mol_h_density.txt", skip_header=1)
     s_gmx = np.genfromtxt(data_path+gmx_path+"1_mol_s_order.txt", skip_header=1)
+    ow_gmx_sym = np.genfromtxt(data_path+gmx_path+"1_mol_o_density_symmetrize.txt", skip_header=1)
+    hw_gmx_sym = np.genfromtxt(data_path+gmx_path+"1_mol_h_density_symmetrize.txt", skip_header=1)
+    s_gmx_sym = np.genfromtxt(data_path+gmx_path+"1_mol_s_order_symmetrize.txt", skip_header=1)
 
     cp2k_path = 'cp2k/data_absz/1water_data/'
     ow_cp2k = np.genfromtxt(data_path+cp2k_path+"o_density.txt", skip_header=1)
@@ -71,7 +74,7 @@ def main():
     ax = axes[0]
     ax.text(0.05, 0.90, 'a)', transform=ax.transAxes,
             size=20, weight='bold')
-    rect = [0.465, 0.7, 0.4, 0.4]
+    rect = [0.47, 0.7, 0.4, 0.4]
     ax2 = add_subplot_axes(ax, rect)
     ax2.plot(
         ow_gmx[:,0],
@@ -95,8 +98,8 @@ def main():
     ax2.set_ylabel(r"$\mathregular{\rho(z), nm^{-3}}$", fontsize=12,
             labelpad=9)
     ax.plot(
-        ow_gmx[:,0],
-        ow_gmx[:,1],
+        ow_gmx_sym[:,0],
+        ow_gmx_sym[:,1],
         linestyle=get_ls("GROMACS"),
         label="GROMACS",
         linewidth=3,
@@ -104,9 +107,9 @@ def main():
         color=get_color("GROMACS")
     )
     ax.fill_between(
-        ow_gmx[:,0],
-        ow_gmx[:,1] - ow_gmx[:,2],
-        ow_gmx[:,1] + ow_gmx[:,2],
+        ow_gmx_sym[:,0],
+        ow_gmx_sym[:,1] - ow_gmx_sym[:,2],
+        ow_gmx_sym[:,1] + ow_gmx_sym[:,2],
         alpha=0.3,
         color=get_color("GROMACS")
     )
@@ -131,7 +134,7 @@ def main():
     ax.set_xlim(-0.01, 0.5)
     ax.set_ylim(-2, 25)
     ax.set_xlabel(r"$\mathregular{\vert z \vert, nm}$", fontsize=22, labelpad=15)
-    ax.set_ylabel(r"$\mathregular{\rho(z), nm^{-3}}$", fontsize=22, labelpad=15)
+    ax.set_ylabel(r"$\mathregular{\rho(\vert z \vert), nm^{-3}}$", fontsize=22, labelpad=15)
 
     ax.tick_params(axis="both", which="both", direction="in", labelsize=16, pad=6)
     ax.xaxis.set_minor_locator(MultipleLocator(0.05))
@@ -146,8 +149,8 @@ def main():
     ax.text(0.05, 0.90, 'b)', transform=ax.transAxes,
             size=20, weight='bold')
     ax.plot(
-        hw_gmx[:,0],
-        hw_gmx[:,1],
+        hw_gmx_sym[:,0],
+        hw_gmx_sym[:,1],
         linestyle=get_ls("GROMACS"),
         linewidth=3,
         alpha=0.85,
@@ -155,13 +158,13 @@ def main():
         color=get_color("GROMACS")
     )
     ax.fill_between(
-        hw_gmx[:,0],
-        hw_gmx[:,1] - hw_gmx[:,2],
-        hw_gmx[:,1] + hw_gmx[:,2],
+        hw_gmx_sym[:,0],
+        hw_gmx_sym[:,1] - hw_gmx_sym[:,2],
+        hw_gmx_sym[:,1] + hw_gmx_sym[:,2],
         alpha=0.3,
         color=get_color("GROMACS")
     )
-    rect = [0.69, 0.7, 0.4, 0.4]
+    rect = [0.72, 0.7, 0.4, 0.4]
     ax2 = add_subplot_axes(ax, rect)
     ax2.plot(
         hw_gmx[:,0],
@@ -205,7 +208,7 @@ def main():
     ax.set_xlim(-0.01, 0.5)
     ax.set_ylim(-2, 25)
     ax.set_xlabel(r"$\mathregular{\vert z \vert, nm}$", fontsize=22, labelpad=15)
-    ax.set_ylabel(r"$\mathregular{\rho(z), nm^{-3}}$", fontsize=22, labelpad=15)
+    ax.set_ylabel(r"$\mathregular{\rho(\vert z \vert), nm^{-3}}$", fontsize=22, labelpad=15)
 
     ax.tick_params(axis="both", which="both", direction="in", labelsize=16, pad=6)
     ax.xaxis.set_minor_locator(MultipleLocator(0.05))
@@ -219,8 +222,8 @@ def main():
     ax.text(0.05, 0.90, 'c)', transform=ax.transAxes,
             size=20, weight='bold')
     ax.plot(
-        s_gmx[:,0],
-        s_gmx[:,1],
+        s_gmx_sym[:,0],
+        s_gmx_sym[:,1],
         linestyle=get_ls("GROMACS"),
         label="GROMACS",
         linewidth=3,
@@ -228,9 +231,9 @@ def main():
         color=get_color("GROMACS")
     )
     ax.fill_between(
-        s_gmx[:,0],
-        s_gmx[:,1] - s_gmx[:,2],
-        s_gmx[:,1] + s_gmx[:,2],
+        s_gmx_sym[:,0],
+        s_gmx_sym[:,1] - s_gmx_sym[:,2],
+        s_gmx_sym[:,1] + s_gmx_sym[:,2],
         color=get_color("GROMACS"),
         alpha=0.3,
     )
@@ -252,10 +255,9 @@ def main():
         color=get_color("CP2K")
     )
 
-    ax.set_xlim(0.0, 0.25)
+    ax.set_xlim(-0.01, 0.25)
     ax.set_ylim(-0.5, 0.5)
     ax.set_xlabel(r"$\mathregular{\vert z \vert, nm}$", fontsize=22, labelpad=15)
-    #ax.set_ylabel(r"$\mathregular{\rho(\vert z \vert), nm^{-3}}$", fontsize=22, labelpad=15)
     ax.set_ylabel(r"$\mathregular{S}$", fontsize=22, labelpad=15)
 
     ax.tick_params(axis="both", which="both", direction="in", labelsize=16, pad=6)
@@ -270,7 +272,7 @@ def main():
             bbox_to_anchor=(0.5, 1.07),
             fontsize=16,
             loc='upper center',
-            ncol=5)
+            ncol=2)
     fig.tight_layout()
     fig.savefig("1_water_results.pdf", bbox_inches="tight")
 
