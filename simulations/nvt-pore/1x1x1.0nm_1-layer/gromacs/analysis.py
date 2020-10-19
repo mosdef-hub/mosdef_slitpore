@@ -9,14 +9,10 @@ from mosdef_slitpore.utils.utils import get_bond_array
 project = signac.get_project()
 
 
-def number_density(job):
+def number_density(job, symmetrize=False):
     dim = 1
     box_range = [0.167, 1.167]
     pore_center = (box_range[1] - box_range[0]) / 2 + box_range[0]
-    if job.sp.nwater == 1:
-        symmetrize = False
-    else:
-        symmetrize = False
     o_densities = list()
     h_densities = list()
     fig, ax = plt.subplots()
@@ -62,40 +58,40 @@ def number_density(job):
     plt.ylabel("Number Density ($nm^-3$)")
 
     plt.legend()
+    if symmetrize == True:
+        extension = "_symmetrize"
+    else:
+        extension = ""
     with job:
         np.savetxt(
-            "o_density.txt",
+            f"o_density{extension}.txt",
             np.transpose(np.vstack([bins, o_mean, o_std])),
             header="Bins\tDensity_mean\tDensity_std",
         )
 
         np.savetxt(
-            "h_density.txt",
+            f"h_density{extension}.txt",
             np.transpose(np.vstack([bins, h_mean, h_std])),
             header="Bins\tDensity_mean\tDensity_std",
         )
-        plt.savefig("numberdensity.pdf")
+        plt.savefig(f"numberdensity{extension}.pdf")
     np.savetxt(
-        f"data/{job.sp.nwater}_mol_o_density.txt",
+        f"data/{job.sp.nwater}_mol_o_density{extension}.txt",
         np.transpose(np.vstack([bins, o_mean, o_std])),
         header="Bins\tDensity_mean\tDensity_std",
     )
 
     np.savetxt(
-        f"data/{job.sp.nwater}_mol_h_density.txt",
+        f"data/{job.sp.nwater}_mol_h_density{extension}.txt",
         np.transpose(np.vstack([bins, h_mean, h_std])),
         header="Bins\tDensity_mean\tDensity_std",
     )
 
 
-def s_order(job):
+def s_order(job, symmetrize=False):
     dim = 1
     box_range = [0.167, 1.167]
     pore_center = (box_range[1] - box_range[0]) / 2 + box_range[0]
-    if job.sp.nwater == 1:
-        symmetrize = True
-    else:
-        symmetrize = False
     fig, ax = plt.subplots()
     s_list = list()
     if job.sp.nwater == 1:
@@ -126,16 +122,20 @@ def s_order(job):
     plt.xlabel("z-position (nm)")
     plt.ylabel("S")
 
+    if symmetrize == True:
+        extension = "_symmetrize"
+    else:
+        extension = ""
     with job:
-        plt.savefig("s_order.pdf")
+        plt.savefig(f"s_order{extension}.pdf")
 
         np.savetxt(
-            "s_order.txt",
+            f"s_order{extension}.txt",
             np.transpose(np.vstack([bins, s_mean, s_std])),
             header="Bins\tS_mean\tS_std",
         )
     np.savetxt(
-        f"data/{job.sp.nwater}_mol_s_order.txt",
+        f"data/{job.sp.nwater}_mol_s_order{extension}.txt",
         np.transpose(np.vstack([bins, s_mean, s_std])),
         header="Bins\tS_mean\tS_std",
     )
@@ -173,3 +173,5 @@ if __name__ == "__main__":
     for job in project.find_jobs():
         number_density(job)
         s_order(job)
+        number_density(job, symmetrize=True)
+        s_order(job, symmetrize=True)
