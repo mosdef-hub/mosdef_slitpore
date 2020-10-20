@@ -286,9 +286,10 @@ def plot_large_2nm():
     hw_lmp = np.genfromtxt(data_path+lmp_path+"485_mol_h_density.txt", skip_header=1)
     s_lmp = np.genfromtxt(data_path+lmp_path+"485_mol_s_order.txt", skip_header=1)
 
-    ow_gomc = pd.read_csv("2nm_gomc/results_gomc_ow_density.csv", index_col=0)
-    hw_gomc = pd.read_csv("2nm_gomc/results_gomc_hw_density.csv", index_col=0)
-    s_gomc = pd.read_csv("2nm_gomc/results_gomc_s.csv", index_col=0)
+    gomc_path = '../mosdef_slitpore/plotting/2nm_gomc/'
+    ow_gomc = pd.read_csv(gomc_path+"results_gomc_ow_density.csv", index_col=0)
+    hw_gomc = pd.read_csv(gomc_path+"results_gomc_hw_density.csv", index_col=0)
+    s_gomc = pd.read_csv(gomc_path+"results_gomc_s.csv", index_col=0)
 
     cass_path = 'cassandra/analysis/'
     all_cass = pd.read_csv(data_path+cass_path+"results_485-water.csv")
@@ -552,9 +553,10 @@ def plot_small_1nm():
     hw_lmp = np.genfromtxt(data_path+lmp_path+"24_mol_h_density.txt", skip_header=1)
     s_lmp = np.genfromtxt(data_path+lmp_path+"24_mol_s_order.txt", skip_header=1)
 
-    ow_gomc = pd.read_csv("1nm_gomc/results_gomc_ow_density.csv", index_col=0)
-    hw_gomc = pd.read_csv("1nm_gomc/results_gomc_hw_density.csv", index_col=0)
-    s_gomc = pd.read_csv("1nm_gomc/results_gomc_s.csv", index_col=0)
+    gomc_path = '../mosdef_slitpore/plotting/1nm_gomc/'
+    ow_gomc = pd.read_csv(gomc_path+"results_gomc_ow_density.csv", index_col=0)
+    hw_gomc = pd.read_csv(gomc_path+"results_gomc_hw_density.csv", index_col=0)
+    s_gomc = pd.read_csv(gomc_path+"results_gomc_s.csv", index_col=0)
 
     cp2k_path = 'cp2k/data/24water_data/'
     ow_cp2k = np.genfromtxt(data_path+cp2k_path+"o_density.txt", skip_header=1)
@@ -872,7 +874,3 @@ def plot_small_1nm():
             ncol=5)
     fig.tight_layout()
     fig.savefig("1nm_results.pdf", bbox_inches="tight")
-
-plot_1_water()
-plot_large_2nm()
-plot_small_1nm()
