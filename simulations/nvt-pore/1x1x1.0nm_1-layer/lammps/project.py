@@ -4,7 +4,6 @@ import warnings
 import os
 import foyer
 import mbuild as mb
-import environment
 from flow import FlowProject, directives
 from mosdef_slitpore.utils.utils import get_ff
 from mosdef_slitpore.utils.gromacs import write_ndx, add_settles
