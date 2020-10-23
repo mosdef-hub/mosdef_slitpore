@@ -1,10 +1,8 @@
 import flow
 import signac
 import warnings
-import os
 import foyer
 import mbuild as mb
-import environment
 from flow import FlowProject, directives
 from mosdef_slitpore.utils.utils import get_ff
 from mosdef_slitpore.utils.gromacs import write_ndx, add_settles
@@ -12,6 +10,9 @@ from mbuild.formats.lammpsdata import write_lammpsdata
 from mosdef_slitpore.utils.cassandra_helpers import create_spce_water
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
+
+# Determines Lammps exectuable. 
+run_type = "serial"
 
 def workspace_command(cmd):
     """Simple command to always go to the workspace directory"""
@@ -79,11 +80,14 @@ def initialize(job):
 @Project.post(nvt_complete)
 @flow.cmd
 def run_nvt(job):
-    return _lammps_str(job)
+    return _lammps_str(job, run_type=run_type)
 
 def _lammps_str(job):
     root = job._project.root_directory()
-    cmd = ('mpirun -n 16 lmp -i {0}/files/in.spce')
+    if run_type == "mpi":
+        cmd = ('mpirun -n 1 lmp -i {0}/files/in.spce')
+    elif run_type == "serial":
+        cmd = ('lmp_serial -i {0}/files/in.spce')
 
     return workspace_command(cmd.format(root))
 
