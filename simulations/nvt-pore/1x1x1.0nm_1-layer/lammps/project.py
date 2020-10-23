@@ -1,7 +1,6 @@
 import flow
 import signac
 import warnings
-import subprocess
 import foyer
 import mbuild as mb
 from flow import FlowProject, directives
