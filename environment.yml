@@ -11,7 +11,7 @@ dependencies:
     - signac-flow
     - cassandra
     - mosdef_cassandra
-    - gromacs=2019.1
+    - gromacs
     - pandas
     - matplotlib
     - unyt
@@ -21,4 +21,4 @@ dependencies:
     - gsd
     - mdtraj
     - cmake
-    - lammps=2019.06.05
+    - lammps
