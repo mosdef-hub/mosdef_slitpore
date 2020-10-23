@@ -23,7 +23,7 @@ The initialization and analysis code, as well as the force field files are
 contained within the `mosdef_slitpore` directory.  
 
 ### Signac
-The simulations run with Cassandra, GROMACS, LAMMPS, and CP2k are managed by the [signac](https://signac.io) framework.  There is a specific signac project for each slitpore system and simulation engine mentioned in the previous sentence.  Each project contains multiple `jobs` with unique `statepoints` which are conditions at which the simulation is run.  Please see signac documentation for additional details.
+The simulations run with Cassandra, GROMACS, LAMMPS, and CP2K are managed by the [signac](https://signac.io) framework.  There is a specific signac project for each slitpore system and simulation engine.  Each project contains multiple `jobs` with unique `statepoints` which are conditions at which the simulations are run.  Please see signac documentation for additional details.
 
 ### Running simulations on a supercomputer or cluster
 It is highly advised to run these simulations on a supercomputer or cluster.  For the simulations that
