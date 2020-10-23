@@ -20,3 +20,5 @@ dependencies:
     - openbabel
     - gsd
     - mdtraj
+    - cmake
+    - lammps=2019.06.05
