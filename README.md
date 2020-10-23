@@ -11,14 +11,15 @@ Additionally, the `GOMC` and `CP2K` packages must be installed from source, as
 well as the [Pore-Builder](https://github.com/rmatsum836/Pore-Builder) mBuild
 recipe. Please see (link to paper) for detailed installation instructions.
 
+To install this package simply execute the following on the command line: `pip install -e .`
+
 ### Package Overview
 All code to run the simulations are contained within the `simulations` directory.
 The naming convention is defined by 1) type of simulation 2) dimensions of the
 molecular system and 3) simulation engine used.
 
 The initialization and analysis code, as well as the force field files are
-contained within the `mosdef_slitpore` directory.
-
+contained within the `mosdef_slitpore` directory.  
 ### Simulation details
 * LJ, cutoff, no analytical tail corrections
 * 9.0 angstrom cutoffs for LJ and Coulombic interactions
