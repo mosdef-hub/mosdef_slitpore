@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import signac
 import os
 from mosdef_slitpore.analysis import compute_density, compute_s
+from mosdef_slitpore.utils.utils import get_bond_array
 
 project = signac.get_project()
 
@@ -60,7 +61,11 @@ def s_order(job):
     fig, ax = plt.subplots()
     s_list = list()
     for trj in md.iterload(os.path.join(job.ws, 'nvt.dcd'), top=os.path.join(job.ws, 'init.mol2'), chunk=9000, skip=2001):
-        bins, s_values = compute_s(trj, dim, pore_center=pore_center, bin_width=0.01)
+        water_bonds = get_bond_array(trj)
+        bins, s_values = compute_s(trj,
+                                   dim,
+                                   pore_center=pore_center,
+                                   bond_array=water_bonds)
         s_list.append(s_values)
 
     s_mean = np.mean(s_list, axis=0)
@@ -107,6 +112,6 @@ def area(job):
         plt.savefig('cumulative_area.pdf')
 
 if __name__ == '__main__':
-    for job in project.find_jobs({"nwater": 24}):
+    for job in project.find_jobs():
         number_density(job)
         s_order(job)
