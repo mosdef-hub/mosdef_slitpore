@@ -51,6 +51,8 @@ def compute_density(
             density.append(mask.sum() / (area * 2 * bin_width * traj.n_frames))
         else:
             density.append(mask.sum() / (area * bin_width * traj.n_frames))
+        if symmetrize:
+            density[0] = density[0] * 2
 
     return bin_centers, density
 
@@ -63,7 +65,7 @@ def compute_s(
     bin_width=0.01,
     bond_array=None,
     symmetrize=False,
-    ):
+):
 
     """Compute the "s" order parameter
 
