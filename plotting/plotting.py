@@ -73,28 +73,6 @@ def plot_1_water():
     ax.text(0.05, 0.90, 'a)', transform=ax.transAxes,
             size=20, weight='bold')
     rect = [0.47, 0.7, 0.4, 0.4]
-    ax2 = add_subplot_axes(ax, rect)
-    ax2.plot(
-        ow_gmx[:,0],
-        ow_gmx[:,1],
-        linestyle=get_ls("GROMACS"),
-        label="GROMACS",
-        linewidth=3,
-        alpha=0.85,
-        color=get_color("GROMACS")
-    )
-    ax2.fill_between(
-        ow_gmx[:,0],
-        ow_gmx[:,1] - ow_gmx[:,2],
-        ow_gmx[:,1] + ow_gmx[:,2],
-        alpha=0.3,
-        color=get_color("GROMACS")
-    )
-    ax2.set_xlim((-0.3, 0.3))
-    ax2.set_ylim((0.0, 25))
-    ax2.set_xlabel(r"$\mathregular{z, nm}$", fontsize=12, labelpad=9)
-    ax2.set_ylabel(r"$\mathregular{\rho(z), nm^{-3}}$", fontsize=12,
-            labelpad=9)
     ax.plot(
         ow_gmx_sym[:,0],
         ow_gmx_sym[:,1],
@@ -129,15 +107,15 @@ def plot_1_water():
         color=get_color("CP2K")
     )
 
-    ax.set_xlim(-0.01, 0.5)
-    ax.set_ylim(-2, 25)
+    ax.set_xlim(0.00, 0.5)
+    ax.set_ylim(-1, 12)
     ax.set_xlabel(r"$\mathregular{\vert z \vert, nm}$", fontsize=22, labelpad=15)
     ax.set_ylabel(r"$\mathregular{\rho(\vert z \vert), nm^{-3}}$", fontsize=22, labelpad=15)
 
     ax.tick_params(axis="both", which="both", direction="in", labelsize=16, pad=6)
     ax.xaxis.set_minor_locator(MultipleLocator(0.05))
-    ax.yaxis.set_major_locator(MultipleLocator(10))
-    ax.yaxis.set_minor_locator(MultipleLocator(2))
+    ax.yaxis.set_major_locator(MultipleLocator(3))
+    ax.yaxis.set_minor_locator(MultipleLocator(1))
     ax.xaxis.set_ticks_position("both")
     ax.yaxis.set_ticks_position("both")
 
@@ -162,29 +140,6 @@ def plot_1_water():
         alpha=0.3,
         color=get_color("GROMACS")
     )
-    rect = [0.72, 0.7, 0.4, 0.4]
-    ax2 = add_subplot_axes(ax, rect)
-    ax2.plot(
-        hw_gmx[:,0],
-        hw_gmx[:,1],
-        linestyle=get_ls("GROMACS"),
-        label="GROMACS",
-        linewidth=3,
-        alpha=0.85,
-        color=get_color("GROMACS")
-    )
-    ax2.fill_between(
-        hw_gmx[:,0],
-        hw_gmx[:,1] - hw_gmx[:,2],
-        hw_gmx[:,1] + hw_gmx[:,2],
-        alpha=0.3,
-        color=get_color("GROMACS")
-    )
-    ax2.set_xlim((-0.3, 0.3))
-    ax2.set_ylim((0.0, 25))
-    ax2.set_xlabel(r"$\mathregular{z, nm}$", fontsize=12, labelpad=9)
-    ax2.set_ylabel(r"$\mathregular{\rho(z), nm^{-3}}$", fontsize=12,
-            labelpad=9)
     ax.plot(
         hw_cp2k[:,0],
         hw_cp2k[:,1],
@@ -203,15 +158,15 @@ def plot_1_water():
         color=get_color("CP2K")
     )
 
-    ax.set_xlim(-0.01, 0.5)
-    ax.set_ylim(-2, 25)
+    ax.set_xlim(0.00, 0.5)
+    ax.set_ylim(-1, 12)
     ax.set_xlabel(r"$\mathregular{\vert z \vert, nm}$", fontsize=22, labelpad=15)
     ax.set_ylabel(r"$\mathregular{\rho(\vert z \vert), nm^{-3}}$", fontsize=22, labelpad=15)
 
     ax.tick_params(axis="both", which="both", direction="in", labelsize=16, pad=6)
     ax.xaxis.set_minor_locator(MultipleLocator(0.05))
-    ax.yaxis.set_major_locator(MultipleLocator(10))
-    ax.yaxis.set_minor_locator(MultipleLocator(2))
+    ax.yaxis.set_major_locator(MultipleLocator(3))
+    ax.yaxis.set_minor_locator(MultipleLocator(1))
     ax.xaxis.set_ticks_position("both")
     ax.yaxis.set_ticks_position("both")
 
@@ -254,9 +209,9 @@ def plot_1_water():
     )
 
     ax.set_xlim(-0.01, 0.25)
-    ax.set_ylim(-0.5, 0.5)
+    ax.set_ylim(-0.3, 0.3)
     ax.set_xlabel(r"$\mathregular{\vert z \vert, nm}$", fontsize=22, labelpad=15)
-    ax.set_ylabel(r"$\mathregular{S}$", fontsize=22, labelpad=15)
+    ax.set_ylabel(r"$\mathregular{S}$", fontsize=22, labelpad=15, style="italic")
 
     ax.tick_params(axis="both", which="both", direction="in", labelsize=16, pad=6)
     ax.xaxis.set_minor_locator(MultipleLocator(0.05))
@@ -267,7 +222,7 @@ def plot_1_water():
     handles, labels = ax.get_legend_handles_labels()
     lgd = fig.legend(handles, 
             labels,
-            bbox_to_anchor=(0.5, 1.07),
+            bbox_to_anchor=(0.5, 1.08),
             fontsize=16,
             loc='upper center',
             ncol=2)
@@ -521,7 +476,7 @@ def plot_large_2nm():
     ax.set_xlim(-0.75, 0.75)
     ax.set_ylim(-0.5, 0.5)
     ax.set_xlabel(r"$\mathregular{z, nm}$", fontsize=22, labelpad=15)
-    ax.set_ylabel(r"$\mathregular{S}$", fontsize=22, labelpad=15)
+    ax.set_ylabel(r"$\mathregular{S}$", fontsize=22, labelpad=15, style="italic")
 
     ax.tick_params(axis="both", which="both", direction="in", labelsize=16, pad=6)
     ax.xaxis.set_minor_locator(MultipleLocator(0.05))
@@ -855,7 +810,7 @@ def plot_small_1nm():
     ax.set_xlim(-0.4, 0.4)
     ax.set_ylim(-0.5, 0.5)
     ax.set_xlabel(r"$\mathregular{z, nm}$", fontsize=22, labelpad=15)
-    ax.set_ylabel(r"$\mathregular{S}$", fontsize=22, labelpad=15)
+    ax.set_ylabel(r"$\mathregular{S}$", fontsize=22, labelpad=15, style="italic")
 
     ax.tick_params(axis="both", which="both", direction="in", labelsize=16, pad=6)
     ax.xaxis.set_minor_locator(MultipleLocator(0.05))
