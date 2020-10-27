@@ -66,8 +66,10 @@ def compute_s(
     pore_center=0.0,
     max_distance=1.0,
     bin_width=0.01,
+    bond_array=None,
     symmetrize=False,
-):
+    ):
+
     """Compute the "s" order parameter
 
     Parameters
@@ -81,9 +83,14 @@ def compute_s(
     max_distance : float, optional, default = 1.0
         max distance to consider from the center of the pore
     bin_width : float, optional, default = 0.01
-        width of the bin for computing s
+        width of the bin for computing
+    bond_array : np.array(dtype=np.int32), optional, default = None
+        Array of bonds to pass into `make_molecules_whole`
+        Warning: This argument is necessary if loading in a mol2 file due to a
+        current bug in the MDTraj MOL2 reader: https://github.com/mdtraj/mdtraj/issues/1581
     symmetrize : bool, optional, default = False
         if binning should be done in abs(z) instead of z
+
     Returns
     -------
     bin_centers : np.ndarray
@@ -92,7 +99,7 @@ def compute_s(
         the value of s for each bin
     """
     # Make molecules whole first
-    traj.make_molecules_whole(inplace=True)
+    traj.make_molecules_whole(inplace=True, sorted_bonds=bond_array)
     # Select ow and hw
     water_o = traj.top.select("water and name O")
     water_h = traj.top.select("water and name H")
