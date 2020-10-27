@@ -255,6 +255,7 @@ def compute_angle(
     """
     # Make molecules whole first
     traj.make_molecules_whole(inplace=True)
+    
     # Select ow and hw
     water_o = traj.top.select("water and name O")
     water_h = traj.top.select("water and name H")
