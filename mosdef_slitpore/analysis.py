@@ -48,9 +48,14 @@ def compute_density(
         )
         bin_centers.append(bin_center)
         if symmetrize:
-            density.append(mask.sum() / (area * 2 * bin_width * traj.n_frames))
+            if np.isclose(bin_center,0):
+                density.append(mask.sum() / (area * 1 * bin_width * traj.n_frames))
+            else:
+                density.append(mask.sum() / (area * 2 * bin_width * traj.n_frames))
         else:
             density.append(mask.sum() / (area * bin_width * traj.n_frames))
+        if symmetrize:
+            density[0] = density[0]*2
 
     return bin_centers, density
 
