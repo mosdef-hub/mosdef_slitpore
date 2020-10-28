@@ -54,20 +54,23 @@ def get_ls(engine):
 def plot_1_water():
     data_path = '../simulations/nvt-pore/1x1x1.0nm_1-layer/'
     gmx_path = 'gromacs/data/'
-    ow_gmx = np.genfromtxt(data_path+gmx_path+"1_mol_o_density.txt", skip_header=1)
-    hw_gmx = np.genfromtxt(data_path+gmx_path+"1_mol_h_density.txt", skip_header=1)
-    s_gmx = np.genfromtxt(data_path+gmx_path+"1_mol_s_order.txt", skip_header=1)
+    #ow_gmx = np.genfromtxt(data_path+gmx_path+"1_mol_o_density.txt", skip_header=1)
+    #hw_gmx = np.genfromtxt(data_path+gmx_path+"1_mol_h_density.txt", skip_header=1)
+    #s_gmx = np.genfromtxt(data_path+gmx_path+"1_mol_s_order.txt", skip_header=1)
     ow_gmx_sym = np.genfromtxt(data_path+gmx_path+"1_mol_o_density_symmetrize.txt", skip_header=1)
     hw_gmx_sym = np.genfromtxt(data_path+gmx_path+"1_mol_h_density_symmetrize.txt", skip_header=1)
     s_gmx_sym = np.genfromtxt(data_path+gmx_path+"1_mol_s_order_symmetrize.txt", skip_header=1)
+    angle_gmx = np.genfromtxt(data_path+gmx_path+"1_mol_angle_dist_normalized.txt", skip_header=1)
 
     cp2k_path = 'cp2k/data_absz/1water_data/'
     ow_cp2k = np.genfromtxt(data_path+cp2k_path+"o_density.txt", skip_header=1)
     hw_cp2k = np.genfromtxt(data_path+cp2k_path+"h_density.txt", skip_header=1)
     s_cp2k = np.genfromtxt(data_path+cp2k_path+"s_order.txt", skip_header=1)
+    cp2k_angle_path = 'cp2k/distribution_data/1water_data/'
+    angle_cp2k = np.genfromtxt(data_path+cp2k_angle_path+"angle_dist_normalized.txt", skip_header=1)
 
 
-    fig, axes = plt.subplots(1, 3, figsize=(15,5))
+    fig, axes = plt.subplots(1, 4, figsize=(18,5))
     # Plot OW
     ax = axes[0]
     ax.text(0.05, 0.90, 'a)', transform=ax.transAxes,
@@ -218,6 +221,27 @@ def plot_1_water():
     ax.yaxis.set_minor_locator(MultipleLocator(0.05))
     ax.xaxis.set_ticks_position("both")
     ax.yaxis.set_ticks_position("both")
+
+    ax = axes[3]
+    ax.text(0.00, 0.10, 'd)', transform=ax.transAxes,
+            size=20, weight='bold')
+    ax.hist(angle_gmx[:,0],
+            bins=angle_gmx[:,0],
+            weights=angle_gmx[:,1],
+            color=get_color("GROMACS"),
+            label="GROMACS",
+            alpha=0.3)
+
+    ax.hist(angle_cp2k[:,0],
+            bins=angle_cp2k[:,0],
+            weights=angle_cp2k[:,1],
+            color=get_color("CP2K"),
+            label="CP2K",
+            alpha=0.3)
+
+    ax.set_ylim((0.0, 0.05))
+    ax.set_xlabel(r"$\mathregular{angle}$", fontsize=22, labelpad=15)
+    ax.set_ylabel(r"$\mathregular{Relative Frequency}$", fontsize=22, labelpad=15)
 
     handles, labels = ax.get_legend_handles_labels()
     lgd = fig.legend(handles, 
