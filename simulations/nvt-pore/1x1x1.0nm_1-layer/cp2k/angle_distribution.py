@@ -121,15 +121,10 @@ def angle_dist(job):
     )
     angle_bins_center = (angle_bins[:-1] + angle_bins[1:]) / 2
     plt.figure()
-    normalized_counts=np.divide(counts,abs(np.sin(angle_bins_center)))
-    #plt.bar(angle_bins_center,normalized_counts)
-    #print(angle_bins_center)
-    #print(normalized_counts)
-    arr=plt.hist(angle_bins_center,weights=normalized_counts,bins=50,density=True)
+    normalized_counts = np.divide(counts, abs(np.sin(angle_bins_center)))
+    arr = plt.hist(angle_bins_center, weights=normalized_counts, bins=50, density=True)
     plt.xlabel("Angle (degress)")
     plt.ylabel("Relative frequency")
-    #for i in range(100):
-    #    plt.text(arr[1][i],arr[0][i],str(arr[0][i]))
     with job:
         plt.savefig(
             project.root_directory()
