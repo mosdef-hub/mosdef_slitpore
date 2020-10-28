@@ -120,8 +120,16 @@ def angle_dist(job):
         "The stdev of the angle is {}".format(np.std(all_angle_list)) + "\n"
     )
     angle_bins_center = (angle_bins[:-1] + angle_bins[1:]) / 2
+    plt.figure()
+    normalized_counts=np.divide(counts,abs(np.sin(angle_bins_center)))
+    #plt.bar(angle_bins_center,normalized_counts)
+    #print(angle_bins_center)
+    #print(normalized_counts)
+    arr=plt.hist(angle_bins_center,weights=normalized_counts,bins=50,density=True)
     plt.xlabel("Angle (degress)")
     plt.ylabel("Relative frequency")
+    #for i in range(100):
+    #    plt.text(arr[1][i],arr[0][i],str(arr[0][i]))
     with job:
         plt.savefig(
             project.root_directory()
@@ -135,7 +143,7 @@ def angle_dist(job):
             + "/distribution_data/{}/angle_dist.txt".format(
                 str(job.sp.nwater) + "water_data"
             ),
-            np.transpose(np.vstack([cos_angle_bins_center, counts])),
+            np.transpose(np.vstack([angle_bins_center, normalized_counts])),
             header="Angle_bins\tRelativeFreq",
         )
         text_file = open(
