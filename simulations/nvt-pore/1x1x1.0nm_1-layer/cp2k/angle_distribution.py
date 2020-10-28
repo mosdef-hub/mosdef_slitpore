@@ -113,29 +113,53 @@ def angle_dist(job):
     counts, angle_bins, bars = plt.hist(
         all_angle_list, bins=100, alpha=0.5, density=True
     )
-    results_string += (
-        "The mean of the angle is {}".format(np.mean(all_angle_list)) + "\n"
-    )
-    results_string += (
-        "The stdev of the angle is {}".format(np.std(all_angle_list)) + "\n"
-    )
-    angle_bins_center = (angle_bins[:-1] + angle_bins[1:]) / 2
-    plt.figure()
-    normalized_counts = np.divide(counts, abs(np.sin(angle_bins_center)))
-    arr = plt.hist(angle_bins_center, weights=normalized_counts, bins=50, density=True)
     plt.xlabel("Angle (degress)")
     plt.ylabel("Relative frequency")
+    plt.title("Unnormalized distribution")
+    angle_bins_center = (angle_bins[:-1] + angle_bins[1:]) / 2
     with job:
         plt.savefig(
             project.root_directory()
-            + "/distribution_data/{}/angle_dist.pdf".format(
+            + "/distribution_data/{}/angle_dist_unnormalized.pdf".format(
                 str(job.sp.nwater) + "water_data"
             )
         )
 
         np.savetxt(
             project.root_directory()
-            + "/distribution_data/{}/angle_dist.txt".format(
+            + "/distribution_data/{}/angle_dist_unnormalized.txt".format(
+                str(job.sp.nwater) + "water_data"
+            ),
+            np.transpose(np.vstack([angle_bins_center, counts])),
+            header="Angle_bins\tRelativeFreq",
+        )
+
+    results_string += (
+        "The mean of the angle is {}".format(np.mean(all_angle_list)) + "\n"
+    )
+    results_string += (
+        "The stdev of the angle is {}".format(np.std(all_angle_list)) + "\n"
+    )
+    plt.figure()
+    normalized_counts = np.divide(
+        counts, abs(np.sin((np.pi / 180) * angle_bins_center))
+    )
+    arr = plt.hist(angle_bins_center, weights=normalized_counts, bins=100, density=True)
+    # plt.bar(angle_bins_center,normalized_counts)
+    plt.xlabel("Angle (degress)")
+    plt.ylabel("Relative frequency")
+    plt.title("Normalized distribution")
+    with job:
+        plt.savefig(
+            project.root_directory()
+            + "/distribution_data/{}/angle_dist_normalized.pdf".format(
+                str(job.sp.nwater) + "water_data"
+            )
+        )
+
+        np.savetxt(
+            project.root_directory()
+            + "/distribution_data/{}/angle_dist_normalized.txt".format(
                 str(job.sp.nwater) + "water_data"
             ),
             np.transpose(np.vstack([angle_bins_center, normalized_counts])),
