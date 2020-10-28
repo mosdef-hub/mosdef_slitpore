@@ -82,7 +82,7 @@ def angle_dist(job):
     all_cos_angle_list = np.asarray(all_cos_angle_list)
     all_angle_list = (180 / np.pi) * np.arccos(all_cos_angle_list)
     counts, cos_angle_bins, bars = plt.hist(
-        all_cos_angle_list, bins=100, alpha=0.5, density=True
+        all_cos_angle_list, bins=50, alpha=0.5, density=True
     )
     results_string += (
         "The mean of the cos(angle) is {}".format(np.mean(all_cos_angle_list)) + "\n"
@@ -111,7 +111,7 @@ def angle_dist(job):
         )
     plt.figure()
     counts, angle_bins, bars = plt.hist(
-        all_angle_list, bins=100, alpha=0.5, density=True
+        all_angle_list, bins=50, alpha=0.5, density=True
     )
     plt.xlabel("Angle (degress)")
     plt.ylabel("Relative frequency")
@@ -144,7 +144,7 @@ def angle_dist(job):
     normalized_counts = np.divide(
         counts, abs(np.sin((np.pi / 180) * angle_bins_center))
     )
-    arr = plt.hist(angle_bins_center, weights=normalized_counts, bins=100, density=True)
+    arr = plt.hist(angle_bins_center, weights=normalized_counts, bins=50, density=True)
     # plt.bar(angle_bins_center,normalized_counts)
     plt.xlabel("Angle (degress)")
     plt.ylabel("Relative frequency")
