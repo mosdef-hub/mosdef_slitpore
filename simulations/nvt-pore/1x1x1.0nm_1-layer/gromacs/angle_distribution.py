@@ -63,7 +63,7 @@ def angle_dist(job):
     all_cos_angle_list = np.asarray(all_cos_angle_list)
     all_angle_list = (180 / np.pi) * np.arccos(all_cos_angle_list)
     counts, cos_angle_bins, bars = plt.hist(
-        all_cos_angle_list, bins=60, alpha=0.5, density=False
+        all_cos_angle_list, bins=60, alpha=0.5, density=True
     )
     cos_angle_bins_center = (cos_angle_bins[:-1] + cos_angle_bins[1:]) / 2
     plt.xlabel("cos(angle)")
@@ -111,7 +111,6 @@ def angle_dist(job):
         )
 
     plt.figure()
-    weights = np.ones_like(angle_bins_center) / len(angle_bins_center)
     normalized_counts = np.divide(
         counts, abs(np.sin((np.pi / 180) * angle_bins_center))
     )
