@@ -220,13 +220,15 @@ def plot_1_water():
             align="left",
             alpha=0.4)
 
-    ax.set_ylim((0.0, 0.04))
+    ax.set_ylim((0.0, 4.0))
     ax.tick_params(axis="both", which="both", direction="in", labelsize=16, pad=6)
     ax.set_xlabel(r"$\mathregular{Angle\ \theta, \deg}$", fontsize=22, labelpad=15)
-    ax.set_ylabel(r"$\mathregular{Normalized\ frequency}$", fontsize=22, labelpad=15)
+    ax.set_ylabel(r"$\mathregular{Normalized\ distribution}$", fontsize=22, labelpad=15)
 
     ax.xaxis.set_minor_locator(MultipleLocator(20))
     ax.xaxis.set_major_locator(MultipleLocator(60))
+    ax.yaxis.set_minor_locator(MultipleLocator(0.2))
+    ax.yaxis.set_major_locator(MultipleLocator(1.0))
     ax.xaxis.set_ticks_position("both")
     ax.yaxis.set_ticks_position("both")
 
