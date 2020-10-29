@@ -224,6 +224,8 @@ def plot_1_water():
     ax.tick_params(axis="both", which="both", direction="in", labelsize=16, pad=6)
     ax.set_xlabel(r"$\mathregular{Angle\ \theta, \deg}$", fontsize=22, labelpad=15)
     ax.set_ylabel(r"$\mathregular{Relative Frequency}$", fontsize=22, labelpad=15)
+    ax.xaxis.set_minor_locator(MultipleLocator(20))
+    ax.xaxis.set_major_locator(MultipleLocator(60))
     ax.xaxis.set_ticks_position("both")
     ax.yaxis.set_ticks_position("both")
 
