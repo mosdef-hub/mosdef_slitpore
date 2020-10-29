@@ -144,7 +144,9 @@ def angle_dist(job):
     normalized_counts = np.divide(
         counts, abs(np.sin((np.pi / 180) * angle_bins_center))
     )
-    arr = plt.hist(angle_bins_center, weights=normalized_counts, bins=np.linspace(0, 180, num=61), density=True)
+    normalized_counts /= np.sum(normalized_counts)
+    normalized_counts =normalized_counts *60
+    arr = plt.hist(angle_bins_center, weights=normalized_counts, bins=np.linspace(0, 180, num=61), density=False)
     # plt.bar(angle_bins_center,normalized_counts)
     plt.xlabel("Angle (degress)")
     plt.ylabel("Relative frequency")
