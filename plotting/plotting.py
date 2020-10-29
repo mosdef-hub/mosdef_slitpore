@@ -91,8 +91,8 @@ def plot_1_water():
 
     ax.set_xlim(0.00, 0.5)
     ax.set_ylim(-1, 12)
-    ax.set_xlabel(r"$\mathregular{\vert z \vert, nm}$", fontsize=22, labelpad=15)
-    ax.set_ylabel(r"$\mathregular{\rho(\vert z \vert), nm^{-3}}$", fontsize=22, labelpad=15)
+    ax.set_xlabel(r"$\mathregular{\vert \mathit{z} \vert, nm}$", fontsize=22, labelpad=15)
+    ax.set_ylabel(r"$\mathregular{\rho(\vert \mathit{z} \vert), nm^{-3}}$", fontsize=22, labelpad=15)
 
     ax.tick_params(axis="both", which="both", direction="in", labelsize=16, pad=6)
     ax.xaxis.set_minor_locator(MultipleLocator(0.05))
@@ -142,8 +142,8 @@ def plot_1_water():
 
     ax.set_xlim(0.00, 0.5)
     ax.set_ylim(-1, 12)
-    ax.set_xlabel(r"$\mathregular{\vert z \vert, nm}$", fontsize=22, labelpad=15)
-    ax.set_ylabel(r"$\mathregular{\rho(\vert z \vert), nm^{-3}}$", fontsize=22, labelpad=15)
+    ax.set_xlabel(r"$\mathregular{\vert \mathit{z} \vert, nm}$", fontsize=22, labelpad=15)
+    ax.set_ylabel(r"$\mathregular{\rho(\vert \mathit{z} \vert), nm^{-3}}$", fontsize=22, labelpad=15)
 
     ax.tick_params(axis="both", which="both", direction="in", labelsize=16, pad=6)
     ax.xaxis.set_minor_locator(MultipleLocator(0.05))
@@ -192,7 +192,7 @@ def plot_1_water():
 
     ax.set_xlim(-0.01, 0.25)
     ax.set_ylim(-0.3, 0.3)
-    ax.set_xlabel(r"$\mathregular{\vert z \vert, nm}$", fontsize=22, labelpad=15)
+    ax.set_xlabel(r"$\mathregular{\vert \mathit{z} \vert, nm}$", fontsize=22, labelpad=15)
     ax.set_ylabel(r"$\mathregular{S}$", fontsize=22, labelpad=15, style="italic")
 
     ax.tick_params(axis="both", which="both", direction="in", labelsize=16, pad=6)
@@ -223,7 +223,8 @@ def plot_1_water():
     ax.set_ylim((0.0, 0.04))
     ax.tick_params(axis="both", which="both", direction="in", labelsize=16, pad=6)
     ax.set_xlabel(r"$\mathregular{Angle\ \theta, \deg}$", fontsize=22, labelpad=15)
-    ax.set_ylabel(r"$\mathregular{Relative Frequency}$", fontsize=22, labelpad=15)
+    ax.set_ylabel(r"$\mathregular{Normalized\ frequency}$", fontsize=22, labelpad=15)
+
     ax.xaxis.set_minor_locator(MultipleLocator(20))
     ax.xaxis.set_major_locator(MultipleLocator(60))
     ax.xaxis.set_ticks_position("both")
@@ -329,8 +330,8 @@ def plot_large_2nm():
 
     ax.set_xlim(-0.75, 0.75)
     ax.set_ylim(-2, 180)
-    ax.set_xlabel(r"$\mathregular{z, nm}$", fontsize=22, labelpad=15)
-    ax.set_ylabel(r"$\mathregular{\rho(z), nm^{-3}}$", fontsize=22, labelpad=15)
+    ax.set_xlabel(r"$\mathregular{\mathit{z}, nm}$", fontsize=22, labelpad=15)
+    ax.set_ylabel(r"$\mathregular{\rho(\mathit{z}), nm^{-3}}$", fontsize=22, labelpad=15)
 
     ax.tick_params(axis="both", which="both", direction="in", labelsize=16, pad=6)
     ax.xaxis.set_minor_locator(MultipleLocator(0.05))
@@ -404,8 +405,8 @@ def plot_large_2nm():
 
     ax.set_xlim(-0.75, 0.75)
     ax.set_ylim(-2, 180)
-    ax.set_xlabel(r"$\mathregular{z, nm}$", fontsize=22, labelpad=15)
-    ax.set_ylabel(r"$\mathregular{\rho(z), nm^{-3}}$", fontsize=22, labelpad=15)
+    ax.set_xlabel(r"$\mathregular{\mathit{z}, nm}$", fontsize=22, labelpad=15)
+    ax.set_ylabel(r"$\mathregular{\rho(\mathit{z}), nm^{-3}}$", fontsize=22, labelpad=15)
 
     ax.tick_params(axis="both", which="both", direction="in", labelsize=16, pad=6)
     ax.xaxis.set_minor_locator(MultipleLocator(0.05))
@@ -486,7 +487,7 @@ def plot_large_2nm():
 
     ax.set_xlim(-0.75, 0.75)
     ax.set_ylim(-0.5, 0.5)
-    ax.set_xlabel(r"$\mathregular{z, nm}$", fontsize=22, labelpad=15)
+    ax.set_xlabel(r"$\mathregular{\mathit{z}, nm}$", fontsize=22, labelpad=15)
     ax.set_ylabel(r"$\mathregular{S}$", fontsize=22, labelpad=15, style="italic")
 
     ax.tick_params(axis="both", which="both", direction="in", labelsize=16, pad=6)
@@ -498,7 +499,7 @@ def plot_large_2nm():
     handles, labels = ax.get_legend_handles_labels()
     lgd = fig.legend(handles, 
             labels,
-            bbox_to_anchor=(0.5, 1.07),
+            bbox_to_anchor=(0.5, 1.1),
             fontsize=16,
             loc='upper center',
             ncol=4)
@@ -621,8 +622,8 @@ def plot_small_1nm():
 
     ax.set_xlim(-0.4, 0.4)
     ax.set_ylim(-2, 140)
-    ax.set_xlabel(r"$\mathregular{z, nm}$", fontsize=22, labelpad=15)
-    ax.set_ylabel(r"$\mathregular{\rho(z), nm^{-3}}$", fontsize=22, labelpad=15)
+    ax.set_xlabel(r"$\mathregular{\mathit{z}, nm}$", fontsize=22, labelpad=15)
+    ax.set_ylabel(r"$\mathregular{\rho(\mathit{z}), nm^{-3}}$", fontsize=22, labelpad=15)
 
     ax.tick_params(axis="both", which="both", direction="in", labelsize=16, pad=6)
     ax.xaxis.set_minor_locator(MultipleLocator(0.05))
@@ -723,8 +724,8 @@ def plot_small_1nm():
 
     ax.set_xlim(-0.4, 0.4)
     ax.set_ylim(-2, 240)
-    ax.set_xlabel(r"$\mathregular{z, nm}$", fontsize=22, labelpad=15)
-    ax.set_ylabel(r"$\mathregular{\rho(z), nm^{-3}}$", fontsize=22, labelpad=15)
+    ax.set_xlabel(r"$\mathregular{\mathit{z}, nm}$", fontsize=22, labelpad=15)
+    ax.set_ylabel(r"$\mathregular{\rho(\mathit{z}), nm^{-3}}$", fontsize=22, labelpad=15)
 
     ax.tick_params(axis="both", which="both", direction="in", labelsize=16, pad=6)
     ax.xaxis.set_minor_locator(MultipleLocator(0.05))
@@ -820,7 +821,7 @@ def plot_small_1nm():
 
     ax.set_xlim(-0.4, 0.4)
     ax.set_ylim(-0.5, 0.5)
-    ax.set_xlabel(r"$\mathregular{z, nm}$", fontsize=22, labelpad=15)
+    ax.set_xlabel(r"$\mathregular{\mathit{z}, nm}$", fontsize=22, labelpad=15)
     ax.set_ylabel(r"$\mathregular{S}$", fontsize=22, labelpad=15, style="italic")
 
     ax.tick_params(axis="both", which="both", direction="in", labelsize=16, pad=6)
@@ -832,7 +833,7 @@ def plot_small_1nm():
     handles, labels = ax.get_legend_handles_labels()
     lgd = fig.legend(handles, 
             labels,
-            bbox_to_anchor=(0.5, 1.07),
+            bbox_to_anchor=(0.5, 1.1),
             fontsize=16,
             loc='upper center',
             ncol=5)
