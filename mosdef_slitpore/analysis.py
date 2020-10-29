@@ -227,6 +227,7 @@ def compute_angle(
     max_distance=1.0,
     bin_width=0.01,
     symmetrize=False,
+    bond_array=None,
 ):
     """Compute the cos(angle) between HOH bisector and graphene surface normal
 
@@ -244,6 +245,10 @@ def compute_angle(
         width of the bin for computing s
     symmetrize : bool, optional, default = False
         if binning should be done in abs(z) instead of z
+    bond_array : np.array(dtype=np.int32), optional, default = None
+        Array of bonds to pass into `make_molecules_whole`
+        Warning: This argument is necessary if loading in a mol2 file due to a
+        current bug in the MDTraj MOL2 reader: https://github.com/mdtraj/mdtraj/issues/1581
     Returns
     -------
     bin_centers : np.ndarray
@@ -254,7 +259,7 @@ def compute_angle(
         array that contains all the samples for cos(angle)
     """
     # Make molecules whole first
-    traj.make_molecules_whole(inplace=True)
+    traj.make_molecules_whole(inplace=True, sorted_bonds=bond_array)
     # Select ow and hw
     water_o = traj.top.select("water and name O")
     water_h = traj.top.select("water and name H")
