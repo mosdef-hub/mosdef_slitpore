@@ -63,7 +63,7 @@ def angle_dist(job):
     all_cos_angle_list = np.asarray(all_cos_angle_list)
     all_angle_list = (180 / np.pi) * np.arccos(all_cos_angle_list)
     counts, cos_angle_bins, bars = plt.hist(
-        all_cos_angle_list, bins=60, alpha=0.5, density=True
+        all_cos_angle_list, bins=60, alpha=0.5, density=False
     )
     cos_angle_bins_center = (cos_angle_bins[:-1] + cos_angle_bins[1:]) / 2
     plt.xlabel("cos(angle)")
@@ -85,8 +85,9 @@ def angle_dist(job):
             header="cos_Angle_bins\tRelativeFreq",
         )
     plt.figure()
+    bins = np.linspace(0, 180, num=61)
     counts, angle_bins, bars = plt.hist(
-        all_angle_list, bins=np.linspace(0, 180, num=61), alpha=0.5, density=True
+        all_angle_list, bins=bins, alpha=0.5, density=True
     )
     plt.xlabel("Angle (degress)")
     plt.ylabel("Relative frequency")
@@ -110,6 +111,7 @@ def angle_dist(job):
         )
 
     plt.figure()
+    weights = np.ones_like(angle_bins_center) / len(angle_bins_center)
     normalized_counts = np.divide(
         counts, abs(np.sin((np.pi / 180) * angle_bins_center))
     )
@@ -117,7 +119,6 @@ def angle_dist(job):
     normalized_counts /= np.sum(normalized_counts)
     normalized_counts *= 60
     arr = plt.hist(angle_bins_center, weights=normalized_counts, bins=np.linspace(0, 180, num=61), density=False)
-    # plt.bar(angle_bins_center,normalized_counts)
     plt.xlabel("Angle (degress)")
     plt.ylabel("Relative frequency")
     plt.title("Normalized distribution")
