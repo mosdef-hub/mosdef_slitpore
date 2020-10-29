@@ -8,27 +8,6 @@ from matplotlib import rcParams
 rcParams['font.sans-serif'] = 'Arial'
 rcParams['font.family'] = 'sans-serif'
 
-def add_subplot_axes(ax,rect):
-    fig = plt.gcf()
-    box = ax.get_position()
-    width = box.width
-    height = box.height
-    inax_position  = ax.transAxes.transform(rect[0:2])
-    transFigure = fig.transFigure.inverted()
-    infig_position = transFigure.transform(inax_position)
-    x = infig_position[0]
-    y = infig_position[1]
-    width *= rect[2]
-    height *= rect[3]  # <= Typo was here
-    subax = fig.add_axes([x,y,width,height])
-    x_labelsize = subax.get_xticklabels()[0].get_size()
-    y_labelsize = subax.get_yticklabels()[0].get_size()
-    x_labelsize *= rect[2]**0.5
-    y_labelsize *= rect[3]**0.5
-    subax.xaxis.set_tick_params(labelsize=x_labelsize)
-    subax.yaxis.set_tick_params(labelsize=y_labelsize)
-    return subax
-
 def get_color(engine):
     color_dict = {
             'Cassandra': '#1f77b4',
@@ -70,9 +49,9 @@ def plot_1_water():
     angle_cp2k = np.genfromtxt(data_path+cp2k_angle_path+"angle_dist_normalized.txt", skip_header=1)
 
 
-    fig, axes = plt.subplots(1, 4, figsize=(18,5))
+    fig, axes = plt.subplots(2, 2, figsize=(9,9))
     # Plot OW
-    ax = axes[0]
+    ax = axes[0][0]
     ax.text(0.05, 0.90, 'a)', transform=ax.transAxes,
             size=20, weight='bold')
     rect = [0.47, 0.7, 0.4, 0.4]
@@ -124,7 +103,7 @@ def plot_1_water():
 
 
     # Plot HW
-    ax = axes[1]
+    ax = axes[0][1]
     ax.text(0.05, 0.90, 'b)', transform=ax.transAxes,
             size=20, weight='bold')
     ax.plot(
@@ -174,7 +153,7 @@ def plot_1_water():
     ax.yaxis.set_ticks_position("both")
 
     # Plot S
-    ax = axes[2]
+    ax = axes[1][0]
     ax.text(0.05, 0.90, 'c)', transform=ax.transAxes,
             size=20, weight='bold')
     ax.plot(
@@ -222,28 +201,34 @@ def plot_1_water():
     ax.xaxis.set_ticks_position("both")
     ax.yaxis.set_ticks_position("both")
 
-    ax = axes[3]
-    ax.text(0.00, 0.10, 'd)', transform=ax.transAxes,
+    legend_ax = ax
+    ax = axes[1][1]
+    ax.text(0.05, 0.90, 'd)', transform=ax.transAxes,
             size=20, weight='bold')
     ax.hist(angle_gmx[:,0],
-            bins=angle_gmx[:,0],
+            bins=len(angle_gmx[:,0]),
             weights=angle_gmx[:,1],
             color=get_color("GROMACS"),
             label="GROMACS",
-            alpha=0.3)
-
+            align="left",
+            alpha=0.4)
     ax.hist(angle_cp2k[:,0],
-            bins=angle_cp2k[:,0],
+            bins=len(angle_cp2k[:,0]),
             weights=angle_cp2k[:,1],
             color=get_color("CP2K"),
             label="CP2K",
-            alpha=0.3)
+            align="left",
+            alpha=0.4)
 
-    ax.set_ylim((0.0, 0.05))
-    ax.set_xlabel(r"$\mathregular{angle}$", fontsize=22, labelpad=15)
+    ax.set_ylim((0.0, 0.04))
+    ax.tick_params(axis="both", which="both", direction="in", labelsize=16, pad=6)
+    ax.set_xlabel(r"$\mathregular{Angle\ \theta, \deg}$", fontsize=22, labelpad=15)
     ax.set_ylabel(r"$\mathregular{Relative Frequency}$", fontsize=22, labelpad=15)
+    ax.xaxis.set_ticks_position("both")
+    ax.yaxis.set_ticks_position("both")
 
-    handles, labels = ax.get_legend_handles_labels()
+
+    handles, labels = legend_ax.get_legend_handles_labels()
     lgd = fig.legend(handles, 
             labels,
             bbox_to_anchor=(0.5, 1.08),
