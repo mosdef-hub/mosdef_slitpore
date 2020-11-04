@@ -117,12 +117,15 @@ def check_simulation(filen, nsteps):
             for line in f:
                 pass
             last = line.strip().split()
-    except OSError:
+    except (UnboundLocalError, OSError):
         return False
 
-    if int(last[0]) == nsteps:
-        return True
-    else:
+    try:
+        if int(last[0]) == nsteps:
+            return True
+        else:
+            return False
+    except IndexError:
         return False
 
 
