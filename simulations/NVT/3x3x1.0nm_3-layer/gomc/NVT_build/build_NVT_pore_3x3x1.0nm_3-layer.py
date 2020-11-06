@@ -1,7 +1,7 @@
 from mbuild.recipes.porebuilder import GraphenePore
 import mbuild as mb
 from foyer import Forcefield
-import mbuild.formats.charmm_writer as mf_charmm
+from mosdef_slitpore.utils import charmm_writer as mf_charmm
 
 
 Water_res_name = 'H2O'
