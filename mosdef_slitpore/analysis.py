@@ -218,3 +218,77 @@ def compute_mol_per_area(
         new_bins = [(bi - shift_value) for bi in new_bins]
 
     return (areas, new_bins)
+
+
+def compute_angle(
+    traj,
+    surface_normal_dim=2,
+    pore_center=0.0,
+    max_distance=1.0,
+    bin_width=0.01,
+    symmetrize=False,
+    bond_array=None,
+):
+    """Compute the cos(angle) between HOH bisector and graphene surface normal
+
+    Parameters
+    ----------
+    traj : mdtraj.Trajectory,
+        trajectory to analyze
+    surface_normal_dim : enum (0,1,2), optional, default = 2
+        direction normal to the surface (x:0, y:1, z:2)
+    pore_center : float, optional, default = 0.0
+        coordinate of the pore center along surface_normal_dim
+    max_distance : float, optional, default = 1.0
+        max distance to consider from the center of the pore
+    bin_width : float, optional, default = 0.01
+        width of the bin for computing s
+    symmetrize : bool, optional, default = False
+        if binning should be done in abs(z) instead of z
+    bond_array : np.array(dtype=np.int32), optional, default = None
+        Array of bonds to pass into `make_molecules_whole`
+        Warning: This argument is necessary if loading in a mol2 file due to a
+        current bug in the MDTraj MOL2 reader: https://github.com/mdtraj/mdtraj/issues/1581
+    Returns
+    -------
+    bin_centers : np.ndarray
+        the bin centers, shifted so that pore_center is at 0.0
+    cos_angle_values : np.ndarray
+        the value of average cos(angle) for each bin
+    cos_angles: np.ndarray
+        array that contains all the samples for cos(angle)
+    """
+    # Make molecules whole first
+    traj.make_molecules_whole(inplace=True, sorted_bonds=bond_array)
+    # Select ow and hw
+    water_o = traj.top.select("water and name O")
+    water_h = traj.top.select("water and name H")
+    traj_ow = traj.atom_slice(water_o)
+    traj_hw = traj.atom_slice(water_h)
+
+    # Compute angles between surface normal ([0,0,1]/[0,0,-1]) and h-o-h bisector
+    hw_midpoints = traj_hw.xyz.reshape(traj_hw.n_frames, -1, 2, 3).mean(axis=2)
+
+    vectors = traj_ow.xyz - hw_midpoints
+    vectors /= np.linalg.norm(vectors, axis=-1, keepdims=True)
+    cos_angles = vectors[:, :, surface_normal_dim]
+    # The surface normal is decided by looking at the position of O in H2O
+    side_of_pore = np.sign(-traj_ow.xyz[:, :, surface_normal_dim] + pore_center)
+    cos_angles = np.multiply(cos_angles, side_of_pore)
+    # Compute distances -- center of pore already @ 0,0; use OW position
+    if symmetrize:
+        distances = abs(traj_ow.xyz[:, :, surface_normal_dim] - pore_center)
+    else:
+        distances = traj_ow.xyz[:, :, surface_normal_dim] - pore_center
+    bin_centers = []
+    cos_angle_values = []
+    for bin_center in np.arange(-max_distance, max_distance, bin_width):
+        mask = np.logical_and(
+            distances > bin_center - 0.5 * bin_width,
+            distances < bin_center + 0.5 * bin_width,
+        )
+        cos_angle = np.mean(cos_angles[mask])
+        bin_centers.append(bin_center)
+        cos_angle_values.append(cos_angle)
+
+    return bin_centers, cos_angle_values, cos_angles
