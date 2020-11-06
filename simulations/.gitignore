@@ -1,6 +1,0 @@
-.bundles
-signac*
-templates/
-*bundle*.o*
-workspace/
-submit.sge

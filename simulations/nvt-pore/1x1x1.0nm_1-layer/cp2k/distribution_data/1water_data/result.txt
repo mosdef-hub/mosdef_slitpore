@@ -1,4 +1,0 @@
-The mean of the cos(angle) is 0.379962682723999
-The stdev of the cos(angle) is 0.4918923079967499
-The mean of the angle is 63.77849197387695
-The stdev of the angle is 34.167205810546875
