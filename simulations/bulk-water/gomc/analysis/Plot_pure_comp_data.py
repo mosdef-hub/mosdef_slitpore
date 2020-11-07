@@ -122,11 +122,11 @@ frame1 = legend1.get_frame()
 frame1.set_facecolor('0.90')
 
 plt.legend(ncol=1,loc='upper left', fontsize=legend_font_size, prop={'family':'Arial','size': legend_font_size})
-plt.show()
 
 
 
-plt.show()
+
+#plt.show()
 fig1.savefig(P_vs_ChemPot_saving_name)
 #****************************************
 #Plot Number 1  P vs T) (end)

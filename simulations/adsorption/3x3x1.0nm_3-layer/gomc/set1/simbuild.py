@@ -5,7 +5,9 @@ from shutil import copy2
 from shutil import copytree
 import numpy as np
 
-
+#*********************************************************
+# data to change if needed (start)
+#*********************************************************
 
 explicit_path_to_GOMC_executable_string = None
 # if explicit_path_to_GOMC_executable_string = None, it assumes the you are manually entering the path every time you
@@ -13,6 +15,18 @@ explicit_path_to_GOMC_executable_string = None
 # Example: for explicit_path_to_GOMC_executable_sting, if you just want to enter the explict path for your computer
 # or server just replace the above with the following, and you will be the 'GOMC_CPU_GCMC' executable added to it.
 # explicit_path_to_GOMC_executable_string = '/home/brad/Programs/GIT_repositories/Test_Slit_pore_mosdef_build/GOMC/bin'
+
+CPU_or_GPU = 'CPU'   # enter string either CPU or GPU, choose to run on CPU or GPU (this design was intened for CPU)
+
+module_load_command_1 = "module swap gnu7/7.3.0 intel/2019"   #  leave as None if no module loaded, or provided as a string
+module_load_command_2 = None    # is  leave as None if no module loaded, or provided as a string
+module_load_command_3 = None   # is  None if no module loaded, or provided as a string
+
+constaint_command = " --constraint=intel"   # is None if there is no constraint command for the HPC submission, # or provided as a string
+
+#*********************************************************
+# data to change if needed (end)
+#*********************************************************
 
 def write_slurm(file_out, task, Ncores,server_run_directory, newdir):
     # SLURM boilerplate
@@ -32,10 +46,10 @@ def write_slurm(file_out, task, Ncores,server_run_directory, newdir):
 
     Line_13 = 'echo  "Running on host" hostname'
     Line_14 = 'echo  "Time is" date'
-    Line_15 = "module swap gnu7/7.3.0 intel/2019"
 
-    goto_directory = os.getcwd()
-    #goto_directory = server_run_directory
+
+    #goto_directory = os.getcwd()
+    goto_directory = server_run_directory
     file = open(file_out, 'w')
 
     file.write(intro+"\n\n")
@@ -44,26 +58,49 @@ def write_slurm(file_out, task, Ncores,server_run_directory, newdir):
     file.write(slurm+Line_4+"\n")
     file.write(slurm + Line_5 + "\n")
     file.write(slurm + Line_6 + "\n")
-    file.write(slurm+Line_7 + "\n")
+
+    if constaint_command != None and isinstance(constaint_command, str):
+        file.write(slurm+constaint_command + "\n")
+
     file.write(slurm+Line_8 + "\n")
     file.write(slurm+Line_10 + "\n")
     file.write(slurm+Line_11 + "\n")
     file.write(slurm + Line_12 + "\n\n")
     file.write(Line_13 + "\n")
-    file.write(Line_14 + "\n")
-    file.write(Line_15 + "\n\n")
+    file.write(Line_14 + "\n\n")
+
+    if module_load_command_1 != None and isinstance(module_load_command_1,str):
+        file.write(module_load_command_1 + "\n")
+    if module_load_command_2 != None and isinstance(module_load_command_2, str):
+        file.write(module_load_command_1 + "\n")
+    if module_load_command_3 != None and isinstance(module_load_command_3, str):
+        file.write(module_load_command_1 + "\n")
+
+    file.write("\n\n")
     file.write("cd " + goto_directory + "\n\n")
     file.write(task+"\n")
     file.close()
     return
 
 
+if isinstance(CPU_or_GPU, str):
+    if CPU_or_GPU == 'CPU':
+        print('GOMC run using CPU')
+    elif CPU_or_GPU == 'GPU':
+        print('GOMC run using GPU')
+    else:
+        print("Error: neither 'CPU' or 'GPU' was selected for the CPU_or_GPU variable")
+else:
+    print("Error: neither 'CPU' or 'GPU' was selected for the CPU_or_GPU variable")
 
 
 
-executable_file =  'GOMC_CPU_GCMC'
+executable_file_part_1 =  'GOMC_'    # this can be changed to GPU if the user wants to run the GPU code
+executable_file_part_2 =  '_GCMC'    # this can be changed to GPU if the user wants to run the GPU code
+executable_file = executable_file_part_1 + CPU_or_GPU + executable_file_part_2
 
-if explicit_path_to_GOMC_executable_string != None:
+
+if explicit_path_to_GOMC_executable_string != None :
     if isinstance(explicit_path_to_GOMC_executable_string,str):
         if explicit_path_to_GOMC_executable_string[-1] == '/':
             length = len(explicit_path_to_GOMC_executable_string)-1
@@ -78,13 +115,15 @@ if explicit_path_to_GOMC_executable_string != None:
 else:
     prog = executable_file
 
-#prog = '/home/brad/Programs/GOMC/GOMC-2_6-master/bin/GOMC_CPU_GCMC'
-#server_run_directory = '/wsu/home/hf/hf68/hf6839/Simulations/Graphene_water/Graphene_water_MoSDeF/mosdef_slitpore/simulations/desorption/3x3x1.0nm_3-layer/gomc_no_fake_water/set1'
 goto_directory = os.getcwd()
 server_run_directory = goto_directory
 
+
+
+
+
 job_name='wp_10'
-parameters='../../../../../ads_equilb_pdb_psf_FF/gomc/GOMC_pore_fake_water_FF.inp'
+parameters='../../build_ads_system/GOMC_pore_fake_water_FF.inp'
 outputname = 'SPCE_PORE_10'
 RSF='false'
 #init_pdb=[" ", " "]
@@ -117,11 +156,11 @@ for irun in range(0, nruns):
     if restart[irun] == 0:
         RSF='False'
         if adsorption_or_desorption == 'ads' :
-	        pdb_name = ['../../../../../ads_equilb_pdb_psf_FF/gomc/pore_3x3x1.0nm_3-layer.pdb', '../../../../../ads_equilb_pdb_psf_FF/gomc/GOMC_reservior_fake_water_box.pdb']
-	        psf_name = ['../../../../../ads_equilb_pdb_psf_FF/gomc/pore_3x3x1.0nm_3-layer.psf', '../../../../../ads_equilb_pdb_psf_FF/gomc/GOMC_reservior_fake_water_box.psf']
+	        pdb_name = ['../../build_ads_system/pore_3x3x1.0nm_3-layer.pdb', '../../build_ads_system/GOMC_reservior_fake_water_box.pdb']
+	        psf_name = ['../../build_ads_system/pore_3x3x1.0nm_3-layer.psf', '../../build_ads_system/GOMC_reservior_fake_water_box.psf']
         elif adsorption_or_desorption == 'des':
-	        pdb_name = ['../../../../../NVT/3x3x1.0nm_3-layer/gomc/Output_data_BOX_0_restart.pdb', '../../../../../NVT/3x3x1.6nm_3-layer/gomc/NVT_build/GOMC_reservior_fake_water_box.pdb']
-	        psf_name = ['../../../../../NVT/3x3x1.0nm_3-layer/gomc/Output_data_merged.psf',        '../../../../..//NVT/3x3x1.6nm_3-layer/gomc/NVT_build/GOMC_reservior_fake_water_box.psf']
+	        pdb_name = ['../../NVT/3x3x1.0nm_3-layer/Output_data_BOX_0_restart.pdb', '../../NVT/3x3x1.0nm_3-layer/NVT_build/GOMC_reservior_fake_water_box.pdb']
+	        psf_name = ['../../NVT/3x3x1.0nm_3-layer/Output_data_merged.psf',        '../../NVT/3x3x1.0nm_3-layer/NVT_build/GOMC_reservior_fake_water_box.psf']
         else:
             print('pick a desorption or adsorption')
 

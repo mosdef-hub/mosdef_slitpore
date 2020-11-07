@@ -1,0 +1,34 @@
+PSF 
+
+       3 !NTITLE
+ REMARKS this file Water_boxes_for_test_box_30A - created by mBuild/foyer using the
+ REMARKS parameters from the {} force field via MoSDef
+ REMARKS created on 2020-11-06 14:05:49.528458
+
+
+       0 !NATOM
+
+       0 !NBOND: bonds
+
+
+       0 !NTHETA: angles
+
+
+       0 !NPHI: dihedrals
+
+
+       0 !NIMPHI: impropers
+
+
+       0 !NDON: donors
+
+
+       0 !NACC: acceptors
+
+
+       0 !NNB
+
+
+       1       0 !NGRP 
+       0       1       0
+

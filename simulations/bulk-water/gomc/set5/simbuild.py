@@ -5,12 +5,28 @@ from shutil import copy2
 from shutil import copytree
 import numpy as np
 
+#*********************************************************
+# data to change if needed (start)
+#*********************************************************
+
 explicit_path_to_GOMC_executable_string = None
 # if explicit_path_to_GOMC_executable_string = None, it assumes the you are manually entering the path every time you
 #open a new terminal window per the install GOMC section
 # Example: for explicit_path_to_GOMC_executable_sting, if you just want to enter the explict path for your computer
 # or server just replace the above with the following, and you will be the 'GOMC_CPU_GCMC' executable added to it.
 # explicit_path_to_GOMC_executable_string = '/home/brad/Programs/GIT_repositories/Test_Slit_pore_mosdef_build/GOMC/bin'
+
+CPU_or_GPU = 'CPU'   # enter string either CPU or GPU, choose to run on CPU or GPU (this design was intened for CPU)
+
+module_load_command_1 = "module swap gnu7/7.3.0 intel/2019"   #  leave as None if no module loaded, or provided as a string
+module_load_command_2 = None    # is  leave as None if no module loaded, or provided as a string
+module_load_command_3 = None   # is  None if no module loaded, or provided as a string
+
+constaint_command = " --constraint=intel"   # is None if there is no constraint command for the HPC submission, # or provided as a string
+
+#*********************************************************
+# data to change if needed (end)
+#*********************************************************
 
 def write_slurm(file_out, task, Ncores,server_run_directory, newdir):
     # SLURM boilerplate
@@ -30,7 +46,7 @@ def write_slurm(file_out, task, Ncores,server_run_directory, newdir):
 
     Line_13 = 'echo  "Running on host" hostname'
     Line_14 = 'echo  "Time is" date'
-    Line_15 = "module swap gnu7/7.3.0 intel/2019"
+
 
     #goto_directory = os.getcwd()
     goto_directory = server_run_directory
@@ -42,26 +58,49 @@ def write_slurm(file_out, task, Ncores,server_run_directory, newdir):
     file.write(slurm+Line_4+"\n")
     file.write(slurm + Line_5 + "\n")
     file.write(slurm + Line_6 + "\n")
-    file.write(slurm+Line_7 + "\n")
+
+    if constaint_command != None and isinstance(constaint_command, str):
+        file.write(slurm+constaint_command + "\n")
+
     file.write(slurm+Line_8 + "\n")
     file.write(slurm+Line_10 + "\n")
     file.write(slurm+Line_11 + "\n")
     file.write(slurm + Line_12 + "\n\n")
     file.write(Line_13 + "\n")
-    file.write(Line_14 + "\n")
-    file.write(Line_15 + "\n\n")
+    file.write(Line_14 + "\n\n")
+
+    if module_load_command_1 != None and isinstance(module_load_command_1,str):
+        file.write(module_load_command_1 + "\n")
+    if module_load_command_2 != None and isinstance(module_load_command_2, str):
+        file.write(module_load_command_1 + "\n")
+    if module_load_command_3 != None and isinstance(module_load_command_3, str):
+        file.write(module_load_command_1 + "\n")
+
+    file.write("\n\n")
     file.write("cd " + goto_directory + "\n\n")
     file.write(task+"\n")
     file.close()
     return
 
 
+if isinstance(CPU_or_GPU, str):
+    if CPU_or_GPU == 'CPU':
+        print('GOMC run using CPU')
+    elif CPU_or_GPU == 'GPU':
+        print('GOMC run using GPU')
+    else:
+        print("Error: neither 'CPU' or 'GPU' was selected for the CPU_or_GPU variable")
+else:
+    print("Error: neither 'CPU' or 'GPU' was selected for the CPU_or_GPU variable")
 
 
 
-executable_file =  '/wsu/home/hf/hf68/hf6839/GOMC-2_6-master/bin/GOMC_CPU_GCMC'
+executable_file_part_1 =  'GOMC_'    # this can be changed to GPU if the user wants to run the GPU code
+executable_file_part_2 =  '_GCMC'    # this can be changed to GPU if the user wants to run the GPU code
+executable_file = executable_file_part_1 + CPU_or_GPU + executable_file_part_2
 
-if explicit_path_to_GOMC_executable_string != None:
+
+if explicit_path_to_GOMC_executable_string != None :
     if isinstance(explicit_path_to_GOMC_executable_string,str):
         if explicit_path_to_GOMC_executable_string[-1] == '/':
             length = len(explicit_path_to_GOMC_executable_string)-1
@@ -76,11 +115,12 @@ if explicit_path_to_GOMC_executable_string != None:
 else:
     prog = executable_file
 
-#prog = '/home/brad/Programs/GOMC/GOMC-2_6-master/bin/GOMC_CPU_GCMC'
-server_run_directory = '/wsu/home/hf/hf68/hf6839/Simulations/Graphene_water/Graphene_water_MoSDeF/mosdef_slitpore/simulations/bulk-water/gomc/set5'
+goto_directory = os.getcwd()
+server_run_directory = goto_directory
 
-#goto_directory = os.getcwd()
-#server_run_directory = goto_directory
+
+
+
 job_name='SPCE_Pvap'
 parameters='../../build_liq_vap_boxes/Water_Pvap_vs_Chempot.inp'
 outputname = 'SPCE_Pvap'
