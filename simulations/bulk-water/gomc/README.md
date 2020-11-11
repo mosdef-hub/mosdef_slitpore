@@ -18,7 +18,7 @@ Note: Part 1's simulation data will be used later for setting up simulations and
 
 
 ### Step 2 : build the coordinate, topology, and force field files (PDB, PSF, and FF (.inp))
-1) Change the terminal window directory to the build_reservior directory (i.e., to mosdef_slitpore/mosdef_slitpore/simulations/desorption/3x3x1.0nm_3-layer/gomc/build_reservior). Assuming you are in the main bulk-water gomc directory (mosdef_slitpore/simulations/bulk-water/gomc).
+1) Change the terminal window directory to the build_reservior directory (i.e., to mosdef_slitpore/mosdef_slitpore/simulations/bulk-water/gomc/build_liq_vap_boxes). Assuming you are in the main bulk-water gomc directory (mosdef_slitpore/simulations/bulk-water/gomc).
 * cd build_liq_vap_boxes
 
 2) Run the python build script

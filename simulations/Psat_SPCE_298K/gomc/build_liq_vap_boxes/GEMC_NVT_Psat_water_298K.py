@@ -1,6 +1,7 @@
 import mbuild as mb
 from foyer import Forcefield
-import mbuild.formats.charmm_writer as mf_charmm
+sys.path.append('../../../../')
+from mosdef_slitpore.utils import charmm_writer as mf_charmm
 
 Water_res_name = 'H2O'
 FF_file_water = '../../../../mosdef_slitpore/ffxml/pore-spce.xml'
@@ -38,7 +39,7 @@ mf_charmm.charmm_psf_psb_FF(water_box_liq,
                             'Box_0_liq_water_30A_L_cubed_box',
                             structure_1 = water_box_vap ,
                             filename_1 = 'Box_1_vap_water_600A_L_cubed_box',
-                            GOMC_FF_filename ="GOMC_water_FF" ,
+                            FF_filename ="GOMC_water_FF" ,
                             forcefield_files = FF_Dict,
                             residues= residues_List ,
                             Bead_to_atom_name_dict = None,

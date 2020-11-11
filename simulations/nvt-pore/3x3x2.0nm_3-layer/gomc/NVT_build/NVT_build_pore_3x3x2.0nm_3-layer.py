@@ -1,10 +1,10 @@
-from mbuild.recipes.porebuilder import GraphenePoreSolvent
-from mbuild.recipes.porebuilder import GraphenePore
+from mbuild import recipes
 import mbuild as mb
 from foyer import Forcefield
 import parmed.structure
 import foyer
-import mbuild.formats.charmm_writer as mf_charmm
+sys.path.append('../../../../../')
+from mosdef_slitpore.utils import charmm_writer as mf_charmm
 #**************************************************************
 #**************************************************************
 # variables to change  (start)
@@ -43,7 +43,7 @@ graphene_sheet_space_nm = 0.335
 
 n_waters = 485
 
-empty_graphene_pore = GraphenePore( pore_width=pore_width_nm ,
+empty_graphene_pore =recipes.GraphenePore( pore_width=pore_width_nm ,
                                     pore_length=3.0,
                                     pore_depth=3.0,
                                     n_sheets=No_sheets,
@@ -65,13 +65,13 @@ filled_pore.periodicity[2] = Total_box_z_axis_nm
 
 
 mf_charmm.charmm_psf_psb_FF(filled_pore,
-                  'filled_pore_water_3x3x2.0nm_3-layer',
-                  structure_1 = None,
-                  filename_1 = None,
-                            GOMC_FF_filename ="GOMC_pore_water_FF" ,
-                  forcefield_files= FF_Graphene_pore_w_solvent_Dict ,
-                  residues=residues_Graphene_pore_w_solvent_List ,
-                  Bead_to_atom_name_dict = None,
+                            'filled_pore_water_3x3x2.0nm_3-layer',
+                            structure_1 = None,
+                            filename_1 = None,
+                            FF_filename ="GOMC_pore_water_FF" ,
+                            forcefield_files= FF_Graphene_pore_w_solvent_Dict ,
+                            residues=residues_Graphene_pore_w_solvent_List ,
+                            Bead_to_atom_name_dict = None,
                             fix_residue = Fix_Graphene_residue,
                             fix_res_bonds_angles = Fix_bonds_angles_residues,
                             reorder_res_in_pdb_psf = False

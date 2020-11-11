@@ -1,7 +1,8 @@
-from mbuild.recipes.porebuilder import GraphenePore
+from mbuild import recipes
 import mbuild as mb
 from foyer import Forcefield
-import mbuild.formats.charmm_writer as mf_charmm
+sys.path.append('../../../../../')
+from mosdef_slitpore.utils import charmm_writer as mf_charmm
 
 
 Water_res_name = 'H2O'
@@ -53,7 +54,7 @@ No_sheets = 3
 sheet_spacing = 0.335
 #for GOMC, currently we need to add the space at the end of the simulation
 # this does not matter as we are using PBC's
-graphene = GraphenePore(
+graphene =recipes.GraphenePore(
         pore_width=sheet_spacing ,
         pore_length=3.0,
         pore_depth=3.0,
@@ -69,26 +70,26 @@ graphene.periodicity[2] = sheet_spacing*(2*No_sheets-1)+pore_width_nm
 
 
 mf_charmm.charmm_psf_psb_FF(graphene,
-                  'pore_3x3x1.0nm_3-layer',
-                  structure_1 = box_reservior,
-                  filename_1 = 'GOMC_reservior_box',
-                            GOMC_FF_filename ="GOMC_pore_water_FF" ,
-                  forcefield_files= FF_Graphene_pore_w_solvent_Dict ,
-                  residues=residues_Graphene_pore_w_solvent_List ,
-                  Bead_to_atom_name_dict = None,
+                            'pore_3x3x1.0nm_3-layer',
+                            structure_1 = box_reservior,
+                            filename_1 = 'GOMC_reservior_box',
+                            FF_filename ="GOMC_pore_water_FF" ,
+                            forcefield_files= FF_Graphene_pore_w_solvent_Dict ,
+                            residues=residues_Graphene_pore_w_solvent_List ,
+                            Bead_to_atom_name_dict = None,
                             fix_residue = Fix_Graphene_residue,
                             fix_res_bonds_angles = Fix_bonds_angles_residues,
                             reorder_res_in_pdb_psf = False
                             )
 
 mf_charmm.charmm_psf_psb_FF(graphene,
-                  'pore_3x3x1.0nm_3-layer',
-                  structure_1 = box_reservior_w_fake_water,
-                  filename_1 = 'GOMC_reservior_fake_water_box',
-                            GOMC_FF_filename ="GOMC_pore_fake_water_FF" ,
-                  forcefield_files= FF_Graphene_pore_w_solvent_fake_water_Dict ,
-                  residues=residues_Graphene_pore_w_solvent_fake_water_List ,
-                  Bead_to_atom_name_dict = None,
+                            'pore_3x3x1.0nm_3-layer',
+                            structure_1 = box_reservior_w_fake_water,
+                            filename_1 = 'GOMC_reservior_fake_water_box',
+                            FF_filename ="GOMC_pore_fake_water_FF" ,
+                            forcefield_files= FF_Graphene_pore_w_solvent_fake_water_Dict ,
+                            residues=residues_Graphene_pore_w_solvent_fake_water_List ,
+                            Bead_to_atom_name_dict = None,
                             fix_residue = Fix_Graphene_residue,
                             fix_res_bonds_angles = Fix_bonds_angles_fake_water_residues,
                             reorder_res_in_pdb_psf = False

@@ -1,9 +1,10 @@
-from mbuild.recipes.porebuilder import GraphenePore
+from mbuild import recipes
 import mbuild as mb
 from foyer import Forcefield
 import parmed.structure
 import foyer
-import mbuild.formats.charmm_writer as mf_charmm
+sys.path.append('../../../../../')
+from mosdef_slitpore.utils import charmm_writer as mf_charmm
 
 Water_res_name = 'H2O'
 
@@ -33,7 +34,7 @@ water_spacing_from_walls = 0.2
 
 n_waters = 24
 
-empty_graphene_pore = GraphenePore( pore_width=sheet_spacing ,
+empty_graphene_pore =recipes.GraphenePore( pore_width=sheet_spacing ,
                                     pore_length=1.0 ,
                                     pore_depth=1.1 ,
                                     n_sheets=No_sheets,
@@ -58,7 +59,7 @@ mf_charmm.charmm_psf_psb_FF(filled_pore,
                             'filled_pore_water_1x1x1.0nm_1-layer',
                             structure_1 = None ,
                             filename_1 = None,
-                            GOMC_FF_filename ="GOMC_pore_water_FF" ,
+                            FF_filename ="GOMC_pore_water_FF" ,
                             forcefield_files= FF_Graphene_pore_w_solvent_water_Dict ,
                             residues= residues_Graphene_pore_w_solvent_water_List ,
                             Bead_to_atom_name_dict = None,
