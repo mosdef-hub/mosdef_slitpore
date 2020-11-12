@@ -1,7 +1,7 @@
 
 ## Instructions to build and run the GOMC 1x1x1.0nm pore nvt-pore simulations: 
 
-###  GOMC nvt-pore runs in the 1x1x1.0nm graphen pore
+###  GOMC nvt-pore runs in the 1x1x1.0nm graphene pore
 The GOMC simulations in this folder simulate water in the 1x1x1.0nm graphene pore. The instructions recreating these simulations are provided below.
 
 Note: These simulations require setup simulations to gather all the data needed to select the correct number of waters.  The number of water molecules is derived from the bulk-waters simulations and the adsorption simulations.  The number of water molecules was determined from these simulations when the water vapor pressures divided by water's saturation pressure equals 1.6 (P/Psat =1.6).  However, the calculated number of water molecules is included in the system build files, so the user can run these simulations without running the setup simulations.  If the user wants to run and calculate the number of water themselves, they can, and they will need to modify the build files accordingly.
