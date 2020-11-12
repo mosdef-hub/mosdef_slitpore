@@ -35,6 +35,17 @@ def has_md_files(job):
 
 
 @Project.label
+def has_restart_file(job):
+    "Verify that the restart file required for restarting the MD simulation is there"
+
+    try:
+        return job.isfile(job.doc.restart_filename)
+    except:
+        return False
+
+
+
+@Project.label
 def md_completed(job):
     "Verify that the md simulation has completed"
 
@@ -143,7 +154,7 @@ def md_files(job):
 
 @Project.operation
 @Project.pre(has_md_files)
-@Project.post(md_completed)
+@Project.post(has_restart_file)
 @flow.directives(np=64)
 def run_md(job):
     from cp2kmdpy import runners_mpi
@@ -156,7 +167,7 @@ def run_md(job):
 
 
 @Project.operation
-@Project.pre(has_md_files)
+@Project.pre(has_restart_file)
 @flow.directives(np=64)
 def restart_md(job):
     from cp2kmdpy import runners_mpi
