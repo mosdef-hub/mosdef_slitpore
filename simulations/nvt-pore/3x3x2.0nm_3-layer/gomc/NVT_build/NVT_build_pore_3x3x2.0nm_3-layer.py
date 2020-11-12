@@ -3,6 +3,7 @@ import mbuild as mb
 from foyer import Forcefield
 import parmed.structure
 import foyer
+import sys
 sys.path.append('../../../../../')
 from mosdef_slitpore.utils import charmm_writer as mf_charmm
 #**************************************************************
@@ -18,7 +19,7 @@ FF_file_fake_water = '../../../../../mosdef_slitpore/ffxml/FF_Fake_SPCE.xml'
 
 water = mb.load('O', smiles=True)
 water.name = Water_res_name
-water.energy_minimization(forcefield = FF_file , steps=10**9)
+water.energy_minimize(forcefield = FF_file , steps=10**9)
 
 FF_Graphene_pore_w_solvent_Dict = {'H2O' : FF_file, 'BOT' : FF_file, 'TOP' : FF_file}
 residues_Graphene_pore_w_solvent_List = [ water.name,   'BOT', 'TOP']

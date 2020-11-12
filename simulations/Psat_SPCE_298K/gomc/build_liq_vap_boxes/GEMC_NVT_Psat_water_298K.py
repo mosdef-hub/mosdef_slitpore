@@ -1,5 +1,6 @@
 import mbuild as mb
 from foyer import Forcefield
+import sys
 sys.path.append('../../../../')
 from mosdef_slitpore.utils import charmm_writer as mf_charmm
 
@@ -8,7 +9,7 @@ FF_file_water = '../../../../mosdef_slitpore/ffxml/pore-spce.xml'
 
 water = mb.load('O', smiles=True)
 water.name = Water_res_name
-water.energy_minimization(forcefield = FF_file_water , steps=10**9)
+water.energy_minimize(forcefield = FF_file_water , steps=10**9)
 
 
 FF_Dict = {water.name: FF_file_water }

@@ -1,6 +1,7 @@
 from mbuild import recipes
 import mbuild as mb
 from foyer import Forcefield
+import sys
 sys.path.append('../../../../../')
 from mosdef_slitpore.utils import charmm_writer as mf_charmm
 
