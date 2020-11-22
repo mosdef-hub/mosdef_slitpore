@@ -1,6 +1,6 @@
 import mbuild as mb
 import subprocess
-from cssi_cp2k.classes import SIM as sim
+from mosdef_cp2k_writer.classes import SIM as sim
 import math
 
 
