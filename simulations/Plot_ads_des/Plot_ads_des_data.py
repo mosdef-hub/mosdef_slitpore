@@ -30,7 +30,7 @@ Psat_data = pd.read_csv(Psat_data_file, sep=',', header=0, na_values='NaN',
 						usecols=[0,1], index_col=False)
 
 Psat_data = pd.DataFrame(Psat_data)
-print(Psat_data)
+
 
 Psat_SPEC_data_bar = Psat_data.loc[:,'Avg_Pvap_bar']
 Psat_SPEC_data_bar = list(Psat_SPEC_data_bar)[0]
@@ -88,7 +88,7 @@ calc_data_reading_name_16A_des_Gubbins = 'Gubbins_extracted_data/16_des_rescaled
 
 calc_data_10A_ads_Gubbins = pd.read_csv(calc_data_reading_name_10A_ads_Gubbins,  sep=',')
 calc_data_10A_ads_Gubbins_df = pd.DataFrame(calc_data_10A_ads_Gubbins)
-print(calc_data_10A_ads_Gubbins_df )
+
 calc_data_16A_ads_Gubbins = pd.read_csv(calc_data_reading_name_16A_ads_Gubbins,  sep=',')
 calc_data_16A_ads_Gubbins_df = pd.DataFrame(calc_data_16A_ads_Gubbins)
 
@@ -154,7 +154,7 @@ calc_data_reading_name_16A_ads_Cass = '../adsorption/3x3x1.6nm_3-layer/cassandra
 calc_data_reading_name_10A_des_Cass = '../desorption/3x3x1.0nm_3-layer/cassandra/analysis/results.csv'
 calc_data_reading_name_16A_des_Cass = '../desorption/3x3x1.6nm_3-layer/cassandra/analysis/results.csv'
 
-calc_reading_name_pressure_Cass = '../bulk-water/cassandra/analysis/results_nd.csv'
+calc_reading_name_pressure_Cass = '../bulk-water/cassandra/analysis/results.csv'
 
 calc_data_10A_ads_Cass = pd.read_csv(calc_data_reading_name_10A_ads_Cass,  sep=',', index_col=0)
 calc_data_10A_ads_Cass_df = pd.DataFrame(calc_data_10A_ads_Cass)
@@ -184,7 +184,7 @@ Avg_E_No_water_per_nm_sq_16A_des_Cass = calc_data_16A_des_Cass_df.loc[:, 'nmols_
 
 
 mu_kJ_per_mol_Cass = calc_data_pressure_Cass_df.loc[:, 'mu-cassandra_kJmol' ].tolist()
-Avg_pressure_bar_Cass = calc_data_pressure_Cass_df.loc[:, 'press_bar' ].tolist()
+Avg_pressure_bar_Cass = calc_data_pressure_Cass_df.loc[:, 'pressure_bar' ].tolist()
 
 mu_kJ_per_mol_and_P_dict = {}
 
@@ -343,112 +343,6 @@ tuples = zip(*sorted_pairs)
 P_div_Po_16A_des_Cass_list, Avg_of_E_per_area_16A_des_Cass_list, Std_Dev_E_per_area_16A_des_Cass_list  = [ list(tuple) for tuple in tuples]
 
 
-# original Cassandra organization
-"""
-
-Avg_of_E_per_area_10A_ads_Cass_list = []
-mu_kJ_per_mol_10A_ads_Cass_list = []
-P_div_Po_10A_ads_Cass_list = []
-Avg_mu_kJ_per_mol_10A_ads_Cass_list = []
-Std_Dev_E_per_area_10A_ads_Cass_list = []
-for i in range(0, No_runs_per_set_10A_ads_Cass):
-    Average_of_mu_list = []
-    Average_of_E_per_area_list_iteration = []
-    for j in range(0, No_independant_run_sets_per_10A_ads_Cass):
-        evaluate_iteration = i + j * int(No_runs_per_set_10A_ads_Cass)
-        Average_of_mu_list.append(mu_kJ_per_mol_10A_ads_Cass[evaluate_iteration])
-        Average_of_E_per_area_list_iteration.append(Avg_E_No_water_per_nm_sq_10A_ads_Cass[evaluate_iteration])
-
-    Avg_of_E_per_area_10A_ads_Cass_list.append(np.mean(Average_of_E_per_area_list_iteration))
-    Avg_mu_kJ_per_mol_10A_ads_Cass_list.append(np.mean(Average_of_mu_list))
-    Calc_P_div_Po = np.mean(np.exp(mu_kJ_per_mol_10A_ads_Cass[i] * slope_Cass + intercept_Cass)) / Psat_at_298K
-    P_div_Po_10A_ads_Cass_list.append(Calc_P_div_Po)
-    Std_Dev_E_per_area_10A_ads_Cass_list.append(np.std(Average_of_E_per_area_list_iteration, ddof=1))
-
-
-zipped_lists = zip(P_div_Po_10A_ads_Cass_list, Avg_of_E_per_area_10A_ads_Cass_list, Std_Dev_E_per_area_10A_ads_Cass_list)
-sorted_pairs = sorted(zipped_lists)
-tuples = zip(*sorted_pairs)
-P_div_Po_10A_ads_Cass_list, Avg_of_E_per_area_10A_ads_Cass_list, Std_Dev_E_per_area_10A_ads_Cass_list  = [ list(tuple) for tuple in tuples]
-
-
-Avg_of_E_per_area_16A_ads_Cass_list = []
-mu_kJ_per_mol_16A_ads_Cass_list = []
-P_div_Po_16A_ads_Cass_list = []
-Avg_mu_kJ_per_mol_16A_ads_Cass_list = []
-Std_Dev_E_per_area_16A_ads_Cass_list = []
-for i in range(0, No_runs_per_set_16A_ads_Cass):
-    Average_of_mu_list = []
-    Average_of_E_per_area_list_iteration = []
-    for j in range(0, No_independant_run_sets_per_16A_ads_Cass):
-        evaluate_iteration = i + j * int(No_runs_per_set_16A_ads_Cass)
-        Average_of_mu_list.append(mu_kJ_per_mol_16A_ads_Cass[evaluate_iteration])
-        Average_of_E_per_area_list_iteration.append(Avg_E_No_water_per_nm_sq_16A_ads_Cass[evaluate_iteration])
-
-    Avg_of_E_per_area_16A_ads_Cass_list.append(np.mean(Average_of_E_per_area_list_iteration))
-    Avg_mu_kJ_per_mol_16A_ads_Cass_list.append(np.mean(Average_of_mu_list))
-    Calc_P_div_Po = np.mean(np.exp(mu_kJ_per_mol_16A_ads_Cass[i] * slope_Cass + intercept_Cass)) / Psat_at_298K
-    P_div_Po_16A_ads_Cass_list.append(Calc_P_div_Po)
-    Std_Dev_E_per_area_16A_ads_Cass_list.append(np.std(Average_of_E_per_area_list_iteration, ddof=1))
-
-
-zipped_lists = zip(P_div_Po_16A_ads_Cass_list, Avg_of_E_per_area_16A_ads_Cass_list, Std_Dev_E_per_area_16A_ads_Cass_list)
-sorted_pairs = sorted(zipped_lists)
-tuples = zip(*sorted_pairs)
-P_div_Po_16A_ads_Cass_list, Avg_of_E_per_area_16A_ads_Cass_list, Std_Dev_E_per_area_16A_ads_Cass_list  = [ list(tuple) for tuple in tuples]
-
-
-Avg_of_E_per_area_10A_des_Cass_list = []
-mu_kJ_per_mol_10A_des_Cass_list = []
-P_div_Po_10A_des_Cass_list = []
-Avg_mu_kJ_per_mol_10A_des_Cass_list = []
-Std_Dev_E_per_area_10A_des_Cass_list = []
-for i in range(0, No_runs_per_set_10A_des_Cass):
-    Average_of_mu_list = []
-    Average_of_E_per_area_list_iteration = []
-    for j in range(0, No_independant_run_sets_per_10A_des_Cass):
-        evaluate_iteration = i + j * int(No_runs_per_set_10A_des_Cass)
-        Average_of_mu_list.append(mu_kJ_per_mol_10A_des_Cass[evaluate_iteration])
-        Average_of_E_per_area_list_iteration.append(Avg_E_No_water_per_nm_sq_10A_des_Cass[evaluate_iteration])
-
-    Avg_of_E_per_area_10A_des_Cass_list.append(np.mean(Average_of_E_per_area_list_iteration))
-    Avg_mu_kJ_per_mol_10A_des_Cass_list.append(np.mean(Average_of_mu_list))
-    Calc_P_div_Po = np.mean(np.exp(mu_kJ_per_mol_10A_des_Cass[i] * slope_Cass + intercept_Cass)) / Psat_at_298K
-    P_div_Po_10A_des_Cass_list.append(Calc_P_div_Po)
-    Std_Dev_E_per_area_10A_des_Cass_list.append(np.std(Average_of_E_per_area_list_iteration, ddof=1))
-
-
-zipped_lists = zip(P_div_Po_10A_des_Cass_list, Avg_of_E_per_area_10A_des_Cass_list, Std_Dev_E_per_area_10A_des_Cass_list)
-sorted_pairs = sorted(zipped_lists)
-tuples = zip(*sorted_pairs)
-P_div_Po_10A_des_Cass_list, Avg_of_E_per_area_10A_des_Cass_list, Std_Dev_E_per_area_10A_des_Cass_list  = [ list(tuple) for tuple in tuples]
-
-
-Avg_of_E_per_area_16A_des_Cass_list = []
-mu_kJ_per_mol_16A_des_Cass_list = []
-P_div_Po_16A_des_Cass_list = []
-Avg_mu_kJ_per_mol_16A_des_Cass_list = []
-Std_Dev_E_per_area_16A_des_Cass_list = []
-for i in range(0, No_runs_per_set_16A_des_Cass):
-    Average_of_mu_list = []
-    Average_of_E_per_area_list_iteration = []
-    for j in range(0, No_independant_run_sets_per_16A_des_Cass):
-        evaluate_iteration = i + j * int(No_runs_per_set_16A_des_Cass)
-        Average_of_mu_list.append(mu_kJ_per_mol_16A_des_Cass[evaluate_iteration])
-        Average_of_E_per_area_list_iteration.append(Avg_E_No_water_per_nm_sq_16A_des_Cass[evaluate_iteration])
-
-    Avg_of_E_per_area_16A_des_Cass_list.append(np.mean(Average_of_E_per_area_list_iteration))
-    Avg_mu_kJ_per_mol_16A_des_Cass_list.append(np.mean(Average_of_mu_list))
-    Calc_P_div_Po = np.mean(np.exp(mu_kJ_per_mol_16A_des_Cass[i] * slope_Cass + intercept_Cass)) / Psat_at_298K
-    P_div_Po_16A_des_Cass_list.append(Calc_P_div_Po)
-    Std_Dev_E_per_area_16A_des_Cass_list.append(np.std(Average_of_E_per_area_list_iteration, ddof=1))
-
-
-zipped_lists = zip(P_div_Po_16A_des_Cass_list, Avg_of_E_per_area_16A_des_Cass_list, Std_Dev_E_per_area_16A_des_Cass_list)
-sorted_pairs = sorted(zipped_lists)
-tuples = zip(*sorted_pairs)
-P_div_Po_16A_des_Cass_list, Avg_of_E_per_area_16A_des_Cass_list, Std_Dev_E_per_area_16A_des_Cass_list  = [ list(tuple) for tuple in tuples]
-"""
 
 #****************************************
 #Plot Number 1  (start)
@@ -550,7 +444,7 @@ ax1[0].grid()
 ax1[1].grid()
 
 
-plt.show()
+#plt.show()
 fig1.savefig(E_vs_P_Psat_saving_name)
 #****************************************
 #Plot Number 1 (end)
