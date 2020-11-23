@@ -4,11 +4,10 @@ import warnings
 import os
 import foyer
 import mbuild as mb
-import environment
 from flow import FlowProject, directives
 from mosdef_slitpore.utils.utils import get_ff
 from mosdef_slitpore.utils.gromacs import write_ndx, add_settles
-from mosdef_slitpore.utils.cassandra import spce_water
+from mosdef_slitpore.utils.cassandra_helpers import create_spce_water
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -43,7 +42,7 @@ def nvt_complete(job):
 @Project.operation
 @Project.post(init_complete)
 def initialize(job):
-    water = spce_water()
+    water = create_spce_water()
     water.name = 'SOL'
     pore = mb.recipes.GraphenePoreSolvent(
         pore_width=1.0,
@@ -93,11 +92,15 @@ def run_em(job):
 @Project.post(nvt_complete)
 @flow.cmd
 def run_nvt(job):
-    return _gromacs_str("nvt.mdp", "nvt", "em")
+    if job.sp.nsteps == 100000000:
+        mdp = "nvt_1_water.mdp"
+    else:
+        mdp = "nvt.mdp"
+    return _gromacs_str(mdp, "nvt", "em")
 
 def _gromacs_str(mdp, op_name, gro_name):
     """Helper function, returns grompp command string for operation """
-    mdp = signac.get_project().fn("files/{}.mdp".format(op_name))
+    mdp = signac.get_project().fn("files/{}".format(mdp))
     cmd = "gmx grompp -f {mdp} -c {gro_name}.gro -p init.top -o {op_name}.tpr --maxwarn 1 && gmx mdrun -deffnm {op_name} -ntmpi 1"
     return workspace_command(
         cmd.format(mdp=mdp, op_name=op_name, gro_name=gro_name)

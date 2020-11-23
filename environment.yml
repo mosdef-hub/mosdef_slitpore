@@ -1,0 +1,26 @@
+name: slitpore37
+channels:
+    - conda-forge
+    - mosdef
+    - omnia
+    - bioconda
+dependencies:
+    - mbuild
+    - foyer
+    - signac
+    - signac-flow
+    - cassandra
+    - mosdef_cassandra
+    - gromacs
+    - pandas
+    - matplotlib
+    - unyt
+    - py3dmol
+    - scipy
+    - openbabel>=3.0.0
+    - gsd
+    - mdtraj
+    - cmake
+    - lammps
+    - ocl-icd-system
+    - git-lfs

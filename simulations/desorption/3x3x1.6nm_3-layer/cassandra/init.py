@@ -12,10 +12,7 @@ def init_project():
     temperature = 298.0 * u.K
     # Define chemical potentials
     mus = [
-        -63.0 * u.kJ / u.mol,
-        -60.0 * u.kJ / u.mol,
         -57.0 * u.kJ / u.mol,
-        -54.0 * u.kJ / u.mol,
         -53.0 * u.kJ / u.mol,
         -52.0 * u.kJ / u.mol,
         -51.0 * u.kJ / u.mol,
@@ -25,12 +22,15 @@ def init_project():
         -45.0 * u.kJ / u.mol,
     ]
 
-    # Run for 150 M steps
-    nsteps_eq = 5000000
-    nsteps_prod = 150000000
+    # Run for 300 M steps
+    nsteps_nvt = 5000000
+    nsteps_gcmc = 300000000
 
-    # Start with 405 waters in pore
-    nwater = 405
+    # Start with 400 waters in pore
+    nwater = 400
+
+    # For reproducibility
+    np.random.seed(5048279)
 
     for mu in mus:
         for run in range(3):
@@ -39,8 +39,12 @@ def init_project():
                 "T": float(temperature.in_units(u.K).value),
                 "mu": float(mu.in_units(u.kJ / u.mol).value),
                 "nwater": nwater,
-                "nsteps_eq": nsteps_eq,
-                "nsteps_prod": nsteps_prod,
+                "nsteps": {
+                    "nvt" : nsteps_nvt,
+                    "gcmc" : nsteps_gcmc,
+                },
+                "seed1" : np.random.randint(10**8),
+                "seed2" : np.random.randint(10**8),
                 "run": run,
             }
 

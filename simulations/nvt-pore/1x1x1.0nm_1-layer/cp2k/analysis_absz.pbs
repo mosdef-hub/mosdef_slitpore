@@ -1,0 +1,7 @@
+#!/bin/bash -l        
+#PBS -l walltime=1:00:00,nodes=1:ppn=1,mem=10gb 
+cd $PBS_O_WORKDIR
+module purge
+module load conda
+source activate /home/siepmann/singh891/anaconda3/envs/slitpore37
+python analysis_absz.py

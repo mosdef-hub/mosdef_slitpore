@@ -1,7 +1,10 @@
 import flow
-from flow import FlowProject, directives
-import templates.ndcrc
 import warnings
+
+
+from flow import FlowProject, directives
+from mosdef_slitpore.utils.cassandra_helpers import check_simulation
+
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -12,78 +15,63 @@ class Project(FlowProject):
 
 @Project.label
 def equil_complete(job):
-    "Verify that the simulation has completed"
+    """Check if the equilibration simulation has completed"""
+    return check_simulation(job.fn("equil.nvt.out.prp"), job.sp.nsteps.equil)
 
-    import numpy as np
-
-    try:
-        thermo_data = np.genfromtxt(job.fn("equil.nvt.out.prp"), skip_header=3)
-        completed = int(thermo_data[-1][0]) == job.sp.nsteps_eq
-    except:
-        completed = False
-        pass
-
-    return completed
 
 @Project.label
 def prod_complete(job):
-    "Verify that the simulation has completed"
-
-    import numpy as np
-
-    try:
-        thermo_data = np.genfromtxt(job.fn("prod.nvt.out.prp"), skip_header=3)
-        completed = int(thermo_data[-1][0]) == job.sp.nsteps_prod
-    except:
-        completed = False
-        pass
-
-    return completed
+    """Check if the production simulation has completed"""
+    return check_simulation(job.fn("prod.nvt.out.prp"), job.sp.nsteps.prod)
 
 
 @Project.operation
 @Project.post(prod_complete)
 @directives(omp_num_threads=4)
-def run_desorption(job):
-    """Run desorption simulation for the given statepoint"""
+def run_simulation(job):
+    """Run NVT simulations for the given statepoint"""
 
     import mbuild
     import unyt as u
 
-    from mosdef_slitpore.utils.cassandra import run_nvt
-    from mosdef_slitpore.utils.cassandra import spce_water
+    from mosdef_slitpore.utils.cassandra_runners import run_nvt
+    from mosdef_slitpore.utils.cassandra_helpers import spce_water
+
+    pore_width = 2.0 * u.nm
 
     temperature = job.sp.T * u.K
     nwater = job.sp.nwater
-    nsteps_eq = job.sp.nsteps_eq
-    nsteps_prod = job.sp.nsteps_prod
+    nsteps_eq = job.sp.nsteps.equil
+    nsteps_prod = job.sp.nsteps.prod
+    seed1 = job.sp.seed1
+    seed2 = job.sp.seed2
 
     # Create pore system
-    empty_pore = mbuild.recipes.GraphenePore(
-        pore_width=2.0,
+    filled_pore = mbuild.recipes.GraphenePoreSolvent(
         pore_length=3.0,
         pore_depth=3.0,
+        pore_width=pore_width.to_value("nm"),
         n_sheets=3,
         slit_pore_dim=2,
+        x_bulk=0,
+        solvent=spce_water,
+        n_solvent=nwater,
     )
 
     # Translate to centered at 0,0,0 and make box larger in z
-    empty_pore.translate(-empty_pore.center)
-    empty_pore.periodicity[2] = 6.0
-
-    # Create a water molecule with the spce geometry
-    water = spce_water()
-    # Create box of water to place in pore
-    water_box = mbuild.Box([3.0, 3.0, 1.8]) #nm
-    water = mbuild.fill_box(water, n_compounds=nwater, box=water_box)
-    water.translate(-water.center)
-    filled_pore = mbuild.Compound()
-    filled_pore.add(empty_pore, inherit_periodicity=True)
-    filled_pore.add(water, inherit_periodicity=False)
+    box_center = filled_pore.periodicity/2.0
+    filled_pore.translate(-box_center)
+    filled_pore.periodicity[2] = 6.0
 
     # Run simulation from inside job dir
     with job:
-        run_nvt(empty_pore, filled_pore, nwater, temperature, nsteps_eq, nsteps_prod)
+        run_nvt(
+            filled_pore,
+            temperature,
+            nsteps_eq,
+            nsteps_prod,
+            seeds = [seed1, seed2],
+        )
 
 
 if __name__ == "__main__":
