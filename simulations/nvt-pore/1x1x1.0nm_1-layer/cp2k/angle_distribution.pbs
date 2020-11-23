@@ -4,4 +4,4 @@ cd $PBS_O_WORKDIR
 module purge
 module load conda
 source activate /home/siepmann/singh891/anaconda3/envs/slitpore37
-python analysis.py
+python angle_distribution.py
