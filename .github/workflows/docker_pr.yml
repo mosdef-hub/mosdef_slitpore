@@ -24,7 +24,7 @@ jobs:
               path: /tmp/.buildx-cache
               key: ${{ runner.os }}-buildx-${{ github.sha }}
               restore-keys: |
-                  ${{ runners.os }}-buildx-
+                  ${{ runner.os }}-buildx-
         -
           name: Test
           id: docker_test
