@@ -19,7 +19,7 @@ jobs:
           uses: docker/build-push-action@v2.2.0
           with:
               context: ./docker
-              file: ./Dockerfile
+              file: ./docker/Dockerfile
               push: true
               tags: rmatsum836/mosdef_slitpore:latest
         -
