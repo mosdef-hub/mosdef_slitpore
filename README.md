@@ -12,7 +12,7 @@ The goal of this project is to replicate the work of Gubbins and colleagues[1] u
 * Add link to SI.
 
 ## Simulation details
-* LJ, cutoff, no analytical tail corrections
+* Lennard-Jones (LJ) 12-6 potentials, cutoff, no analytical tail corrections
 * 9.0 angstrom cutoffs for LJ and Coulombic interactions
 * Long range electrostatics 
 
@@ -35,8 +35,6 @@ well as the [Pore-Builder](https://github.com/rmatsum836/Pore-Builder) mBuild
 recipe. Please see (link to paper) for detailed installation instructions.
 
 To install this package simply execute the following on the command line: `pip install -e .`
-
-
 
 ### Running simulations on a supercomputer or cluster
 It is highly advised to run these simulations on a supercomputer or cluster.  For the simulations that
