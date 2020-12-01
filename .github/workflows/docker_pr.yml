@@ -64,7 +64,7 @@ jobs:
               context: ./docker
               file: ./docker/Dockerfile
               push: true
-              tags: rmatsum836/mosdef_slitpore:latest
+              tags: rmatsum836/mosdef_slitpore:0.0
         -
           name: Image digest
           run: echo ${{ steps.docker_build.outputs.digest }}
