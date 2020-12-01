@@ -24,3 +24,4 @@ dependencies:
     - lammps
     - ocl-icd-system
     - git-lfs
+    - seaborn
