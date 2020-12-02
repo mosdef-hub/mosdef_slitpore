@@ -63,7 +63,7 @@ jobs:
           with:
               builder: ${{ steps.buildx.outputs.name }}
               push: true
-              context: ./docker
+              context: .
               file: ./docker/Dockerfile
               tags: rmatsum/mosdef_slitpore:0.0
         -
