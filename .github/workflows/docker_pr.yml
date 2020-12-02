@@ -1,4 +1,4 @@
- For pushes to master branch run the tests and push image to GitHub registry 
+# For pushes to master branch run the tests and push image to GitHub registry 
 name: Build and push Docker images
 on:
     pull_request:
