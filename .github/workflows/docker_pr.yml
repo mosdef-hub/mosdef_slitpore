@@ -33,6 +33,5 @@ jobs:
               builder: ${{ steps.buildx.outputs.name }}
               context: ./docker
               file: ./docker/Dockerfile
-              target: test
-              cache-from: type=local,src=/tmp/.buildx-cache
+              target: true
               cache-to: type=local,dest=/tmp/.buildx-cache
