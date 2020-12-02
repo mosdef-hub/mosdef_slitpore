@@ -34,3 +34,4 @@ jobs:
               context: ./docker
               file: ./docker/Dockerfile
               target: test
+              cache-from: type=local, src=/tmp/.buildx-cache
