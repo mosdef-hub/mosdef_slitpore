@@ -62,9 +62,10 @@ jobs:
           uses: docker/build-push-action@v2.2.0
           with:
               builder: ${{ steps.buildx.outputs.name }}
+              push: true
               context: ./docker
               file: ./docker/Dockerfile
-              tags: rmatsum836/mosdef_slitpore:0.0
+              tags: rmatsum/mosdef_slitpore:0.0
         -
           name: Image digest
           run: echo ${{ steps.docker_build.outputs.digest }}
