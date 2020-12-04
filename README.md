@@ -52,5 +52,5 @@ supported environments.
 ## References
 1. Striolo, A.; Chialvo, A. A.; Cummings, P. T.; Gubbins, K. E. Water Adsorption in Carbon-Slit Nanopores. Langmuir, 2003, 19 (20), 8583–8591.
 2. Klein, C.; Sallai, J.; Jones, T.; Iacovella, C. R.; McCabe, C.; Cummings, P. T. A Hierarchical, Component Based Approach to Screening Properties of Soft Matter. Foundations of Molecular Modeling and simulation, 2016.
-3. Klein, C.; Summers, A. Z; Thompson, M. W.; Gilmer, J. B.; McCabe, C.; Cummings, P. T.; Sallai, J.; Iacovella, C. R. Formalizing Atom-typing and the Dissemination of Force Fields with Foyer. Comput. Mater. Sci., 2019, 167, 215-227
-4. Adorf, C. S.; Dodd, P. M.; Ramasubramani, V.; & Glotzer, S. C. Simple data and workflow management with the signac framework. Comput. Mater. Sci., 2018, 146, 220-229.
+3. Klein, C.; Summers, A. Z; Thompson, M. W.; Gilmer, J. B.; McCabe, C.; Cummings, P. T.; Sallai, J.; Iacovella, C. R. Formalizing Atom-typing and the Dissemination of Force Fields with Foyer. Comput. Mater. Sci., 2019, 167, 215-227.
+4. Adorf, C. S.; Dodd, P. M.; Ramasubramani, V.; & Glotzer, S. C. Simple Data and Workflow Management with the Signac Framework. Comput. Mater. Sci., 2018, 146, 220-229.
