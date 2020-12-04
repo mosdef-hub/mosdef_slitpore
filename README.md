@@ -36,6 +36,12 @@ recipe. Please see (link to paper) for detailed installation instructions.
 
 To install this package simply execute the following on the command line: `pip install -e .`
 
+#### Docker Image
+The simulations and analysis in this package can also be run with using Docker.  To run the docker image, execute the following command `docker run -it rmatsum/mosdef-slitpore:latest` which will pull the latest docker image from Docker Hub.  Running this image will drop you into a `bash` shell in the container at the location `/workspace`.  In general, containers are intended to be used as an "application", meaning no persistent data should be stored in the container.  If you are in a working directory with necessary input files, such as LAMMPS, you can run `lammps` with the following command:
+```
+docker run --mount type=bind,source=$(pwd),target=/workspace rmatsum/mosdef-slitpore:latest "lmp_mpi < in.lammps"
+```
+
 ### Running simulations on a supercomputer or cluster
 It is highly advised to run these simulations on a supercomputer or cluster.  For the simulations that
 are managed with signac, the submission of job operations can be handled by an
