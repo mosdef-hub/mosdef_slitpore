@@ -2,7 +2,7 @@
 A collection of Python functions and scripts to run and analyze simulations of water inside carbon slit pores.
 
 ## Project Overview
-The goal of this project is to replicate the work of Gubbins and colleagues[1] using the Molecular Simulation and Design Framework (MoSDeF).  MoSDeF aids in the initialization and parametrization of chemical systems for molecular simulation, and aims to be tightly integrated with the numerous molecular simulation codes available.  Such integration allows for comparisons of simulation results from the various engines in a reproducible manner.  Simulations are run using the following engines.
+The goal of this project is to replicate the work of Gubbins and colleagues[1] using the Molecular Simulation and Design Framework (MoSDeF)[2,3].  MoSDeF aids in the initialization and parametrization of chemical systems for molecular simulation, and aims to be tightly integrated with the numerous molecular simulation codes available.  Such integration allows for comparisons of simulation results from the various engines in a reproducible manner.  Simulations are run using the following engines.
 - [Cassandra](https://cassandra.nd.edu)
 - [GROMACS](http://www.gromacs.org)
 - [LAMMPS](https://lammps.sandia.gov)
@@ -24,7 +24,7 @@ molecular system and 3) simulation engine used.
 The initialization and analysis code, as well as the force field files are
 contained within the `mosdef_slitpore` directory.
 
-The simulations run with Cassandra, GROMACS, LAMMPS, and CP2K are managed by the [signac](https://signac.io) framework.  There is a specific signac project for each slitpore system and simulation engine.  Each project contains multiple `jobs` with unique `statepoints` which are conditions at which the simulations are run.  Please see signac documentation for additional details.
+The simulations run with Cassandra, GROMACS, LAMMPS, and CP2K are managed by the [signac](https://signac.io) framework[4].  There is a specific signac project for each slitpore system and simulation engine.  Each project contains multiple `jobs` with unique `statepoints` which are conditions at which the simulations are run.  Please see signac documentation for additional details.
 
 The data can be visualized with a Jupyter notebook contained in the `notebooks` directory, which calls the plotting functions in the `plotting` directory.
 
@@ -50,4 +50,7 @@ are managed with signac, the submission of job operations can be handled by an
 supported environments.
 
 ## References
-1. Striolo, A.; Chialvo, A. A.; Cummings, P. T.; Gubbins, K. E. Water Adsorption in Carbon-Slit Nanopores. Langmuir 2003, 19 (20), 8583–8591.
+1. Striolo, A.; Chialvo, A. A.; Cummings, P. T.; Gubbins, K. E. Water Adsorption in Carbon-Slit Nanopores. Langmuir, 2003, 19 (20), 8583–8591.
+2. Klein, C.; Sallai, J.; Jones, T.; Iacovella, C. R.; McCabe, C.; Cummings, P. T. A Hierarchical, Component Based Approach to Screening Properties of Soft Matter. Foundations of Molecular Modeling and simulation, 2016.
+3. Klein, C.; Summers, A. Z; Thompson, M. W.; Gilmer, J. B.; McCabe, C.; Cummings, P. T.; Sallai, J.; Iacovella, C. R. Formalizing Atom-typing and the Dissemination of Force Fields with Foyer. Comput. Mater. Sci., 2019, 167, 215-227
+4. Adorf, C. S.; Dodd, P. M.; Ramasubramani, V.; & Glotzer, S. C. Simple data and workflow management with the signac framework. Comput. Mater. Sci., 2018, 146, 220-229.
