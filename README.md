@@ -1,4 +1,6 @@
 # MoSDeF Slitpores
+[![DOI](https://zenodo.org/badge/274940268.svg)](https://zenodo.org/badge/latestdoi/274940268)
+
 A collection of Python functions and scripts to run and analyze simulations of water inside carbon slit pores.
 
 ## Project Overview
@@ -9,7 +11,9 @@ The goal of this project is to replicate the work of Gubbins and colleagues[1] u
 - [CP2K](https://www.cp2k.org)
 - [GOMC](http://gomc.eng.wayne.edu)
 
-* Add link to SI.
+### Supplementary Information
+The work contained in this repository was used in our [paper](https://www.authorea.com/users/311036/articles/496195-open-source-molecular-modeling-software-in-chemical-engineering-focusing-on-the-molecular-simulation-design-framework?commit=bed95fe98da6c2ed7360a8ef4442e0b35ed82b63).
+The most recent version of the supplementary information is hosted on this repository [here](https://github.com/mosdef-hub/mosdef_slitpore/blob/master/supplementary_info/si_latest.pdf).
 
 ## Simulation details
 * Lennard-Jones (LJ) 12-6 potentials, cutoff, no analytical tail corrections
