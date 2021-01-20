@@ -25,7 +25,7 @@ RUN apk --update-cache upgrade && \
 	echo "conda activate slitpore" >> /home/anaconda/.bashrc && \
 	conda activate slitpore && \
 	cd /software && \
-    git clone https://github.com/rmatsum836/mosdef_slitpore && \
+    git clone https://github.com/mosdef-hub/mosdef_slitpore && \
     cd mosdef_slitpore && \
     python setup.py install && cd ../ && \
 	conda clean -afy && apk del .build_deps && \
