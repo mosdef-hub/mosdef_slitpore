@@ -13,7 +13,7 @@ The goal of this project is to replicate the work of Gubbins and colleagues[1] u
 
 ### Supplementary Information
 The work contained in this repository was used in our [paper](https://www.authorea.com/users/311036/articles/496195-open-source-molecular-modeling-software-in-chemical-engineering-focusing-on-the-molecular-simulation-design-framework?commit=bed95fe98da6c2ed7360a8ef4442e0b35ed82b63).
-The most recent version of the supplementary information is hosted on this repository.
+The most recent version of the supplementary information is hosted on this repository [here](https://github.com/mosdef-hub/mosdef_slitpore/blob/master/supplementary_info/si_latest.pdf).
 
 ## Simulation details
 * Lennard-Jones (LJ) 12-6 potentials, cutoff, no analytical tail corrections
