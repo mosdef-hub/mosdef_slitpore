@@ -15,6 +15,8 @@ def init_project():
         -54.0 * u.kJ / u.mol,
         -51.0 * u.kJ / u.mol,
         -48.0 * u.kJ / u.mol,
+        -47.0 * u.kJ / u.mol,
+        -46.0 * u.kJ / u.mol,
         -45.0 * u.kJ / u.mol,
         -44.6 * u.kJ / u.mol,
         -44.3 * u.kJ / u.mol,

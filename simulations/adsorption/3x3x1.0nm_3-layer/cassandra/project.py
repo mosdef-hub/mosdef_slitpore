@@ -48,8 +48,7 @@ def run_adsorption(job):
     )
 
     # Translate to centered at 0,0,0 and make box larger in z
-    box_center = empty_pore.periodicity/2.0
-    empty_pore.translate(-box_center)
+    empty_pore.translate(-empty_pore.center)
     empty_pore.periodicity[2] = 6.0
 
     # Run simulation from inside job dir
