@@ -12,9 +12,6 @@ def init_project():
     temperature = 298.0 * u.K
     # Define chemical potentials
     mus = [
-        -47.0 * u.kJ / u.mol,
-        -46.0 * u.kJ / u.mol,
-        -45.0 * u.kJ / u.mol,
         -43.0 * u.kJ / u.mol,
         -42.0 * u.kJ / u.mol,
     ]
